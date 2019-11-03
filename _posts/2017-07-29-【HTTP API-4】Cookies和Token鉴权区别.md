@@ -14,7 +14,15 @@ tags:          #标签
 所以，为了保证客户端和服务端之间有状态，每个请求必须带上相关的"标识"。这个标识的目的主要是用于鉴权认证，常见的鉴权方式有以下2种 `基于Cookies` 和 `基于Token`。
 
 # 二. Cookies鉴权
+长期以来基于`Cookies`鉴权方式一直是身份认证的默认方式，基于`Cookies`鉴权方式是有状态的，这就意味着我们需要在客户端和服务端保存session记录。服务端需要从内存或者Mysql查找指定的session，同时客户端浏览器需要保存对应的session，基于`Cookies`鉴权常见的流程如下。
 
+<img src="https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/http-api-cookie-auth.png?raw=true" width="640" />
+
+1. 用户请求登录服务，输入登录凭证
+2. 服务端校验登录凭证，成功后创建session并存储到内存或Mysql，同时在HTTP response Set-Cookie中返回session给客户端
+3. 客户端本地设置Cookie保存下session
+4. 针对每个请求，客户端通过HTTP Cookie字段把session传给服务端，服务端根据session进行身份认证
+5. 当用户登出服务之后，session会过期无效
 
 # 三. Token鉴权
 
