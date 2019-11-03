@@ -24,8 +24,11 @@ tags:          #标签
 4. 针对每个请求，客户端通过HTTP Cookie字段把session传给服务端，服务端根据session进行身份认证
 5. 当用户登出服务之后，session会过期无效
 
-Golang开发使用Cookies总结
-1. 
+Golang项目使用Cookies鉴权举例
+1. 前后端分离，服务端代码使用Golang进行开发，常用的HTTP Server框架选用 [Gin](https://github.com/gin-gonic/gin)
+2. 前端一般会需要提供一个登录页面，或者使用统一登录页面，服务端需要提供一个登录接口（一般大公司都会有自己的大账号统一登录系统）
+3. 当用户登录之后，服务端会根据用户id生成一个session，并保存在服务端内存中，同时返回给客户端（可以使用github.com/gin-contrib/sessions）
+4. 之后客户端发起的任何一个HTTP请求都需要在header里面设置 `cookie` 字段，值设置为session，服务端接收到之后解析出session，查询内存或数据库获取session对应用户信息
 
 # 三. Token鉴权
 基于`Token`鉴权方式在最近几年由于单体应用、Web API、物联网的兴起越来越流行，有很多种实现Token的方式，但是`JSON Web Tokens (JWTs)`已经成为标准。基于`Token`鉴权方式是无状态的，服务端不再需要保存用户登录的session，同时客户端只需要在每个HTTP header请求带上Token即可，基于`Token`鉴权常见的流程如下。
@@ -40,8 +43,11 @@ Golang开发使用Cookies总结
 
 目前用的最多的Token实现方式是 [JSON Web Tokens](https://jwt.io/introduction/)
 
-Golang开发使用Token总结
-1. 
+Golang项目使用Token鉴权举例
+1. 前后端分离，服务端代码使用Golang进行开发，常用的HTTP Server框架选用 [Gin](https://github.com/gin-gonic/gin)
+2. 前端一般会需要提供一个登录页面，或者使用统一登录页面，服务端需要提供一个登录接口（一般大公司都会有自己的大账号统一登录系统，同时会有统一Token服务）
+3. 当用户登录之后，服务端从统一Token服务获取一个token，并把token下发给客户端
+4. 之后客户端发起的任何一个HTTP请求都需要在header里面设置 `Authorization` 字段，值为对应的token，服务端接收到之后解析出token，请求token服务进行校验并获取对应用户信息
 
 # 四. Cookies vs Token
 1. Token需要经过加密签名，Cookie session则不需要
