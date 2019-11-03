@@ -36,7 +36,9 @@ tags:          #标签
 5. 当用户登出服务之后，Token会过期无效
 
 # 四. Cookies vs Token
-
+1. Token需要经过加密签名，Cookie session则不需要
+2. Cookie session是有状态的，需要在客户端和服务端分别存储一份，而Token是无状态的只需要客户端本地存储即可
+3. 
 
 
 
