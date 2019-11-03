@@ -24,8 +24,7 @@ tags:          #标签
 4. 针对每个请求，客户端通过HTTP Cookie字段把session传给服务端，服务端根据session进行身份认证
 5. 当用户登出服务之后，session会过期无效
 
-使用总结
-
+Golang开发使用Cookies总结
 1. 
 
 # 三. Token鉴权
@@ -41,7 +40,8 @@ tags:          #标签
 
 目前用的最多的Token实现方式是 [JSON Web Tokens](https://jwt.io/introduction/)
 
-使用总结
+Golang开发使用Token总结
+1. 
 
 # 四. Cookies vs Token
 1. Token需要经过加密签名，Cookie session则不需要
