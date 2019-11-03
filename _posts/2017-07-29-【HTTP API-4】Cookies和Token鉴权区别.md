@@ -24,6 +24,8 @@ tags:          #标签
 4. 针对每个请求，客户端通过HTTP Cookie字段把session传给服务端，服务端根据session进行身份认证
 5. 当用户登出服务之后，session会过期无效
 
+实际场景使用
+
 # 三. Token鉴权
 基于`Token`鉴权方式在最近几年由于单体应用、Web API、物联网的兴起越来越流行，有很多种实现Token的方式，但是`JSON Web Tokens (JWTs)`已经成为标准。基于`Token`鉴权方式是无状态的，服务端不再需要保存用户登录的session，同时客户端只需要在每个HTTP header请求带上Token即可，基于`Token`鉴权常见的流程如下。
 
@@ -35,10 +37,11 @@ tags:          #标签
 4. 针对每个请求，客户端通过HTTP Header把Token传给服务端，服务端根据Token进行身份认证
 5. 当用户登出服务之后，Token会过期无效
 
+实际场景使用
+
 # 四. Cookies vs Token
 1. Token需要经过加密签名，Cookie session则不需要
 2. Cookie session是有状态的，需要在客户端和服务端分别存储一份，而Token是无状态的只需要客户端本地存储即可
 3. 
-
 
 
