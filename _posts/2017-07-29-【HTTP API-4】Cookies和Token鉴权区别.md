@@ -25,6 +25,8 @@ tags:          #标签
 5. 当用户登出服务之后，session会过期无效
 
 # 三. Token鉴权
+基于`Token`鉴权方式在最近几年由于单体应用、Web API、物联网的兴起越来越流行，有很多种实现Token的方式，但是`JSON Web Tokens (JWTs)`已经成为标准。基于`Token`鉴权方式是无状态的，服务端不再需要保存用户登录的session，同时客户端只需要在每个HTTP header请求带上Token即可，基于`Token`鉴权常见的流程如下。
 
+<img src="https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/http-api-token-auth.png?raw=true" width="640" />
 
 # 四. Cookies vs Token
