@@ -38,7 +38,7 @@ Golang项目使用Cookies鉴权举例
 1. 用户请求登录服务，输入登录凭证
 2. 服务端校验登录凭证，成功后返回一个签名的Token
 3. 签名Token只需要保存在客户端本地
-4. 针对每个请求，客户端通过HTTP Header把Token传给服务端，服务端根据Token进行身份认证
+4. 针对每个请求，客户端通过HTTP Header Authorization字段把Token传给服务端，服务端根据Token进行身份认证
 5. 当用户登出服务之后，Token会过期无效
 
 目前用的最多的Token实现方式是 [JSON Web Tokens](https://jwt.io/introduction/)
