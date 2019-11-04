@@ -19,7 +19,7 @@ tags:          #标签
 <img src="https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/http-api-cookie-auth.png?raw=true" width="640" />
 
 1. 用户请求登录服务，输入登录凭证
-2. 服务端校验登录凭证，成功后创建session并存储到内存或Mysql，同时在HTTP response Set-Cookie中返回session给客户端
+2. 服务端校验登录凭证，成功后创建session并存储到内存或Mysql，同时在HTTP response header Set-Cookie字段中返回session给客户端
 3. 客户端本地设置Cookie保存下session
 4. 针对每个请求，客户端通过HTTP Cookie字段把session传给服务端，服务端根据session进行身份认证
 5. 当用户登出服务之后，session会过期无效
