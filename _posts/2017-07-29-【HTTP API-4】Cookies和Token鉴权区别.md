@@ -27,7 +27,7 @@ tags:          #标签
 Golang项目使用Cookies鉴权举例
 1. 前后端分离，服务端代码使用Golang进行开发，常用的HTTP Server框架选用 [Gin](https://github.com/gin-gonic/gin)
 2. 前端一般会需要提供一个登录页面，或者使用统一登录页面，服务端需要提供一个登录接口（一般大公司都会有自己的大账号统一登录系统）
-3. 当用户登录之后，服务端会根据用户id生成一个session，并保存在服务端内存中，同时返回给客户端（可以使用github.com/gin-contrib/sessions）
+3. 当用户登录之后，服务端会根据用户id生成一个session，并保存在服务端内存或Mysql中，同时返回给客户端（可以使用github.com/gin-contrib/sessions）
 4. 之后客户端发起的任何一个HTTP请求都需要在header里面设置 `Cookie` 字段，值设置为session，服务端接收到之后解析出session，查询内存或数据库获取session对应用户信息
 
 # 三. Token鉴权
