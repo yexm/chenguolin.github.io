@@ -16,53 +16,39 @@ tags:          #标签
 
 `tcpdump, a powerful command-line packet analyzer; and libpcap, a portable C/C++ library for network traffic capture.`
 
-```
-[cgl@localhost ~]$ tcpdump -h
-tcpdump version 4.5.1
-libpcap version 1.5.3
-Usage: tcpdump [-aAbdDefhHIJKlLnNOpqRStuUvxX] [ -B size ] [ -c count ]
+tcpdump的命令格式 `tcpdump [options] [expression]`   [tcpdump](https://www.tcpdump.org/manpages/tcpdump.1.html#lbAE)
+
+1. options指的是选项参数，具体如下
+   ```
+   [cgl@localhost ~]$ tcpdump -h
+   tcpdump version 4.5.1
+   libpcap version 1.5.3
+   Usage: tcpdump [-aAbdDefhHIJKlLnNOpqRStuUvxX] [ -B size ] [ -c count ]
 		[ -C file_size ] [ -E algo:secret ] [ -F file ] [ -G seconds ]
 		[ -i interface ] [ -j tstamptype ] [ -M secret ]
 		[ -P in|out|inout ]
 		[ -r file ] [ -s snaplen ] [ -T type ] [ -V file ] [ -w file ]
 		[ -W filecount ] [ -y datalinktype ] [ -z command ]
 		[ -Z user ] [ expression ]
-        
--A	  以ASCII格式打印出所有报文
--B    缓冲buffer的大小
--c	  指定数量的报文后
--C	  在将一个原始分组写入文件之前，检查文件当前的大小是否超过了参数file_size 中指定的大小。如果超过了指定大小，则关闭当前文件，然后在打开一个新的文件。参数 file_size 的单位是兆字节（是1,000,000字节，而不是1,048,576字节）。
--d	将匹配信息包的代码以人们能够理解的汇编格式给出。
--dd	将匹配信息包的代码以c语言程序段的格式给出。
--ddd	将匹配信息包的代码以十进制的形式给出。
--D	打印出系统中所有可以用tcpdump截包的网络接口。
--e	在输出行打印出数据链路层的头部信息,也就是使用数据链路层的MAC数据包数据来显示.
--f	将外部的Internet地址以数字的形式打印出来。
--F	从指定的文件中读取表达式，忽略命令行中给出的表达式。
--i	指定监听的网络接口。
--l	使标准输出变为缓冲行形式，可以把数据导出到文件。
--L	列出网络接口的已知数据链路。
--b	在数据-链路层上选择协议，包括ip、arp、rarp、ipx都是这一层的。
--n	不把网络地址转换成名字。
--nn	不进行端口名称的转换。
--N	不输出主机名中的域名部分。例如，‘nic.ddn.mil‘只输出’nic‘。
--t	在输出的每一行不打印时间戳。
--O	不运行分组分组匹配（packet-matching）代码优化程序。
--P	不将网络接口设置成混杂模式。
--q	快速输出。只输出较少的协议信息。
--r	从指定的文件中读取包(这些包一般通过-w选项产生)。
--S	将tcp的序列号以绝对值形式输出，而不是相对值。
--s	从每个分组中读取最开始的snaplen个字节，而不是默认的68个字节。
--T	将监听到的包直接解释为指定的类型的报文，常见的类型有rpc远程过程调用）和snmp（简单网络管理协议)。
--t	不在每一行中输出时间戳。
--tt	在每一行中输出非格式化的时间戳
--ttt	输出本行和前面一行之间的时间差。
--tttt	在每一行中输出由date处理的默认格式的时间戳。
--v	输出一个稍微详细的信息，例如在ip包中可以包括ttl和服务类型的信息。
--vv	输出详细的报文信息。
--w	直接将分组写入文件中，而不是不分析并打印出来。
--X	可以列出16进制以及ASCII的数据包内容,对于监听数据包内容很有用.
-```
+    -A    用ASCII码打印每个数据包
+    -B    设置操作系统缓冲区大小
+    -c	  抓包次数
+    -C	  输出到每个文件的大小
+    -F	  从指定的文件中读取表达式，忽略命令行中给出的表达式
+    -F	  从指定的文件中读取表达式，忽略命令行中给出的表达式
+    -i	  指定监听的网卡
+    -t	  在输出的每一行不打印时间戳
+    -r	  从指定的文件中读取包
+    -s    设置每个数据包的大小，可以使得抓到的数据包不被截断，完整反映数据包的内容
+    -T	  将监听到的包直接解释为指定的类型的报文，常见的类型有rpc远程过程调用 和snmp
+    -v	  输出稍微详细的信息
+    -vv	  输出详细的报文信息
+    -w	  江抓包内容写入文件
+    -X	  列出16进制以及ASCII的数据包内容
+    ```
+
+2. expression指的是表达式
+   
 
 # 三. wireshark
 
