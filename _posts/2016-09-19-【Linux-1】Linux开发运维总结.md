@@ -195,8 +195,10 @@ tags:         #标签
    + `-o`: 指定日志文件
    + `-c`: 断点续传
 6. curl命令
-   + GET请求: `curl -H 'Content-Type:application/json' -H "Cookie:xxxx"  "http://xxx/..."`
-   + POST请求: `curl -H 'Content-Type:application/json' -H "Cookie:xxxx" -d '{....}' "http://xxx/..."`
+   + GET请求: `$ curl -H 'Content-Type:application/json' -H "Cookie:xxxx"  "http://xxx/..."`
+   + POST请求: `$ curl -H 'Content-Type:application/json' -H "Cookie:xxxx" -d '{....}' "http://xxx/..."`
+7. 网卡相关
+   + 查看网卡个数: `$ lspci |grep -i 'eth'`
    
 # 十四. 文件
 1. 查看两个文件间的差别: `$diff file1 file2`
