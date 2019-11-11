@@ -12,9 +12,7 @@ tags:          #标签
 无论是开发还是运维我认为学会抓包技术都是必备的技能，所以这篇文章会介绍如何使用`tcpdump`和`wireshare`进行抓包和分析。`tcpdump`是Linux下的网络包分析命令行工具，`wireshark`则是可视化的网络部分析工具，通常我们是先使用`tcpdump`抓包并保存到文件，然后使用`wireshark`进行分析。
 
 # 二. tcpdump
-`tcpdump` 是一个很常用的网络包分析命令行工具，可以用来显示通过网络传输到本系统的 TCP/IP 以及其他网络的数据包。tcpdump 使用 libpcap 库来抓取网络包，这个库在几乎在所有的 Linux/Unix 中都有。
-
-`tcpdump, a powerful command-line packet analyzer; and libpcap, a portable C/C++ library for network traffic capture.`
+`tcpdump` 是一个很常用的网络包分析命令行工具，可以用来显示通过网络传输到本系统的 TCP/IP 以及其他网络的数据包。tcpdump 使用 libpcap 库来抓取网络包，这个库在几乎在所有的 Linux/Unix 中都有。英文定义为 `tcpdump - dump traffic on a network, a powerful command-line packet analyzer and libpcap, a portable C/C++ library for network traffic capture.`
 
 tcpdump的命令格式 `tcpdump [options] [expression]`   [tcpdump](https://www.tcpdump.org/manpages/tcpdump.1.html#lbAE)
 
@@ -35,7 +33,7 @@ tcpdump的命令格式 `tcpdump [options] [expression]`   [tcpdump](https://www.
     -c  抓包次数
     -C  输出到每个文件的大小
     -F  从指定的文件中读取表达式，忽略命令行中给出的表达式
-    -F  从指定的文件中读取表达式，忽略命令行中给出的表达式
+    -G  
     -i  指定监听的网卡
     -t  在输出的每一行不打印时间戳
     -r  从指定的文件中读取包
