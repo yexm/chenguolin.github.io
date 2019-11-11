@@ -12,6 +12,7 @@ tags:          #标签
 无论是开发还是运维我认为学会抓包技术都是必备的技能，所以这篇文章会介绍如何使用`tcpdump`和`wireshare`进行抓包和分析。`tcpdump`是Linux下的网络包分析命令行工具，`wireshark`则是可视化的网络部分析工具，通常我们是先使用`tcpdump`抓包并保存到文件，然后使用`wireshark`进行分析。
 
 # 二. tcpdump
+## ① 介绍
 `tcpdump` 是一个很常用的网络包分析命令行工具，可以用来显示通过网络传输到本系统的 TCP/IP 以及其他网络的数据包。tcpdump 使用 libpcap 库来抓取网络包，这个库在几乎在所有的 Linux/Unix 中都有。英文定义为 `tcpdump - dump traffic on a network, a powerful command-line packet analyzer and libpcap, a portable C/C++ library for network traffic capture.`
 
 tcpdump的命令格式 `tcpdump [options] [expression]`   [tcpdump](https://www.tcpdump.org/manpages/tcpdump.1.html#lbAE)
@@ -28,26 +29,44 @@ tcpdump的命令格式 `tcpdump [options] [expression]`   [tcpdump](https://www.
 		[ -r file ] [ -s snaplen ] [ -T type ] [ -V file ] [ -w file ]
 		[ -W filecount ] [ -y datalinktype ] [ -z command ]
 		[ -Z user ] [ expression ]
-    -A  用ASCII码打印每个数据包
+    -A  以 ASCII 值显示抓到的包 （比如和 MySQL 的交互时可以通过 -A 查看包的文本内容）
     -B  设置操作系统缓冲区大小
     -c  抓包次数
     -C  输出到每个文件的大小
+    -D  列出所有可用的网卡
     -F  从指定的文件中读取表达式，忽略命令行中给出的表达式
     -G  设置输出文件的滚动切割的间隔
     -i  指定监听的网卡
     -j  时间戳格式
+    -n  禁用域名解析 tcpdump 直接输出 IP 地址
     -t  在输出的每一行不打印时间戳
     -r  从指定的文件中读取包
     -s  设置每个数据包的大小，可以使得抓到的数据包不被截断，完整反映数据包的内容
     -T  将监听到的包直接解释为指定的类型的报文，常见的类型有rpc远程过程调用 和snmp
     -v  输出稍微详细的信息
     -vv 输出详细的报文信息
-    -w  江抓包内容写入文件
-    -X  列出16进制以及ASCII的数据包内容
+    -w  抓包内容输出到文件
+    -X  以 16 进制格式输出数据包的内容，不加该参数会只输出 iptcp/udp 头部信息
+    -z  文件滚动切割之后的后置命令
     ```
 
-2. expression指的是表达式
-   
+2. expr=ession指的是表达式，用于配置要抓取哪些数据包，例如
+    ```
+    1) 指定host: host 10.215.20.13
+    2) 指定网络地址: net 10.215.20.0
+    3) 指定端口: port 8711
+    4) 指定源地址: src 10.215.20.13
+    5) 指定目标地址: dst 10.215.20.0
+    6) 同时指定源地址和目标地址: src 10.215.20.13 and dst 10.215.20.0
+    
+    tcpdump默认会抓取所有协议的数据包，支持以下协议: ip、arp、tcp、udp、icmp
+    tcpdump支持三种逻辑运算
+    1) 非: ! 或 not
+    2) 与: && 或 and
+    3) 或: || 或 or
+    ```
+
+## ② 举例
 
 # 三. wireshark
 
