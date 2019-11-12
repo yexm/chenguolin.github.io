@@ -198,7 +198,7 @@ tags:         #标签
    + GET请求: `$ curl -H 'Content-Type:application/json' -H "Cookie:xxxx"  "http://xxx/..."`
    + POST请求: `$ curl -H 'Content-Type:application/json' -H "Cookie:xxxx" -d '{....}' "http://xxx/..."`
 7. 网卡相关
-   + 查看网卡个数: `$ lspci |grep -i 'eth'`
+   + 查看网卡bond配置: `$ sudo cat /proc/net/bonding/bond0`   [Linux双网卡绑定bond详解](https://blog.51cto.com/lixin15/1769338)
    
 # 十四. 文件
 1. 查看两个文件间的差别: `$diff file1 file2`
