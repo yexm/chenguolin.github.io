@@ -41,7 +41,7 @@ tcpdump的命令格式 `tcpdump [options] [expression]`   [tcpdump](https://www.
     -n  禁用域名解析 tcpdump 直接输出 IP 地址
     -t  在输出的每一行不打印时间戳
     -r  从指定的文件中读取包
-    -s  设置每个数据包的大小，可以使得抓到的数据包不被截断，完整反映数据包的内容
+    -s  设置每个数据包的大小，可以使得抓到的数据包不被截断，完整反映数据包的内容（0表示抓取完整数据）
     -T  将监听到的包直接解释为指定的类型的报文，常见的类型有rpc远程过程调用 和snmp
     -v  输出稍微详细的信息
     -vv 输出详细的报文信息
@@ -67,6 +67,16 @@ tcpdump的命令格式 `tcpdump [options] [expression]`   [tcpdump](https://www.
     ```
 
 ## ② 举例
+`tcpdump tcp -i bond0 -tttt -s 0 -c 100 and dst port ! 22 and src net 10.10.1.0/24 -w 20190131.tcpdump`
+
+1. tcp: 表示只抓取TCP协议的数据包
+2. -i bond0: 表示抓取经过 bond0 的数据包 (bond0是逻辑网卡)
+3. -tttt: 表示时间戳格式为 2017-01-01 11:11:11.123456
+4. -s 0: 表示抓取完整的数据包，默认抓取长度为 68 字节
+5. -c 100: 表示抓取100个数据包
+6. dst port ! 22: 表示抓取目标端口不是 22 的数据包
+7. src net 10.10.1.0/24: 表示抓取源网络地址为 10.10.1.0/24 的数据包
+8. -w 20190131.tcpdump: 表示保存成 tcpdump 文件中, 方便使用 wireshark 分析抓包结果。
 
 # 三. wireshark
 
