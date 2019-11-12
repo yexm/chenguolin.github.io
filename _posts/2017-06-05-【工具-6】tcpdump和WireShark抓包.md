@@ -38,7 +38,8 @@ tcpdump的命令格式 `tcpdump [options] [expression]`   [tcpdump](https://www.
     -G  设置输出文件的滚动切割的间隔
     -i  指定监听的网卡
     -j  时间戳格式
-    -n  禁用域名解析 tcpdump 直接输出 IP 地址
+    -n  输出 IP 地址 而非域名
+    -nn 显示端口号
     -t  在输出的每一行不打印时间戳
     -r  从指定的文件中读取包
     -s  设置每个数据包的大小，可以使得抓到的数据包不被截断，完整反映数据包的内容（0表示抓取完整数据）
@@ -67,16 +68,32 @@ tcpdump的命令格式 `tcpdump [options] [expression]`   [tcpdump](https://www.
     ```
 
 ## ② 举例
-`tcpdump tcp -i bond0 -tttt -s 0 -c 100 and dst port ! 22 and src net 10.10.1.0/24 -w 20190131.tcpdump`
+`tcpdump tcp -nn -i bond0 -tttt -s 0 -c 100 and dst port ! 22 and src net 10.10.1.0/24 -w 20190131.tcpdump`
 
 1. tcp: 表示只抓取TCP协议的数据包
-2. -i bond0: 表示抓取经过 bond0 的数据包 (bond0是逻辑网卡)
-3. -tttt: 表示时间戳格式为 2017-01-01 11:11:11.123456
-4. -s 0: 表示抓取完整的数据包，默认抓取长度为 68 字节
-5. -c 100: 表示抓取100个数据包
-6. dst port ! 22: 表示抓取目标端口不是 22 的数据包
-7. src net 10.10.1.0/24: 表示抓取源网络地址为 10.10.1.0/24 的数据包
-8. -w 20190131.tcpdump: 表示保存成 tcpdump 文件中, 方便使用 wireshark 分析抓包结果。
+2. -nn: 表示输出IP地址和端口号 （通常在网络故障排查中，使用 IP 地址和端口号更便于分析问题）
+3. -i bond0: 表示抓取经过 bond0 的数据包 (bond0是逻辑网卡)
+4. -tttt: 表示时间戳格式为 2017-01-01 11:11:11.123456
+5. -s 0: 表示抓取完整的数据包，默认抓取长度为 68 字节
+6. -c 100: 表示抓取100个数据包
+7. dst port ! 22: 表示抓取目标端口不是 22 的数据包
+8. src net 10.10.1.0/24: 表示抓取源网络地址为 10.10.1.0/24 的数据包
+9. -w 20170101.tcpdump: 表示抓取结果输出到 20170101.tcpdump 文件，方便使用 wireshark 进行分析
+
+其它例子
+1. 抓取包含 192.168.1.1 的数据包: tcpdump -i bond0 -nn host 192.168.1.1 
+2. 抓取包含 192.168.1.0/24 网段的数据包: tcpdump -i bond0 -nn net 192.168.1.0/24  
+3. 抓取包含端口 22 的数据包: tcpdump -i bond0 -nn port 22  
+4. 抓取 udp 协议的数据包: tcpdump -i bond0 -nn udp  
+5. 抓取 icmp 协议的数据包: tcpdump -i bond0 -nn icmp  
+6. 抓取 arp 协议的数据包: tcpdump -i bond0 -nn arp  
+7. 抓取 ip 协议的数据包: tcpdump -i bond0 -nn ip  
+8. 抓取源 ip 是 192.168.1.1 数据包: tcpdump -i bond0 -nn src host 192.168.1.1
+9. 抓取目的 ip 是 192.168.1.1 数据包: tcpdump -i bond0 -nn dst host 192.168.1.1 
+10. 抓取源端口是 22 的数据包: tcpdump -i bond0 -nn src port 22  
+11. 抓取源 ip 是 192.168.1.1 且目的 ip 是 22 的数据包: tcpdump -i bond0 -nn src host 192.168.1.1  and dst port 22  
+
+注意 bond0 指的是网卡接口，默认情况下生产环境都会使用多网卡绑定bond，一般指定为 bond0 即可。
 
 # 三. wireshark
 
