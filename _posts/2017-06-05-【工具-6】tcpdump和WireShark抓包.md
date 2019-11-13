@@ -41,7 +41,7 @@ tcpdump的命令格式 `tcpdump [options] [expression]`   [tcpdump](https://www.
     -n  输出 IP 地址 而非域名
     -nn 显示端口号
     -t  在输出的每一行不打印时间戳
-    -r  从指定的文件中读取包
+    -r  从指定的文件读取抓包内容 （-r data.pcap）
     -s  设置每个数据包的大小，可以使得抓到的数据包不被截断，完整反映数据包的内容（0表示抓取完整数据）
     -T  将监听到的包直接解释为指定的类型的报文，常见的类型有rpc远程过程调用 和snmp
     -v  输出稍微详细的信息
@@ -68,7 +68,7 @@ tcpdump的命令格式 `tcpdump [options] [expression]`   [tcpdump](https://www.
     ```
 
 ## ② 举例
-`tcpdump tcp -nn -i bond0 -tttt -s 0 -c 100 and dst port ! 22 and src net 10.10.1.0/24 -w 20190131.tcpdump`
+`tcpdump tcp -nn -i bond0 -tttt -s 0 -c 100 and dst port ! 22 and src net 10.10.1.0/24 -w 20170101.pcap`
 
 1. tcp: 表示只抓取TCP协议的数据包
 2. -nn: 表示输出IP地址和端口号 （通常在网络故障排查中，使用 IP 地址和端口号更便于分析问题）
@@ -78,7 +78,7 @@ tcpdump的命令格式 `tcpdump [options] [expression]`   [tcpdump](https://www.
 6. -c 100: 表示抓取100个数据包
 7. dst port ! 22: 表示抓取目标端口不是 22 的数据包
 8. src net 10.10.1.0/24: 表示抓取源网络地址为 10.10.1.0/24 的数据包
-9. -w 20170101.tcpdump: 表示抓取结果输出到 20170101.tcpdump 文件，方便使用 wireshark 进行分析
+9. -w 20170101.pcap: 表示抓取结果输出到 20170101.pcap 文件，方便使用 wireshark 进行分析
 
 其它例子
 1. 抓取包含 192.168.1.1 的数据包: tcpdump -i bond0 -nn host 192.168.1.1 
@@ -95,5 +95,28 @@ tcpdump的命令格式 `tcpdump [options] [expression]`   [tcpdump](https://www.
 
 注意 bond0 指的是网卡接口，默认情况下生产环境都会使用多网卡绑定bond，一般指定为 bond0 即可。
 
+## ③ 分析
+tcpdump 支持抓取多种协议的数据包，如 TCP、UDP、ICMP 等等，详情可以参考 [www.tcpdump.org](https://www.tcpdump.org/manpages/tcpdump.1.html#lbAE)。下面我们以 TCP 协议为例，分析一下 tcpdump 抓取到的数据包内容。
+
+这是一段抓包的内容
+08:41:13.729687 IP 192.168.64.28.22 > 192.168.64.1.41916: Flags [P.], seq 196:568, ack 1, win 309, options [nop,nop,TS val 117964079 ecr 816509256], length 372
+
+
+```
+2019-11-13 09:18:07.929532 IP 192.168.10.13.55446 > 192.168.102.35.8711: Flags [S], seq 768512:768512, win 4096, options [mss 1024] length 0
+2019-11-13 09:18:07.929538 IP 192.168.102.35.8711 > 192.168.10.13.55446: Flags [S.], seq 947648:947648, ack 768513, win 4096, options [mss 1024] length 0
+2019-11-13 09:18:07.929586 IP 192.168.10.13.55446 > 192.168.102.35.8711: Flags [.], ack 1, win 4096, options [mss 1024] length 0
+2019-11-13 09:18:07.929636 IP 192.168.10.13.55446 > 192.168.102.35.8711: Flags [P.], seq 1:2, ack 1, win 4096, length 1
+2019-11-13 09:18:07.929701 IP 192.168.102.35.8711 > 192.168.10.13.55446: Flags [.], ack 2, win 4096, length 0
+2019-11-13 09:18:07.929750 IP 192.168.10.13.55446 > 192.168.102.35.8711: Flags [P.], seq 2:21, ack 1, win 4096, options [mss 1024], length 19
+2019-11-13 09:18:07.929757 IP 192.168.102.35.8711 > 192.168.10.13.55446: Flags [P.], seq 1:2, ack 21, win 4077, options [mss 1024], length 1
+2019-11-13 09:18:07.929798 IP 192.168.102.35.8711 > 192.168.10.13.55446: Flags [P.], seq 2:3, ack 21, win 4077, urg 1, options [mss 1024], length 1
+2019-11-13 09:18:07.929847 IP 192.168.102.35.8711 > 192.168.10.13.55446: Flags [P.], seq 3:4, ack 21, win 4077, urg 1, options [mss 1024], length 1
+```
+
+
 # 三. wireshark
+如果需要使用图形工具来抓包请参考 Wireshark。
+Wireshark 还可以用来读取 tcpdump 保存的 pcap 文件。你可以使用 tcpdump 命令行在没有 GUI 界面的远程机器上抓包然后在 Wireshark 中分析数据包。
+
 
