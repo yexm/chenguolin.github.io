@@ -122,22 +122,30 @@ tcpdump 支持抓取多种协议的数据包，如 TCP、UDP、ICMP 等等，详
 6. Flags [S.] 表示SYN+ACK
 7. Flags [P.] 表示PUSH+ACK
 
+下面我们来看一个具体的例子，我们在 192.168.10.13 通过命令 `curl "http://www.baidu.com"` 访问百度首页内容，同时使用tcpdump抓取TCP数据包，我们通过过滤得到抓包数据如下，为了方便分析我们对每一行进行了编号
 ```
-09:46:41.573678 IP BJSH-PREK8SN-199-36.meitu-inc.com.filenet-tms > 61.135.169.121.http: Flags [S], seq 4091238127, win 29200, options [mss 1460,sackOK,TS val 2415029947 ecr 0,nop,wscale 9], length 0
-09:46:41.577160 IP 61.135.169.121.http > BJSH-PREK8SN-199-36.meitu-inc.com.filenet-tms: Flags [S.], seq 2587209100, ack 4091238128, win 8192, options [mss 1452,sackOK,nop,nop,nop,nop,nop,nop,nop,nop,nop,nop,nop,wscale 5], length 0
-09:46:41.577178 IP BJSH-PREK8SN-199-36.meitu-inc.com.filenet-tms > 61.135.169.121.http: Flags [.], ack 1, win 58, length 0
-09:46:41.577213 IP BJSH-PREK8SN-199-36.meitu-inc.com.filenet-tms > 61.135.169.121.http: Flags [P.], seq 1:78, ack 1, win 58, length 77
-09:46:41.580876 IP 61.135.169.121.http > BJSH-PREK8SN-199-36.meitu-inc.com.filenet-tms: Flags [.], ack 78, win 916, length 0
-09:46:41.583144 IP 61.135.169.121.http > BJSH-PREK8SN-199-36.meitu-inc.com.filenet-tms: Flags [.], seq 1:1461, ack 78, win 916, length 1460
-09:46:41.583152 IP BJSH-PREK8SN-199-36.meitu-inc.com.filenet-tms > 61.135.169.121.http: Flags [.], ack 1461, win 63, length 0
-09:46:41.583241 IP 61.135.169.121.http > BJSH-PREK8SN-199-36.meitu-inc.com.filenet-tms: Flags [P.], seq 1461:2782, ack 78, win 916, length 1321
-09:46:41.583251 IP BJSH-PREK8SN-199-36.meitu-inc.com.filenet-tms > 61.135.169.121.http: Flags [.], ack 2782, win 69, length 0
-09:46:41.583331 IP BJSH-PREK8SN-199-36.meitu-inc.com.filenet-tms > 61.135.169.121.http: Flags [F.], seq 78, ack 2782, win 69, length 0
-09:46:41.586804 IP 61.135.169.121.http > BJSH-PREK8SN-199-36.meitu-inc.com.filenet-tms: Flags [.], ack 79, win 916, length 0
-09:46:41.586977 IP 61.135.169.121.http > BJSH-PREK8SN-199-36.meitu-inc.com.filenet-tms: Flags [F.], seq 2782, ack 79, win 916, length 0
-09:46:41.586992 IP BJSH-PREK8SN-199-36.meitu-inc.com.filenet-tms > 61.135.169.121.http: Flags [.], ack 2783, win 69, length 0
+1. 2019-11-13 09:46:41.573678 IP 192.168.10.13.32768 > 61.135.169.121.80: Flags [S], seq 4091238127, win 29200, options [mss 1460,sackOK,TS val 2415029947 ecr 0,nop,wscale 9], length 0
+2. 2019-11-13 09:46:41.577160 IP 61.135.169.121.80 > 192.168.10.13.32768: Flags [S.], seq 2587209100, ack 4091238128, win 8192, options [mss 1452,sackOK,nop,nop,nop,nop,nop,nop,nop,nop,nop,nop,nop,wscale 5], length 0
+3. 2019-11-13 09:46:41.577178 IP 192.168.10.13.32768 > 61.135.169.121.80: Flags [.], ack 1, win 58, length 0
+4. 2019-11-13 09:46:41.577213 IP 192.168.10.13.32768 > 61.135.169.121.80: Flags [P.], seq 1:78, ack 1, win 58, length 77
+5. 2019-11-13 09:46:41.580876 IP 61.135.169.121.80 > 192.168.10.13.32768: Flags [.], ack 78, win 916, length 0
+6. 2019-11-13 09:46:41.583144 IP 61.135.169.121.80 > 192.168.10.13.32768: Flags [.], seq 1:1461, ack 78, win 916, length 1460
+7. 2019-11-13 09:46:41.583152 IP 192.168.10.13.32768 > 61.135.169.121.80: Flags [.], ack 1461, win 63, length 0
+8. 2019-11-13 09:46:41.583241 IP 61.135.169.121.80 > 192.168.10.13.32768: Flags [P.], seq 1461:2782, ack 78, win 916, length 1321
+9. 2019-11-13 09:46:41.583251 IP 192.168.10.13.32768 > 61.135.169.121.80: Flags [.], ack 2782, win 69, length 0
+10. 2019-11-13 09:46:41.583331 IP 192.168.10.13.32768 > 61.135.169.121.80: Flags [F.], seq 78, ack 2782, win 69, length 0
+11. 2019-11-13 09:46:41.586804 IP 61.135.169.121.80 > 192.168.10.13.32768: Flags [.], ack 79, win 916, length 0
+12. 2019-11-13 09:46:41.586977 IP 61.135.169.121.80 > 192.168.10.13.32768: Flags [F.], seq 2782, ack 79, win 916, length 0
+13. 2019-11-13 09:46:41.586992 IP 192.168.10.13.32768 > 61.135.169.121.80: Flags [.], ack 2783, win 69, length 0
 ```
 
+我们来仔细分析一下上面的TCP数据包
+
+1. 第一行表示TCP建连第一次握手: 192.168.10.13:32768 发SYN给 61.135.169.121:80，数据序列号为4091238127，TCP接收窗口大小为29200，数据包长度
+为0 （为什么是源IP地址是32768端口，因为curl用的是临时端口，可以通过 --local-port 61235指定端口号）
+2. 第二行表示TCP建连第二次握手: 61.135.169.121.80 发SYN+ACK给 192.168.10.13.32768，数据序列号为2587209100，同时确认收到4091238127期望下一个数据流编号为4091238128，TCP接收窗口为8192，数据包长度为0
+3. 第三行表示TCP建连第三次握手: 192.168.10.13.32768 发ACK给 61.135.169.121.80，TCP接收窗口为58，数据包长度为0
+4. 
 
 # 三. wireshark
 如果需要使用图形工具来抓包请参考 Wireshark。
