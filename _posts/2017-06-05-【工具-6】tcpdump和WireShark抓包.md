@@ -99,19 +99,43 @@ tcpdump的命令格式 `tcpdump [options] [expression]`   [tcpdump](https://www.
 tcpdump 支持抓取多种协议的数据包，如 TCP、UDP、ICMP 等等，详情可以参考 [www.tcpdump.org](https://www.tcpdump.org/manpages/tcpdump.1.html#lbAE)。下面我们以 TCP 协议为例，分析一下 tcpdump 抓取到的数据包内容。
 
 这是一段抓包的内容
-08:41:13.729687 IP 192.168.64.28.22 > 192.168.64.1.41916: Flags [P.], seq 196:568, ack 1, win 309, options [nop,nop,TS val 117964079 ecr 816509256], length 372
+```
+2017-06-03 09:18:07.929532 IP 192.168.10.13.55446 > 192.168.102.35.41916: Flags [P.], seq 1461:2782, ack 78, win 916, options [nop,nop,TS val 117964079 ecr 816509256], length 1321
+```
+`2017-06-03 09:18:07.929532`: 系统时间戳  
+`IP`: 网络层协议类型，表示IPv4，IP6表示为IPv6  
+`192.168.10.13.55446`: 源IP地址和端口  
+`192.168.102.35.41916`: 目标IP地址和端口  
+`Flags [P.]`: TCP报文类型，表示传送数据，常见类型在下文介绍
+`seq 1461:2782`: 数据流的序列号，源和目标IP发送的第一个数据包该序列号为绝对值，后续使用相对数值，seq 1461:2782 代表该数据包包含该数据流的第 1461 到 2782 字节
+`ack 78`: 表示已经确认的数据流编号
+`win 916`: 表示TCP接收窗口大小为 916 字节，即接收缓冲区中可用的字节数
+`options ...`: 表示TCP选项
+`length 1321`: 表示数据包字节长度
 
+常见的TCP报文的标记类型如下
+1. Flags [S] 表示SYN，发起连接
+2. Flags [F] 表示FIN 关闭连接
+3. Flags [P] 表示PUSH 传送数据
+4. Flags [R] 表示RST 异常关闭连接
+5. Flags [.] 表示ACK 确认数据
+6. Flags [S.] 表示SYN+ACK
+7. Flags [P.] 表示PUSH+ACK
 
 ```
-2019-11-13 09:18:07.929532 IP 192.168.10.13.55446 > 192.168.102.35.8711: Flags [S], seq 768512:768512, win 4096, options [mss 1024] length 0
-2019-11-13 09:18:07.929538 IP 192.168.102.35.8711 > 192.168.10.13.55446: Flags [S.], seq 947648:947648, ack 768513, win 4096, options [mss 1024] length 0
-2019-11-13 09:18:07.929586 IP 192.168.10.13.55446 > 192.168.102.35.8711: Flags [.], ack 1, win 4096, options [mss 1024] length 0
-2019-11-13 09:18:07.929636 IP 192.168.10.13.55446 > 192.168.102.35.8711: Flags [P.], seq 1:2, ack 1, win 4096, length 1
-2019-11-13 09:18:07.929701 IP 192.168.102.35.8711 > 192.168.10.13.55446: Flags [.], ack 2, win 4096, length 0
-2019-11-13 09:18:07.929750 IP 192.168.10.13.55446 > 192.168.102.35.8711: Flags [P.], seq 2:21, ack 1, win 4096, options [mss 1024], length 19
-2019-11-13 09:18:07.929757 IP 192.168.102.35.8711 > 192.168.10.13.55446: Flags [P.], seq 1:2, ack 21, win 4077, options [mss 1024], length 1
-2019-11-13 09:18:07.929798 IP 192.168.102.35.8711 > 192.168.10.13.55446: Flags [P.], seq 2:3, ack 21, win 4077, urg 1, options [mss 1024], length 1
-2019-11-13 09:18:07.929847 IP 192.168.102.35.8711 > 192.168.10.13.55446: Flags [P.], seq 3:4, ack 21, win 4077, urg 1, options [mss 1024], length 1
+09:46:41.573678 IP BJSH-PREK8SN-199-36.meitu-inc.com.filenet-tms > 61.135.169.121.http: Flags [S], seq 4091238127, win 29200, options [mss 1460,sackOK,TS val 2415029947 ecr 0,nop,wscale 9], length 0
+09:46:41.577160 IP 61.135.169.121.http > BJSH-PREK8SN-199-36.meitu-inc.com.filenet-tms: Flags [S.], seq 2587209100, ack 4091238128, win 8192, options [mss 1452,sackOK,nop,nop,nop,nop,nop,nop,nop,nop,nop,nop,nop,wscale 5], length 0
+09:46:41.577178 IP BJSH-PREK8SN-199-36.meitu-inc.com.filenet-tms > 61.135.169.121.http: Flags [.], ack 1, win 58, length 0
+09:46:41.577213 IP BJSH-PREK8SN-199-36.meitu-inc.com.filenet-tms > 61.135.169.121.http: Flags [P.], seq 1:78, ack 1, win 58, length 77
+09:46:41.580876 IP 61.135.169.121.http > BJSH-PREK8SN-199-36.meitu-inc.com.filenet-tms: Flags [.], ack 78, win 916, length 0
+09:46:41.583144 IP 61.135.169.121.http > BJSH-PREK8SN-199-36.meitu-inc.com.filenet-tms: Flags [.], seq 1:1461, ack 78, win 916, length 1460
+09:46:41.583152 IP BJSH-PREK8SN-199-36.meitu-inc.com.filenet-tms > 61.135.169.121.http: Flags [.], ack 1461, win 63, length 0
+09:46:41.583241 IP 61.135.169.121.http > BJSH-PREK8SN-199-36.meitu-inc.com.filenet-tms: Flags [P.], seq 1461:2782, ack 78, win 916, length 1321
+09:46:41.583251 IP BJSH-PREK8SN-199-36.meitu-inc.com.filenet-tms > 61.135.169.121.http: Flags [.], ack 2782, win 69, length 0
+09:46:41.583331 IP BJSH-PREK8SN-199-36.meitu-inc.com.filenet-tms > 61.135.169.121.http: Flags [F.], seq 78, ack 2782, win 69, length 0
+09:46:41.586804 IP 61.135.169.121.http > BJSH-PREK8SN-199-36.meitu-inc.com.filenet-tms: Flags [.], ack 79, win 916, length 0
+09:46:41.586977 IP 61.135.169.121.http > BJSH-PREK8SN-199-36.meitu-inc.com.filenet-tms: Flags [F.], seq 2782, ack 79, win 916, length 0
+09:46:41.586992 IP BJSH-PREK8SN-199-36.meitu-inc.com.filenet-tms > 61.135.169.121.http: Flags [.], ack 2783, win 69, length 0
 ```
 
 
