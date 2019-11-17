@@ -159,5 +159,5 @@ tcpdump 支持抓取多种协议的数据包，如 TCP、UDP、ICMP 等等，详
 # 三. wireshark
 如果需要使用图形工具来抓包请参考 Wireshark。Wireshark 还可以用来读取 tcpdump 保存的 pcap 文件。你可以使用 tcpdump 命令行在没有 GUI 界面的远程机器上抓包然后在 Wireshark 中分析数据包。
 
-学习wireshark的话推荐[一站式学习Wireshark](https://www.w3cschool.cn/wireshark/)， 学完基本就能熟悉wireshark基本的使用方式，这里就
+学习wireshark的话推荐[一站式学习Wireshark](https://www.w3cschool.cn/wireshark/)， 学完基本就能熟悉wireshark基本的使用方式，这里就不再赘述。
 
