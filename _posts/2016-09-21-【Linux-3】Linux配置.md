@@ -115,6 +115,9 @@ fi
 if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
     . /etc/bash_completion
 fi
+
+# python format json
+alias pytool='python -mjson.tool'
 ```
 
 # 二. screenrc配置
