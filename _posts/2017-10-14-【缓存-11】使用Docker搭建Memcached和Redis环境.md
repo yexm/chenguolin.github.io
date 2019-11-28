@@ -34,9 +34,11 @@ tags:          #标签
 1. 下载 5.0版本镜像: `$ docker pull redis:5.0`
 2. 下载 redis.conf文件: `$ curl "http://download.redis.io/redis-stable/redis.conf" > /www/redis/conf/redis.conf`
    ```
-   1). 把
+   1). 把 bind 127.0.0.1 这一行注释了
+   2). 把 protected-mode yes 改成 protected-mode no
+   3). 把 port 6379 改成 自己需要的端口号
    ```
-3. 启动 redis: `$ docker run -d --name redis -p 6379:6379 -v /www/redis/conf/redis.conf:/etc/redis/redis.conf --privileged=true redis:5.0 redis-server /etc/redis/redis.conf`
+3. 启动 redis: `$ docker run -d --name redis -p 6379:6379 -v /www/redis/conf/redis.conf:/etc/redis/redis.conf --privileged=true redis:5.0 redis-server /etc/redis/redis.conf --loglevel debug`
 4. 安装 redis-cli: `$ npm install -g redis-cli`
 5. 使用 redis
    ```
