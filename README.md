@@ -1,5 +1,5 @@
 # 简介
-`藏经阁` 个人学习博客
+`藏经阁` 个人学习博客，陈国林写字的地方
 
 1. 个人主页: https://chenguolin.github.io/
 2. 关于我: https://chenguolin.github.io/about/
