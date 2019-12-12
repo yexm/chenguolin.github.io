@@ -83,10 +83,10 @@ func init() {
 
 Grafana dashbord 的JSON格式配置文件 [golang-process进程监控.json](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/grafana/Golang-Process%E8%BF%9B%E7%A8%8B%E7%9B%91%E6%8E%A7.json)
 
-Grafana 报表具体的配置如下
+针对以上 Grafana 报表，具体的配置如下
 
 ## ① Variables定义
-1. `datasource`
+1. datasource   (数据源字段)
    ```
    1). General
        * Type: Datasource
@@ -95,7 +95,7 @@ Grafana 报表具体的配置如下
        * Type: Prometheus
        * Instance: [thanos](https://github.com/thanos-io/thanos)
     ```
-2. `cluster`
+2. cluster   (集群字段)
     ```
     1). General
        * Type: Query
@@ -104,7 +104,7 @@ Grafana 报表具体的配置如下
        * Data source: $datasource
        * Query: label_values(go_goroutines{job="golang-process-metrics"},cluster)    //cluster 字段可以在Prometheus Server采集配置文件里面配置
     ```
-3. `node`
+3. node   (节点字段)
     ```
     1). General
        * Type: Query
@@ -113,7 +113,7 @@ Grafana 报表具体的配置如下
        * Data source: $datasource
        * Query: label_values(go_goroutines{job="golang-process-metrics",cluster="$cluster"},instance)  //instance 是Prometheus默认自带的label字段
      ```
-4. `Interval`
+4. Interval  (一般情况下都需要设置Interval字段用来筛选数据)
     ```
     1). General
        * Type: Interval
@@ -123,6 +123,7 @@ Grafana 报表具体的配置如下
        * Auto Option: 开
        * Min Interval: 2m   //一般设置为Prometheus server抓取频率的2倍，如果是1m抓取一次metrics，则设置为2m
     ```
+    
 ## ② 
 
 
