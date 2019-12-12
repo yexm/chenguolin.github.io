@@ -81,5 +81,6 @@ func init() {
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/prometheus-monitor-golang-grafana-1.png?raw=true)
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/prometheus-monitor-golang-grafana-2.png?raw=true)
 
+Grafana dashbord 的JSON格式配置文件 [golang-process进程监控.json](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/grafana/Golang-Process%E8%BF%9B%E7%A8%8B%E7%9B%91%E6%8E%A7.json)
 
 # 四. Prometheus报警
