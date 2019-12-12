@@ -94,8 +94,6 @@ Grafana 报表具体的配置如下
         + Type: Prometheus
 	+ Instance name filter: [thanos](https://github.com/thanos-io/thanos)
 
-2. 
-
 ## ② 
 
 
