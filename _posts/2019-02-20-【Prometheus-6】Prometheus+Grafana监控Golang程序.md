@@ -92,7 +92,8 @@ Grafana 报表具体的配置如下
         + Label: Datasource
     + Data source options
         + Type: Prometheus
-	+ Instance name filter: `thanos`
+	+ Instance name filter: [thanos](https://github.com/thanos-io/thanos)
+
 2. 
 
 ## ② 
