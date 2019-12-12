@@ -87,35 +87,42 @@ Grafana 报表具体的配置如下
 
 ## ① Variables定义
 1. `datasource`
-    + General
-        + Type: Datasource
-        + Label: Datasource
-    + Data source options
-        + Type: Prometheus
-	+ Instance: [thanos](https://github.com/thanos-io/thanos)
+   ```
+   1). General
+       * Type: Datasource
+       * Label: Datasource
+   2). Data source options
+       * Type: Prometheus
+       * Instance: [thanos](https://github.com/thanos-io/thanos)
+    ```
 2. `cluster`
-    + General
-        + Type: Query
-        + Label: cluster
-    + Query Options
-        + Data source: $datasource
-	+ Query: label_values(go_goroutines{job="golang-process-metrics"},cluster)    //cluster 字段可以在Prometheus Server采集配置文件里面配置
+    ```
+    1). General
+       * Type: Query
+       * Label: cluster
+    2). Query Options
+       * Data source: $datasource
+       * Query: label_values(go_goroutines{job="golang-process-metrics"},cluster)    //cluster 字段可以在Prometheus Server采集配置文件里面配置
+    ```
 3. `node`
-    + General
-        + Type: Query
-        + Label: node
-    + Query Options
-        + Data source: $datasource
-	+ Query: label_values(go_goroutines{job="golang-process-metrics",cluster="$cluster"},instance)  //instance 是Prometheus默认自带的label字段
+    ```
+    1). General
+       * Type: Query
+       * Label: node
+    2). Query Options
+       * Data source: $datasource
+       * Query: label_values(go_goroutines{job="golang-process-metrics",cluster="$cluster"},instance)  //instance 是Prometheus默认自带的label字段
+     ```
 4. `Interval`
-    + General
-        + Type: Interval
-        + Label: Interval
-    + Interval options
-        + Values: 1m,2m,10m,2h
-	+ Auto Option: 开
-	+ Min Interval: 2m   //一般设置为Prometheus server抓取频率的2倍，如果是1m抓取一次metrics，则设置为2m
-
+    ```
+    1). General
+       * Type: Interval
+       * Label: Interval
+    2) Interval options
+       * Values: 1m,2m,10m,2h
+       * Auto Option: 开
+       * Min Interval: 2m   //一般设置为Prometheus server抓取频率的2倍，如果是1m抓取一次metrics，则设置为2m
+    ```
 ## ② 
 
 
