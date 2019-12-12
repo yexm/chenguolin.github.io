@@ -12,7 +12,7 @@ tags:          #标签
 这篇文章会总结下如何使用 `Prometheus + Grafana` 监控Golang程序，包括实现细节、报表配置 以及报警配置。
 
 # 二. 监控实现
-Golang程序只需要引入 [go-prometheus](https://github.com/chenguolin/go-prometheus) package，prometheus client 内部会自动生成以下几个服务本身监控 metrics，内部会自动起一个HTTP Server，端口默认使用`28888`
+Golang程序只需要引入并使用 [go-prometheus](https://github.com/chenguolin/go-prometheus) package，prometheus client 内部会自动生成以下几个服务本身监控 metrics，内部会自动起一个HTTP Server，端口默认使用`28888`
 
 1. Goroutine监控
    + go_goroutines
