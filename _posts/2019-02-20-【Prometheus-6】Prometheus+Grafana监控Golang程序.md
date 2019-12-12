@@ -78,5 +78,8 @@ func init() {
 ```
 
 # 三. Grafana配置
+![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/prometheus-monitor-golang-grafana-1.png?raw=true)
+![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/prometheus-monitor-golang-grafana-2.png?raw=true)
+
 
 # 四. Prometheus报警
