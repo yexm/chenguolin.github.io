@@ -73,8 +73,8 @@ func init() {
 	[]string{"label1", "label2" ...})
     ...
 }
-
 ...
+
 ```
 
 # 三. Grafana配置
@@ -86,6 +86,14 @@ Grafana dashbord 的JSON格式配置文件 [golang-process进程监控.json](htt
 Grafana 报表具体的配置如下
 
 ## ① Variables定义
+1. `datasource`
+    + General
+        + Type: Datasource
+        + Label: Datasource
+    + Data source options
+        + Type: Prometheus
+	+ Instance name filter: `thanos`
+2. 
 
 ## ② 
 
