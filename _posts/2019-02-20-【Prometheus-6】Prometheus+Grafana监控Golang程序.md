@@ -36,41 +36,41 @@ prometheus client 内部会自动生成以下几个服务本身监控 metrics �
 Golang 程序使用 Prometheus 统计监控指标示例代码如下
 ```
 var (
-	promCounterVecs   = make(map[string]*CounterVec)
-	promGaugeVecs     = make(map[string]*GaugeVec)
-	promHistogramVecs = make(map[string]*HistogramVec)
+    promCounterVecs   = make(map[string]*CounterVec)
+    promGaugeVecs     = make(map[string]*GaugeVec)
+    promHistogramVecs = make(map[string]*HistogramVec)
     promSummaryVecs = make(map[string]*SummaryVecs)
 )
 
 func init() {
-	// init promCounterVecs
-	promCounterVecs["one"] = NewCounterVec(
-		"name",
-		"desc",
-		[]string{"label1", "label2" ...})
+    // init promCounterVecs
+    promCounterVecs["one"] = NewCounterVec(
+	"name",
+	"desc",
+	[]string{"label1", "label2" ...})
     ...
 
-	// init promGaugeVecs
-	promGaugeVecs["one"] = NewGaugeVec(
-		"name",
-		"desc",
-		[]string{"label1", "label2" ...})
-	...
+    // init promGaugeVecs
+    promGaugeVecs["one"] = NewGaugeVec(
+	"name",
+	"desc",
+	[]string{"label1", "label2" ...})
+    ...
 
-	// init promHistogramVecs
-	promHistogramVecs["one"] = NewHistogramVec(
-		"name",
-		"desc",
-		[]float64{60, 10 * 60, 30 * 60, 3600, 6 * 3600, 12 * 3600, 86400},
-		[]string{"label1", "label2" ...})
+    // init promHistogramVecs
+    promHistogramVecs["one"] = NewHistogramVec(
+	"name",
+	"desc",
+	[]float64{60, 10 * 60, 30 * 60, 3600, 6 * 3600, 12 * 3600, 86400},
+	[]string{"label1", "label2" ...})
     ...
     
     // init promSummaryVecs
     promSummaryVecs["one"] = NewSummaryVec(
-		"name",
-		"desc",
-		[]float64{60, 10 * 60, 30 * 60, 3600, 6 * 3600, 12 * 3600, 86400},
-		[]string{"label1", "label2" ...})
+	"name",
+	"desc",
+	[]float64{60, 10 * 60, 30 * 60, 3600, 6 * 3600, 12 * 3600, 86400},
+	[]string{"label1", "label2" ...})
     ...
 }
 
