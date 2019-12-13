@@ -163,28 +163,28 @@ Grafana dashbord 的JSON格式配置文件 [golang-process进程监控.json](htt
    ```
 
 ## ③ Memory mallocs
-1. Memstats  
+1. Memstats   (Graph)
    ```
    sql A: go_memstats_alloc_bytes{job=~"golang-process-metrics",cluster=~"$cluster", instance=~"$node"}
    sql B: go_memstats_heap_inuse_bytes{job=~"golang-process-metrics",cluster=~"$cluster", instance=~"$node"}
    ```
-2. Memstats gc sys bytes
+2. Memstats gc sys bytes   (Graph)
    ```
    sql: go_memstats_gc_sys_bytes{job=~"golang-process-metrics",cluster=~"$cluster", instance=~"$node"}
    ```
-3. Memstats buck hash sys bytes
+3. Memstats buck hash sys bytes   (Graph)
    ```
    sql: go_memstats_buck_hash_sys_bytes{job=~"golang-process-metrics",cluster=~"$cluster", instance=~"$node"}
    ```
-4. Memstats heap idle bytes
+4. Memstats heap idle bytes   (Graph)
    ```
    sql: go_memstats_heap_idle_bytes{job=~"golang-process-metrics",cluster=~"$cluster", instance=~"$node"}
    ```
-5. Memstats heap inuse bytes
+5. Memstats heap inuse bytes   (Graph)
    ```
    sql: go_memstats_heap_inuse_bytes{job=~"golang-process-metrics",cluster=~"$cluster", instance=~"$node"}
    ```
-6. Memstats heap alloc bytes
+6. Memstats heap alloc bytes   (Graph)
    ```
    sql: go_memstats_heap_alloc_bytes{job=~"golang-process-metrics",cluster=~"$cluster", instance=~"$node"}
    ```
