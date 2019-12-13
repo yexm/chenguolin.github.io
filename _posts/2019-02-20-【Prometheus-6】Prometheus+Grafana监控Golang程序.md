@@ -31,7 +31,7 @@ Golang程序只需要引入并使用 [go-prometheus](https://github.com/chenguol
 4. Go信息
    + go_info
    
-prometheus client 内部会自动生成以下几个服务本身监控 metrics 的源代码在 [go_collector.go](https://github.com/prometheus/client_golang/blob/master/prometheus/go_collector.go) 和 [process_collector.go](https://github.com/prometheus/client_golang/blob/master/prometheus/process_collector.go)
+prometheus client 内部会自动生成以上几个监控 metrics 的源代码在 [go_collector.go](https://github.com/prometheus/client_golang/blob/master/prometheus/go_collector.go) 和 [process_collector.go](https://github.com/prometheus/client_golang/blob/master/prometheus/process_collector.go)
 
 Golang 程序使用 Prometheus 统计监控指标示例代码如下
 ```
