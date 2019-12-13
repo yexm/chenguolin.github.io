@@ -39,7 +39,7 @@ var (
     promCounterVecs   = make(map[string]*CounterVec)
     promGaugeVecs     = make(map[string]*GaugeVec)
     promHistogramVecs = make(map[string]*HistogramVec)
-    promSummaryVecs = make(map[string]*SummaryVecs)
+    promSummaryVecs   = make(map[string]*SummaryVecs)
 )
 
 func init() {
@@ -81,9 +81,9 @@ func init() {
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/prometheus-monitor-golang-grafana-1.png?raw=true)
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/prometheus-monitor-golang-grafana-2.png?raw=true)
 
-Grafana dashbord 的JSON格式配置文件 [golang-process进程监控.json](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/grafana/Golang-Process%E8%BF%9B%E7%A8%8B%E7%9B%91%E6%8E%A7.json)
+Grafana dashbord 的JSON格式配置文件 [golang-process进程监控.json](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/grafana/Golang-Process%E8%BF%9B%E7%A8%8B%E7%9B%91%E6%8E%A7.json)，使用Grafana Import即可恢复dashbord。
 
-针对以上 Grafana 报表，具体的配置如下
+针对以上 Grafana 报表，具体的配置如下。注意，Prometheus 会自动添加 job 和 instance 两个label。 
 
 ## ① Variables定义
 1. datasource   (数据源字段)
@@ -162,5 +162,31 @@ Grafana dashbord 的JSON格式配置文件 [golang-process进程监控.json](htt
    sql: process_resident_memory_bytes{job=~"golang-process-metrics",cluster=~"$cluster", instance=~"$node"}
    ```
 
+## ③ Memory mallocs
+1. Memstats  
+   ```
+   sql A: go_memstats_alloc_bytes{job=~"golang-process-metrics",cluster=~"$cluster", instance=~"$node"}
+   sql B: go_memstats_heap_inuse_bytes{job=~"golang-process-metrics",cluster=~"$cluster", instance=~"$node"}
+   ```
+2. Memstats gc sys bytes
+   ```
+   sql: go_memstats_gc_sys_bytes{job=~"golang-process-metrics",cluster=~"$cluster", instance=~"$node"}
+   ```
+3. Memstats buck hash sys bytes
+   ```
+   sql: go_memstats_buck_hash_sys_bytes{job=~"golang-process-metrics",cluster=~"$cluster", instance=~"$node"}
+   ```
+4. Memstats heap idle bytes
+   ```
+   sql: go_memstats_heap_idle_bytes{job=~"golang-process-metrics",cluster=~"$cluster", instance=~"$node"}
+   ```
+5. Memstats heap inuse bytes
+   ```
+   sql: go_memstats_heap_inuse_bytes{job=~"golang-process-metrics",cluster=~"$cluster", instance=~"$node"}
+   ```
+6. Memstats heap alloc bytes
+   ```
+   sql: go_memstats_heap_alloc_bytes{job=~"golang-process-metrics",cluster=~"$cluster", instance=~"$node"}
+   ```
 
 # 四. Prometheus报警
