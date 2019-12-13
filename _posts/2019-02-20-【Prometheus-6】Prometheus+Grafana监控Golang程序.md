@@ -85,7 +85,7 @@ Grafana dashbord 的JSON格式配置文件 [golang-process进程监控.json](htt
 
 针对以上 Grafana 报表，具体的配置如下。注意，Prometheus 会自动添加 job 和 instance 两个label，其它label可以在 Prometheus server 采集配置文件里配置，或业务自行定义上报。
 
-## ① Variables定义
+## ① Variables
 1. datasource   (数据源字段)
    ```
    1). General
@@ -190,3 +190,5 @@ Grafana dashbord 的JSON格式配置文件 [golang-process进程监控.json](htt
    ```
 
 # 四. Prometheus报警
+
+
