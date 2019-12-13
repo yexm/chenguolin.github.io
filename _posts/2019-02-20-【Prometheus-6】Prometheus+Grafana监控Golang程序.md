@@ -93,7 +93,7 @@ Grafana dashbord 的JSON格式配置文件 [golang-process进程监控.json](htt
        * Label: Datasource
    2). Data source options
        * Type: Prometheus
-       * Instance: [thanos](https://github.com/thanos-io/thanos)
+       * Instance: thanos  //https://github.com/thanos-io/thanos  要求通过Thanos部署Prometheus集群  http://dockone.io/article/6019
     ```
 2. cluster   (集群字段)
     ```
