@@ -189,6 +189,7 @@ Grafana dashbord 的JSON格式配置文件 [golang-process进程监控.json](htt
    sql: go_memstats_heap_alloc_bytes{job=~"golang-process-metrics",cluster=~"$cluster", instance=~"$node"}
    ```
 
-# 四. Prometheus报警
+# 四. Prometheus告警
+Prometheus 自带告警模块，允许用户自定义告警规则，可以发送到邮件、企业微信，还可以自定义接口发送到短信，非常方便。具体可以参考  https://prometheus.io/docs/alerting/overview/
 
 
