@@ -124,7 +124,43 @@ Grafana dashbord 的JSON格式配置文件 [golang-process进程监控.json](htt
        * Min Interval: 2m   //一般设置为Prometheus server抓取频率的2倍，如果是1m抓取一次metrics，则设置为2m
     ```
     
-## ② 
+## ② Golang info
+1. Go version  (Table)
+   ```
+   sql: count(go_info{job=~"golang-process-metrics",cluster=~"$cluster", instance=~"$node"}) by (cluster, instance, version)
+   Instant: 开  //获取的是当前最新的时序数据
+   ```
+2. Process starttime  (Table)
+   ```
+   sql: sum(ceil(process_start_time_seconds{job=~"golang-process-metrics",cluster=~"$cluster", instance=~"$node"})*1000) by (cluster, instance)
+   Instant: 开  //获取的是当前最新的时序数据
+   ```
+   
+## ③ Process info
+1. Process Goroutine  (Graph)
+   ```
+   sql: go_goroutines{job=~"golang-process-metrics",cluster=~"$cluster", instance=~"$node"}
+   ```
+2. Process thread    (Graph)
+   ```
+   sql: go_threads{job=~"golang-process-metrics",cluster=~"$cluster", instance=~"$node"}
+   ```
+3. Process open fds    (Graph)
+   ```
+   sql: process_open_fds{job=~"golang-process-metrics",cluster=~"$cluster", instance=~"$node"}  
+   ```
+4. Per second GC count    (Graph)
+   ```
+   sql: sum(rate(go_gc_duration_seconds_count{job=~"golang-process-metrics",cluster=~"$cluster", instance=~"$node"}[$Interval])) by (instance)
+   ```
+5. Average GC time   (Graph)
+   ```
+   sql: go_gc_duration_seconds_sum{job=~"golang-process-metrics",cluster=~"$cluster", instance=~"$node"} / go_gc_duration_seconds_count{job=~"golang-process-metrics",cluster=~"$cluster", instance=~"$node"}
+   ```
+6. Process Memory   (Graph)
+   ```
+   sql: process_resident_memory_bytes{job=~"golang-process-metrics",cluster=~"$cluster", instance=~"$node"}
+   ```
 
 
 # 四. Prometheus报警
