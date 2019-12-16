@@ -237,7 +237,10 @@ tags:         #标签
 8. 查看系统可用内存: `$ free -h`
 9. 查看CPU信息和型号: `$ cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c`
 
-# 十八. 其它
+# 十八. 域名
+1. 
+
+# 十九. 其它
 1. 运行C++ 可执行文件
    + `$ /bin/env LD_LIBRARY_PATH=build/release64/packages/lib/ url_tool`  //LD_LIBRARY_PATH指定依赖的so路径
 2. 域名解析: `$ dig www.baidu.com`
@@ -249,7 +252,7 @@ tags:         #标签
     + Encode: `$ echo "cgl" | base64`
     + Decode: `$ echo 'MWYyZDFlMmU2N2Rm' | base64 —decode`
 
-# 十九. 差异
+# 二十. 差异
 1. Ubuntu操作系统没有 `dig` 工具，需要安装 `dnsutils`，命令为 `apt-get install dnsutils`
 
 
