@@ -238,7 +238,11 @@ tags:         #标签
 9. 查看CPU信息和型号: `$ cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c`
 
 # 十八. 域名
-1. 
+1. 域名解析
+   + `$ ping www.baidu.com`
+   + `$ dig www.baidu.com`  //ANSWER SECTION
+2. dig解析不使用缓存
+   + `$ dig www.baidu.com +trace`  //可以看到从根域名服务器一路解析下来
 
 # 十九. 其它
 1. 运行C++ 可执行文件
