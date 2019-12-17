@@ -245,6 +245,8 @@ func SetHTTPRequestLatencyMetrics(cluster, node, path, method string, statusCode
    Failed sql: sum(increase(http_request_latency_metrics_count{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path",status_code=~"$status"}[$__range:])) - sum(increase(http_request_latency_metrics_count{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path",status_code="200"}[$__range:]))
    ```
 
+`注意: 如果我们希望能够根据Grafana上的时间段进行数据展示，就需要用到 $__range 这个变量`
+
 ## ③ SLA
 
 ## ④ 慢请求统计
