@@ -158,7 +158,7 @@ func SetHTTPRequestLatencyMetrics(cluster, node, path, method string, statusCode
    1). General
     * Type: Query
     * Label: cluster
-    2). Query Options
+   2). Query Options
     * Data source: $datasource
     * Query: label_values(http_request_success_count_metrics{job="http-request-metrics"}, cluster)    //cluster 字段可以在Prometheus Server采集配置文件里面配置
    ```
@@ -167,7 +167,7 @@ func SetHTTPRequestLatencyMetrics(cluster, node, path, method string, statusCode
    1). General
     * Type: Query
     * Label: cluster
-    2). Query Options
+   2). Query Options
     * Data source: $datasource
     * Query: label_values(http_request_success_count_metrics{job="http-request-metrics", cluster=~"$cluster"}, node)    //node 字段可以在Prometheus Server采集配置文件里面配置
    ```
@@ -176,7 +176,7 @@ func SetHTTPRequestLatencyMetrics(cluster, node, path, method string, statusCode
    1). General
     * Type: Query
     * Label: method
-    2). Query Options
+   2). Query Options
     * Data source: $datasource
     * Query: label_values(http_request_success_count_metrics{job="http-request-metrics", cluster=~"$cluster", node=~"$node"}, method) 
    ```
@@ -185,15 +185,16 @@ func SetHTTPRequestLatencyMetrics(cluster, node, path, method string, statusCode
    1). General
     * Type: Query
     * Label: path
-    2). Query Options
+   2). Query Options
     * Data source: $datasource
     * Query: label_values(http_request_success_count_metrics{job="http-request-metrics", cluster=~"$cluster", node=~"$node", method=~"$method"}, path) 
    ```
 6. status (状态码)
+   ```
    1). General
     * Type: Query
     * Label: status
-    2). Query Options
+   2). Query Options
     * Data source: $datasource
     * Query: label_values(http_request_success_count_metrics{job="http-request-metrics", cluster=~"$cluster", node=~"$node", method=~"$method", path=~"$path"}, status_code) 
    ```
