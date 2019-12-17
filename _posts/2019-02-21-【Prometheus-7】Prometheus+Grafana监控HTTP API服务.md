@@ -145,14 +145,14 @@ func SetHTTPRequestLatencyMetrics(cluster, node, path, method string, statusCode
 
 ## ① Variables
 1. datasource (数据源字段)
-```
-1). General
+   ```
+   1). General
     * Type: Datasource
     * Label: Datasource
-2). Data source options
+   2). Data source options
     * Type: Prometheus
     * Instance: thanos  //https://github.com/thanos-io/thanos  要求通过Thanos部署Prometheus集群  http://dockone.io/article/6019
-```
+   ```
 2. cluster (集群)
 ```
 1). General
