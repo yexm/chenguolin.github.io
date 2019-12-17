@@ -235,8 +235,15 @@ func SetHTTPRequestLatencyMetrics(cluster, node, path, method string, statusCode
    sql: sum(increase(http_request_latency_metrics_sum{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path",status_code=~"$status"}[$__range:])) / sum(increase(http_request_latency_metrics_count{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path",status_code=~"$status"}[$__range:]))
    Instant: 开  //获取的是当前最新的时序数据
    ```
-6. 请求QPS
-
+6. 请求QPS  (Graph)
+   ```
+   sql: sum(rate(http_request_latency_metrics_count{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path",status_code=~"$status"}[$Interval]))
+   ```
+7. 请求分布 (Pie Chart) 
+   ```
+   Success sql: sum(increase(http_request_latency_metrics_count{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path",status_code=~"200"}[$__range:])) 
+   Failed sql: sum(increase(http_request_latency_metrics_count{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path",status_code=~"$status"}[$__range:])) - sum(increase(http_request_latency_metrics_count{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path",status_code="200"}[$__range:]))
+   ```
 
 ## ③ SLA
 
