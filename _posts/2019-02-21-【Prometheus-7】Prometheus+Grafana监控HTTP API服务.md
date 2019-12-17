@@ -22,8 +22,8 @@ func AccessLogMiddleware() gin.HandlerFunc {
     return func(c *gin.Context) {
 	// all devops request not need print log
 	if strings.Contains(c.Request.URL.Path, "devops") {
-		c.Next()
-		return
+	    c.Next()
+	    return
 	}
 
 	start := time.Now()
@@ -37,12 +37,12 @@ func AccessLogMiddleware() gin.HandlerFunc {
 
 	// HTTP request start
 	log.Info("HTTP request start ...",
-		log.String(request.RequestIDKey, request.GetRequestID(c)),
-		log.String("path", path),
-		log.String("query", query),
-		log.String("ip", clientIP),
-		log.String("method", method),
-		log.String("body", unescapeReqbody))
+	    log.String(request.RequestIDKey, request.GetRequestID(c)),
+	    log.String("path", path),
+	    log.String("query", query),
+	    log.String("ip", clientIP),
+	    log.String("method", method),
+	    log.String("body", unescapeReqbody))
 
 	// process next handle
 	c.Next()
@@ -54,14 +54,14 @@ func AccessLogMiddleware() gin.HandlerFunc {
 
 	// check status code
 	log.Info("HTTP request end ~",
-		log.String(request.RequestIDKey, request.GetRequestID(c)),
-		log.Float64("latency", latency),
-		log.Int("status_code", statusCode))
+	    log.String(request.RequestIDKey, request.GetRequestID(c)),
+	    log.Float64("latency", latency),
+	    log.Int("status_code", statusCode))
 
 	// add prometheus metrics
 	// TODO cluster and instance need 2 set true value
 	prometheus.SetHTTPRequestLatencyMetrics("cluster", "instance",
-		path, method, statusCode, latency)
+	    path, method, statusCode, latency)
     }
 }
 ```
@@ -143,11 +143,13 @@ func SetHTTPRequestLatencyMetrics(cluster, instance, path, method string, status
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/http-api-prometheus-grafana-2.png?raw=true)
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/http-api-prometheus-grafana-3.png?raw=true)
 
-## ① 总览
+## ① Variables
 
-## ② SLA
+## ② 总览
+
+## ③ SLA
  
-## ③ 错误统计
+## ④ 错误统计
 
 
 # 四. Prometheus告警
