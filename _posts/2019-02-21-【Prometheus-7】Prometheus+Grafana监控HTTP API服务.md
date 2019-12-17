@@ -86,23 +86,23 @@ func init() {
     promCounterVecs["http_request_error_count_metrics"] = prometheus.NewCounterVec(
 	"http_request_error_count_metrics",
 	"http request error count monitor",
-	[]string{"cluster", "instance", "path", "method", "status_code"})
+	[]string{"cluster", "node", "path", "method", "status_code"})
     promCounterVecs["http_request_success_count_metrics"] = prometheus.NewCounterVec(
 	"http_request_success_count_metrics",
 	"http request success count monitor",
-	[]string{"cluster", "instance", "path", "method", "status_code"})
+	[]string{"cluster", "node", "path", "method", "status_code"})
     promHistogramVecs["http_request_latency_metrics"] = prometheus.NewHistogramVec(
 	"http_request_latency_metrics",
 	"http request latency metrics",
 	[]float64{10, 50, 100, 500, 1000},
-	[]string{"cluster", "instance", "path", "method", "status_code"})
+	[]string{"cluster", "node", "path", "method", "status_code"})
 }
 
 // SetHTTPRequestSuccessCountMetrics set http request success count metrics
-func SetHTTPRequestSuccessCountMetrics(cluster, instance, path, method string, statusCode int) {
+func SetHTTPRequestSuccessCountMetrics(cluster, node, path, method string, statusCode int) {
     promLabels := make(prometheus.Labels)
     promLabels["cluster"] = cluster
-    promLabels["instance"] = instance
+    promLabels["node"] = node
     promLabels["path"] = path
     promLabels["method"] = method
     promLabels["status_code"] = strconv.Itoa(statusCode)
@@ -112,10 +112,10 @@ func SetHTTPRequestSuccessCountMetrics(cluster, instance, path, method string, s
 }
 
 // SetHTTPRequestErrorCountMetrics set http request error count metrics
-func SetHTTPRequestErrorCountMetrics(cluster, instance, path, method string, statusCode int) {
+func SetHTTPRequestErrorCountMetrics(cluster, node, path, method string, statusCode int) {
     promLabels := make(prometheus.Labels)
     promLabels["cluster"] = cluster
-    promLabels["instance"] = instance
+    promLabels["node"] = node
     promLabels["path"] = path
     promLabels["method"] = method
     promLabels["status_code"] = strconv.Itoa(statusCode)
@@ -125,10 +125,10 @@ func SetHTTPRequestErrorCountMetrics(cluster, instance, path, method string, sta
 }
 
 // SetHTTPRequestLatencyMetrics set http request latency metrics
-func SetHTTPRequestLatencyMetrics(cluster, instance, path, method string, statusCode int, latency float64) {
+func SetHTTPRequestLatencyMetrics(cluster, node, path, method string, statusCode int, latency float64) {
     promLabels := make(prometheus.Labels)
     promLabels["cluster"] = cluster
-    promLabels["instance"] = instance
+    promLabels["node"] = node
     promLabels["path"] = path
     promLabels["method"] = method
     promLabels["status_code"] = strconv.Itoa(statusCode)
@@ -144,6 +144,69 @@ func SetHTTPRequestLatencyMetrics(cluster, instance, path, method string, status
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/http-api-prometheus-grafana-3.png?raw=true)
 
 ## ① Variables
+1. datasource (数据源字段)
+   ```
+   1). General
+    * Type: Datasource
+    * Label: Datasource
+   2). Data source options
+    * Type: Prometheus
+    * Instance: thanos  //https://github.com/thanos-io/thanos  要求通过Thanos部署Prometheus集群  http://dockone.io/article/6019
+   ```
+2. cluster (集群)
+   ```
+   1). General
+    * Type: Query
+    * Label: cluster
+    2). Query Options
+    * Data source: $datasource
+    * Query: label_values(http_request_success_count_metrics{job="http-request-metrics"}, cluster)    //cluster 字段可以在Prometheus Server采集配置文件里面配置
+   ```
+3. node (节点)
+   ```
+   1). General
+    * Type: Query
+    * Label: cluster
+    2). Query Options
+    * Data source: $datasource
+    * Query: label_values(http_request_success_count_metrics{job="http-request-metrics", cluster=~"$cluster"}, node)    //node 字段可以在Prometheus Server采集配置文件里面配置
+   ```
+4. method (方法)
+   ```
+   1). General
+    * Type: Query
+    * Label: method
+    2). Query Options
+    * Data source: $datasource
+    * Query: label_values(http_request_success_count_metrics{job="http-request-metrics", cluster=~"$cluster", node=~"$node"}, method) 
+   ```
+5. path (路径)
+   ```
+   1). General
+    * Type: Query
+    * Label: path
+    2). Query Options
+    * Data source: $datasource
+    * Query: label_values(http_request_success_count_metrics{job="http-request-metrics", cluster=~"$cluster", node=~"$node", method=~"$method"}, path) 
+   ```
+6. status (状态码)
+   1). General
+    * Type: Query
+    * Label: status
+    2). Query Options
+    * Data source: $datasource
+    * Query: label_values(http_request_success_count_metrics{job="http-request-metrics", cluster=~"$cluster", node=~"$node", method=~"$method", path=~"$path"}, status_code) 
+   ```
+7. Interval (一般情况下都需要设置Interval字段用来筛选数据)
+   ```
+   1). General
+    * Type: Interval
+    * Label: Interval
+   2) Interval options
+    * Values: 1m,2m,10m,2h
+    * Auto Option: 开
+    * Min Interval: 2m   //一般设置为Prometheus server抓取频率的2倍，如果是1m抓取一次metrics，则设置为2m
+   ```
 
 ## ② 总览
 
