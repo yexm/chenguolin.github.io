@@ -210,10 +210,39 @@ func SetHTTPRequestLatencyMetrics(cluster, node, path, method string, statusCode
    ```
 
 ## ② 总览
+1. 请求总数  (Singlestat)
+   ```
+   sql: sum(increase(http_request_latency_metrics_count{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path",status_code=~"$status"}[$__range]))  //$__range 是Grafana内置的变量，表示某个时间段
+   Instant: 开  //获取的是当前最新的时序数据
+   ```
+2. 错误数  (Singlestat)
+   ```
+   sql: sum(increase(http_request_latency_metrics_count{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path"}[$__range:])) - sum(increase(http_request_latency_metrics_count{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path",status_code="200"}[$__range:]))
+   Instant: 开  //获取的是当前最新的时序数据
+   ```
+3. 慢请求数  (Singlestat)
+   ```
+   sql: sum(increase((http_request_latency_metrics_bucket{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path",status_code=~"$status",le="+Inf"} - ignoring(le) http_request_latency_metrics_bucket{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path",status_code=~"$status",le="50"})[$__range:]))
+   Instant: 开  //获取的是当前最新的时序数据
+   ```
+4. 成功率 (Singlestat)
+   ```
+   sql: sum(increase(http_request_latency_metrics_count{job=~"http-request-metrics",cluster=~"$cluster", node =~"$node",method=~"$method",path=~"$path",status_code="200"}[$__range:])) / sum(increase(http_request_latency_metrics_count{job=~"http-request-metrics",cluster=~"$cluster",node =~"$node",method=~"$method",path=~"$path"}[$__range:]))
+   Instant: 开  //获取的是当前最新的时序数据
+   ```
+5. 平均响应时间 (Singlestat)
+   ```
+   sql: sum(increase(http_request_latency_metrics_sum{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path",status_code=~"$status"}[$__range:])) / sum(increase(http_request_latency_metrics_count{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path",status_code=~"$status"}[$__range:]))
+   Instant: 开  //获取的是当前最新的时序数据
+   ```
+6. 请求QPS
+
 
 ## ③ SLA
+
+## ④ 慢请求统计
  
-## ④ 错误统计
+## ⑤ 错误统计
 
 
 # 四. Prometheus告警
