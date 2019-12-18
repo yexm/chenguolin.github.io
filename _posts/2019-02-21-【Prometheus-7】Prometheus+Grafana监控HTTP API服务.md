@@ -149,69 +149,69 @@ Grafana dashbord 的JSON格式配置文件 [HTTP-API服务监控.json](https://g
 
 ## ① Variables
 1. datasource (数据源)
-   ```
-   1). General
-     * Type: Datasource
-     * Label: Datasource
-   2). Data source options
-     * Type: Prometheus
-     * Instance: thanos  //https://github.com/thanos-io/thanos  要求通过Thanos部署Prometheus集群  http://dockone.io/article/6019
-   ```
+    ```
+    1). General
+       * Type: Datasource
+       * Label: Datasource
+    2). Data source options
+       * Type: Prometheus
+       * Instance: thanos  //https://github.com/thanos-io/thanos  要求通过Thanos部署Prometheus集群  http://dockone.io/article/6019
+    ```
 2. cluster (集群)
-   ```
-   1). General
-     * Type: Query
-     * Label: cluster
-   2). Query Options
-     * Data source: $datasource
-     * Query: label_values(http_request_success_count_metrics{job="http-request-metrics"}, cluster)    //cluster 字段可以在 Prometheus Server采集配置文件里面配置
-   ```
+    ```
+    1). General
+       * Type: Query
+       * Label: cluster
+    2). Query Options
+       * Data source: $datasource
+       * Query: label_values(http_request_success_count_metrics{job="http-request-metrics"}, cluster)    //cluster 字段可以在 Prometheus Server采集配置文件里面配置
+    ```
 3. node (节点)
-   ```
-   1). General
-     * Type: Query
-     * Label: cluster
-   2). Query Options
-     * Data source: $datasource
-     * Query: label_values(http_request_success_count_metrics{job="http-request-metrics", cluster=~"$cluster"}, node)    //node 字段可以在Prometheus Server采集配置文件里面配置
-   ```
+    ```
+    1). General
+       * Type: Query
+       * Label: cluster
+    2). Query Options
+       * Data source: $datasource
+       * Query: label_values(http_request_success_count_metrics{job="http-request-metrics", cluster=~"$cluster"}, node)    //node 字段可以在Prometheus Server采集配置文件里面配置
+    ```
 4. method (方法)
-   ```
-   1). General
-     * Type: Query
-     * Label: method
-   2). Query Options
-     * Data source: $datasource
-     * Query: label_values(http_request_success_count_metrics{job="http-request-metrics", cluster=~"$cluster", node=~"$node"}, method) 
-   ```
+    ```
+    1). General
+       * Type: Query
+       * Label: method
+    2). Query Options
+       * Data source: $datasource
+       * Query: label_values(http_request_success_count_metrics{job="http-request-metrics", cluster=~"$cluster", node=~"$node"}, method) 
+    ```
 5. path (路径)
-   ```
-   1). General
-     * Type: Query
-     * Label: path
-   2). Query Options
-     * Data source: $datasource
-     * Query: label_values(http_request_success_count_metrics{job="http-request-metrics", cluster=~"$cluster", node=~"$node",   method=~"$method"}, path) 
-   ```
+    ```
+    1). General
+       * Type: Query
+       * Label: path
+    2). Query Options
+       * Data source: $datasource
+       * Query: label_values(http_request_success_count_metrics{job="http-request-metrics", cluster=~"$cluster", node=~"$node",   method=~"$method"}, path) 
+    ```
 6. status (状态码)
-   ```
-   1). General
-     * Type: Query
-     * Label: status
-   2). Query Options
-     * Data source: $datasource
-     * Query: label_values(http_request_success_count_metrics{job="http-request-metrics", cluster=~"$cluster", node=~"$node", method=~"$method", path=~"$path"}, status_code) 
-   ```
+    ```
+    1). General
+       * Type: Query
+       * Label: status
+    2). Query Options
+       * Data source: $datasource
+       * Query: label_values(http_request_success_count_metrics{job="http-request-metrics", cluster=~"$cluster", node=~"$node", method=~"$method", path=~"$path"}, status_code) 
+    ```
 7. Interval (一般情况下都需要设置Interval字段用来筛选数据)
-   ```
-   1). General
-     * Type: Interval
-     * Label: Interval
-   2) Interval options
-     * Values: 1m,2m,10m,2h
-     * Auto Option: 开
-     * Min Interval: 2m   //一般设置为Prometheus server抓取频率的2倍，如果是1m抓取一次metrics，则设置为2m
-   ```
+    ```
+    1). General
+       * Type: Interval
+       * Label: Interval
+    2) Interval options
+       * Values: 1m,2m,10m,2h
+       * Auto Option: 开
+       * Min Interval: 2m   //一般设置为Prometheus server抓取频率的2倍，如果是1m抓取一次metrics，则设置为2m
+    ```
 
 ## ② 总览
 1. 请求总数  (Singlestat)
