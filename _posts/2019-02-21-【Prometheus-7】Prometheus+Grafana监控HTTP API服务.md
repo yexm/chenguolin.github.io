@@ -143,6 +143,10 @@ func SetHTTPRequestLatencyMetrics(cluster, node, path, method string, statusCode
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/http-api-prometheus-grafana-2.png?raw=true)
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/http-api-prometheus-grafana-3.png?raw=true)
 
+Grafana dashbord 的JSON格式配置文件 [HTTP-API服务监控.json](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/grafana/HTTP-API%E6%9C%8D%E5%8A%A1%E7%9B%91%E6%8E%A7-Grafana.json)，使用Grafana Import即可恢复dashbord。
+
+针对以上 Grafana 报表，具体的配置如下。注意，Prometheus 会自动添加 job 和 instance 两个label，其它label可以在 Prometheus server 采集配置文件里配置，或业务自行定义上报。
+
 ## ① Variables
 1. datasource (数据源字段)
    ```
@@ -248,6 +252,7 @@ func SetHTTPRequestLatencyMetrics(cluster, node, path, method string, statusCode
 `注意: 如果我们希望能够根据Grafana上的时间段进行数据展示，就需要用到 $__range 这个变量`
 
 ## ③ SLA
+1. SLA
 
 ## ④ 慢请求统计
  
