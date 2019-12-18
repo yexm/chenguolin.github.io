@@ -148,69 +148,69 @@ Grafana dashbord 的JSON格式配置文件 [HTTP-API服务监控.json](https://g
 针对以上 Grafana 报表，具体的配置如下。注意，Prometheus 会自动添加 job 和 instance 两个label，其它label可以在 Prometheus server 采集配置文件里配置，或业务自行定义上报。
 
 ## ① Variables
-1. datasource (数据源字段)
+1. datasource (数据源)
    ```
    1). General
-    * Type: Datasource
-    * Label: Datasource
+     * Type: Datasource
+     * Label: Datasource
    2). Data source options
-    * Type: Prometheus
-    * Instance: thanos  //https://github.com/thanos-io/thanos  要求通过Thanos部署Prometheus集群  http://dockone.io/article/6019
+     * Type: Prometheus
+     * Instance: thanos  //https://github.com/thanos-io/thanos  要求通过Thanos部署Prometheus集群  http://dockone.io/article/6019
    ```
 2. cluster (集群)
    ```
    1). General
-    * Type: Query
-    * Label: cluster
+     * Type: Query
+     * Label: cluster
    2). Query Options
-    * Data source: $datasource
-    * Query: label_values(http_request_success_count_metrics{job="http-request-metrics"}, cluster)    //cluster 字段可以在 Prometheus Server采集配置文件里面配置
+     * Data source: $datasource
+     * Query: label_values(http_request_success_count_metrics{job="http-request-metrics"}, cluster)    //cluster 字段可以在 Prometheus Server采集配置文件里面配置
    ```
 3. node (节点)
    ```
    1). General
-    * Type: Query
-    * Label: cluster
+     * Type: Query
+     * Label: cluster
    2). Query Options
-    * Data source: $datasource
-    * Query: label_values(http_request_success_count_metrics{job="http-request-metrics", cluster=~"$cluster"}, node)    //node 字段可以在Prometheus Server采集配置文件里面配置
+     * Data source: $datasource
+     * Query: label_values(http_request_success_count_metrics{job="http-request-metrics", cluster=~"$cluster"}, node)    //node 字段可以在Prometheus Server采集配置文件里面配置
    ```
 4. method (方法)
    ```
    1). General
-    * Type: Query
-    * Label: method
+     * Type: Query
+     * Label: method
    2). Query Options
-    * Data source: $datasource
-    * Query: label_values(http_request_success_count_metrics{job="http-request-metrics", cluster=~"$cluster", node=~"$node"}, method) 
+     * Data source: $datasource
+     * Query: label_values(http_request_success_count_metrics{job="http-request-metrics", cluster=~"$cluster", node=~"$node"}, method) 
    ```
 5. path (路径)
    ```
    1). General
-    * Type: Query
-    * Label: path
+     * Type: Query
+     * Label: path
    2). Query Options
-    * Data source: $datasource
-    * Query: label_values(http_request_success_count_metrics{job="http-request-metrics", cluster=~"$cluster", node=~"$node",   method=~"$method"}, path) 
+     * Data source: $datasource
+     * Query: label_values(http_request_success_count_metrics{job="http-request-metrics", cluster=~"$cluster", node=~"$node",   method=~"$method"}, path) 
    ```
 6. status (状态码)
    ```
    1). General
-    * Type: Query
-    * Label: status
+     * Type: Query
+     * Label: status
    2). Query Options
-    * Data source: $datasource
-    * Query: label_values(http_request_success_count_metrics{job="http-request-metrics", cluster=~"$cluster", node=~"$node", method=~"$method", path=~"$path"}, status_code) 
+     * Data source: $datasource
+     * Query: label_values(http_request_success_count_metrics{job="http-request-metrics", cluster=~"$cluster", node=~"$node", method=~"$method", path=~"$path"}, status_code) 
    ```
 7. Interval (一般情况下都需要设置Interval字段用来筛选数据)
    ```
    1). General
-    * Type: Interval
-    * Label: Interval
+     * Type: Interval
+     * Label: Interval
    2) Interval options
-    * Values: 1m,2m,10m,2h
-    * Auto Option: 开
-    * Min Interval: 2m   //一般设置为Prometheus server抓取频率的2倍，如果是1m抓取一次metrics，则设置为2m
+     * Values: 1m,2m,10m,2h
+     * Auto Option: 开
+     * Min Interval: 2m   //一般设置为Prometheus server抓取频率的2倍，如果是1m抓取一次metrics，则设置为2m
    ```
 
 ## ② 总览
