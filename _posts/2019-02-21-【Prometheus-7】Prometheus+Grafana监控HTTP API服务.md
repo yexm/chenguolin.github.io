@@ -252,12 +252,34 @@ Grafana dashbord 的JSON格式配置文件 [HTTP-API服务监控.json](https://g
 `注意: 如果我们希望能够根据Grafana上的时间段进行数据展示，就需要用到 $__range 这个变量`
 
 ## ③ SLA
-1. SLA
+1. SLA总体情况  (Graph)
+   ```
+   Success sql: sum(rate(http_request_latency_metrics_count{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path",status_code="200"}[$Interval])) /  sum(rate(http_request_latency_metrics_count{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path"}[$Interval]))
+   Error sql: sum(rate(http_request_latency_metrics_count{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path",status_code!="200"}[$Interval])) /  sum(rate(http_request_latency_metrics_count{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path"}[$Interval]))
+   ```
+2. 平均响应时间
+   ```
+   sql: sum(rate(http_request_latency_metrics_sum{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path",status_code=~"$status"}[$Interval])) / sum(rate(http_request_latency_metrics_count{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path",status_code=~"$status"}[$Interval]))
+   ```
 
 ## ④ 慢请求统计
+1. 慢请求明细表 (Table)
+   ```
+   sql: sum(increase((http_request_latency_metrics_bucket{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path",status_code=~"$status",le="+Inf"} - ignoring(le) http_request_latency_metrics_bucket{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path",status_code=~"$status",le="50"})[$__range:]) > 0)  by (cluster,method,path)
+   Instant: 开  //获取的是当前最新的时序数据
+   ```
  
 ## ⑤ 错误统计
-
+1. 错误请求分布  (Pie Chart)
+   ```
+   4xx sql: sum(increase(http_request_latency_metrics_count{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path",status_code=~"4.*"}[$__range:])) 
+   5xx sql: sum(increase(http_request_latency_metrics_count{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path",status_code=~"5.*"}[$__range:]))
+   Instant: 开  //获取的是当前最新的时序数据
+   ```
+2. 错误请求明细表 (Table)
+   ```
+   sql: sum(increase(http_request_latency_metrics_count{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path",status_code!="200"}[$__range:]) > 0) by (cluster,method,path,status_code)
+   ```
 
 # 四. Prometheus告警
 Prometheus 自带告警模块，允许用户自定义告警规则，可以发送到邮件、企业微信，还可以自定义接口发送到短信，非常方便。具体可以参考 https://prometheus.io/docs/alerting/overview/
