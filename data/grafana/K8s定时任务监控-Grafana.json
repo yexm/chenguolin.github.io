@@ -1,0 +1,2144 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Matrix - batch K8s层面监控",
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": 3051,
+  "iteration": 1576753191461,
+  "links": [],
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 18,
+      "panels": [],
+      "title": "总览",
+      "type": "row"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "rgba(245, 54, 54, 0.9)",
+        "rgba(237, 129, 40, 0.89)",
+        "rgba(50, 172, 45, 0.97)"
+      ],
+      "datasource": "$datasource",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 4,
+        "x": 0,
+        "y": 1
+      },
+      "id": 5,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "Value",
+      "targets": [
+        {
+          "expr": "sum(k8s_batch_total_cronjob_running{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "format": "time_series",
+          "instant": true,
+          "interval": "",
+          "intervalFactor": 1,
+          "refId": "A"
+        }
+      ],
+      "thresholds": "",
+      "title": "Running CronJob",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "0",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "rgba(245, 54, 54, 0.9)",
+        "rgba(237, 129, 40, 0.89)",
+        "rgba(50, 172, 45, 0.97)"
+      ],
+      "datasource": "$datasource",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 4,
+        "x": 4,
+        "y": 1
+      },
+      "id": 43,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "Value",
+      "targets": [
+        {
+          "expr": "sum(k8s_batch_total_cronjob_suspend{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "format": "time_series",
+          "instant": true,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "Suspend",
+          "refId": "A"
+        }
+      ],
+      "thresholds": "",
+      "title": "Suspend CronJob",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "0",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "rgba(245, 54, 54, 0.9)",
+        "rgba(237, 129, 40, 0.89)",
+        "rgba(50, 172, 45, 0.97)"
+      ],
+      "datasource": "$datasource",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 4,
+        "x": 8,
+        "y": 1
+      },
+      "id": 6,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "sum(k8s_batch_total_job_running{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "refId": "A"
+        }
+      ],
+      "thresholds": "",
+      "title": "Running Job",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "0",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "rgba(245, 54, 54, 0.9)",
+        "rgba(237, 129, 40, 0.89)",
+        "rgba(50, 172, 45, 0.97)"
+      ],
+      "datasource": "$datasource",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 4,
+        "x": 12,
+        "y": 1
+      },
+      "id": 15,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "sum(k8s_batch_total_job_completed{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "refId": "A"
+        }
+      ],
+      "thresholds": "",
+      "title": "Completed Job",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "0",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "rgba(245, 54, 54, 0.9)",
+        "rgba(237, 129, 40, 0.89)",
+        "rgba(50, 172, 45, 0.97)"
+      ],
+      "datasource": "$datasource",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 4,
+        "x": 16,
+        "y": 1
+      },
+      "id": 16,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "sum(k8s_batch_total_job_failed{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "refId": "A"
+        }
+      ],
+      "thresholds": "",
+      "title": "Failed Job",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "0",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "#299c46",
+        "rgba(237, 129, 40, 0.89)",
+        "#d44a3a"
+      ],
+      "datasource": "$datasource",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 4,
+        "x": 20,
+        "y": 1
+      },
+      "id": 22,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "sum(k8s_batch_total_job_running{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"BIGDATA_TASK\"})",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": "Bigdata",
+          "refId": "A"
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "大数据任务 Running Job",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "0",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "aliasColors": {},
+      "breakPoint": "50%",
+      "cacheTimeout": null,
+      "combine": {
+        "label": "Others",
+        "threshold": 0
+      },
+      "datasource": "$datasource",
+      "fontSize": "80%",
+      "format": "short",
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 0,
+        "y": 4
+      },
+      "id": 14,
+      "interval": null,
+      "legend": {
+        "percentage": true,
+        "percentageDecimals": 2,
+        "show": true,
+        "sort": "current",
+        "sortDesc": false,
+        "values": true
+      },
+      "legendType": "Right side",
+      "links": [],
+      "maxDataPoints": 3,
+      "nullPointMode": "connected",
+      "pieType": "pie",
+      "strokeWidth": 1,
+      "targets": [
+        {
+          "expr": "sum(k8s_batch_total_cronjob_suspend{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "format": "time_series",
+          "instant": true,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "Suspend",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(k8s_batch_total_cronjob_running{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": "Running",
+          "refId": "B"
+        }
+      ],
+      "title": "CronJob 分布",
+      "type": "grafana-piechart-panel",
+      "valueName": "current"
+    },
+    {
+      "aliasColors": {},
+      "breakPoint": "50%",
+      "cacheTimeout": null,
+      "combine": {
+        "label": "Others",
+        "threshold": 0
+      },
+      "datasource": "$datasource",
+      "fontSize": "80%",
+      "format": "short",
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 8,
+        "y": 4
+      },
+      "id": 44,
+      "interval": null,
+      "legend": {
+        "percentage": true,
+        "percentageDecimals": 2,
+        "show": true,
+        "values": true
+      },
+      "legendType": "Right side",
+      "links": [],
+      "maxDataPoints": 3,
+      "nullPointMode": "connected",
+      "pieType": "pie",
+      "strokeWidth": 1,
+      "targets": [
+        {
+          "expr": "sum(k8s_batch_total_job_running{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "format": "time_series",
+          "instant": true,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "Running",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(k8s_batch_total_job_completed{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": "Completed",
+          "refId": "B"
+        },
+        {
+          "expr": "sum(k8s_batch_total_job_failed{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": "Failed",
+          "refId": "C"
+        }
+      ],
+      "title": "Job 分布",
+      "type": "grafana-piechart-panel",
+      "valueName": "current"
+    },
+    {
+      "aliasColors": {},
+      "breakPoint": "50%",
+      "cacheTimeout": null,
+      "combine": {
+        "label": "Others",
+        "threshold": 0
+      },
+      "datasource": "$datasource",
+      "fontSize": "80%",
+      "format": "short",
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 16,
+        "y": 4
+      },
+      "id": 45,
+      "interval": null,
+      "legend": {
+        "percentage": true,
+        "percentageDecimals": 2,
+        "show": true,
+        "values": true
+      },
+      "legendType": "Right side",
+      "links": [],
+      "maxDataPoints": 3,
+      "nullPointMode": "connected",
+      "pieType": "pie",
+      "strokeWidth": 1,
+      "targets": [
+        {
+          "expr": "sum(k8s_batch_total_job_running{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"BIGDATA_TASK\"})",
+          "format": "time_series",
+          "instant": true,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "Running",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(k8s_batch_total_job_completed{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"BIGDATA_TASK\"})",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": "Completed",
+          "refId": "B"
+        },
+        {
+          "expr": "sum(k8s_batch_total_job_failed{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"BIGDATA_TASK\"})",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": "Failed",
+          "refId": "C"
+        }
+      ],
+      "title": "大数据任务 Job 分布",
+      "type": "grafana-piechart-panel",
+      "valueName": "current"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "$datasource",
+      "fill": 1,
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 9
+      },
+      "id": 31,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": true,
+        "max": true,
+        "min": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "paceLength": 10,
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum(k8s_batch_total_cronjob_running{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "format": "time_series",
+          "instant": false,
+          "intervalFactor": 1,
+          "legendFormat": "Running",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(k8s_batch_total_cronjob_suspend{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "format": "time_series",
+          "instant": false,
+          "intervalFactor": 1,
+          "legendFormat": "Suspend",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "CronJob",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "none",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "$datasource",
+      "fill": 1,
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 9
+      },
+      "id": 32,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": true,
+        "max": true,
+        "min": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "paceLength": 10,
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum(k8s_batch_total_job_running{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "Running",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(k8s_batch_total_job_completed{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "Completed",
+          "refId": "B"
+        },
+        {
+          "expr": "sum(k8s_batch_total_job_failed{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "Failed",
+          "refId": "C"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Job",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "$datasource",
+      "fill": 1,
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 9
+      },
+      "id": 33,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": true,
+        "max": true,
+        "min": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "paceLength": 10,
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum(k8s_batch_total_job_running{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"BIGDATA_TASK\"})",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "Running Job",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(k8s_batch_total_job_completed{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"BIGDATA_TASK\"})",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "Completed",
+          "refId": "B"
+        },
+        {
+          "expr": "sum(k8s_batch_total_job_failed{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"BIGDATA_TASK\"})",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "Failed",
+          "refId": "C"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "大数据任务 Job",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 17
+      },
+      "id": 20,
+      "panels": [],
+      "title": "资源消耗",
+      "type": "row"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "#299c46",
+        "rgba(237, 129, 40, 0.89)",
+        "#d44a3a"
+      ],
+      "datasource": "$datasource",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 6,
+        "x": 0,
+        "y": 18
+      },
+      "id": 27,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "sum(k8s_batch_running_job_req_cpu{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "refId": "A"
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Running Job Request CPU",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "#299c46",
+        "rgba(237, 129, 40, 0.89)",
+        "#d44a3a"
+      ],
+      "datasource": "$datasource",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 6,
+        "x": 6,
+        "y": 18
+      },
+      "id": 28,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "sum(k8s_batch_running_job_limit_cpu{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "refId": "A"
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Running Job Limit CPU",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "#299c46",
+        "rgba(237, 129, 40, 0.89)",
+        "#d44a3a"
+      ],
+      "datasource": "$datasource",
+      "format": "decbytes",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 6,
+        "x": 12,
+        "y": 18
+      },
+      "id": 29,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "sum(k8s_batch_running_job_req_mem{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "refId": "A"
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Running Job Request Memory",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "#299c46",
+        "rgba(237, 129, 40, 0.89)",
+        "#d44a3a"
+      ],
+      "datasource": "$datasource",
+      "format": "decbytes",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 6,
+        "x": 18,
+        "y": 18
+      },
+      "id": 30,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "sum(k8s_batch_running_job_limit_mem{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "refId": "A"
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Running Job Limit Memory",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "$datasource",
+      "fill": 1,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 21
+      },
+      "id": 24,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": true,
+        "max": true,
+        "min": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "paceLength": 10,
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum(k8s_batch_running_job_req_cpu{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "Req",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(k8s_batch_running_job_limit_cpu{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "Limit",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Running Job CPU",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "$datasource",
+      "fill": 1,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 21
+      },
+      "id": 25,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": true,
+        "max": true,
+        "min": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "paceLength": 10,
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum(k8s_batch_running_job_req_mem{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "Req",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(k8s_batch_running_job_limit_mem{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "Limit",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Running Job Memory",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "decbytes",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 29
+      },
+      "id": 35,
+      "panels": [],
+      "title": "定时任务",
+      "type": "row"
+    },
+    {
+      "aliasColors": {},
+      "breakPoint": "100%",
+      "cacheTimeout": null,
+      "combine": {
+        "label": "Others",
+        "threshold": 0
+      },
+      "datasource": "$datasource",
+      "fontSize": "80%",
+      "format": "short",
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 0,
+        "y": 30
+      },
+      "id": 37,
+      "interval": null,
+      "legend": {
+        "percentage": true,
+        "show": true,
+        "sideWidth": null,
+        "values": true
+      },
+      "legendType": "Right side",
+      "links": [],
+      "maxDataPoints": 3,
+      "nullPointMode": "connected",
+      "pieType": "pie",
+      "strokeWidth": 1,
+      "targets": [
+        {
+          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"86400\"} > 0 )",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": "< 1d",
+          "refId": "A"
+        },
+        {
+          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"259200\"} \n- ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"86400\"} != 0)",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": "1d ~ 3d",
+          "refId": "B"
+        },
+        {
+          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"604800\"}\n- ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"259200\"} != 0)",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": "3d ~ 7d",
+          "refId": "C"
+        },
+        {
+          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"1.296e+06\"}\n- ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"604800\"} != 0)",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": "7d ~ 15d",
+          "refId": "D"
+        },
+        {
+          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"2.592e+06\"}\n- ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"1.296e+06\"} != 0)",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": "15d ~ 30d",
+          "refId": "E"
+        },
+        {
+          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"+Inf\"}\n- ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"2.592e+06\"} != 0)",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": "> 30d",
+          "refId": "F"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Running CronJob 创建时间分布",
+      "type": "grafana-piechart-panel",
+      "valueName": "current"
+    },
+    {
+      "aliasColors": {},
+      "breakPoint": "50%",
+      "cacheTimeout": null,
+      "combine": {
+        "label": "Others",
+        "threshold": 0
+      },
+      "datasource": "$datasource",
+      "fontSize": "80%",
+      "format": "short",
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 12,
+        "y": 30
+      },
+      "id": 41,
+      "interval": null,
+      "legend": {
+        "percentage": true,
+        "show": true,
+        "values": true
+      },
+      "legendType": "Right side",
+      "links": [],
+      "maxDataPoints": 3,
+      "nullPointMode": "connected",
+      "pieType": "pie",
+      "strokeWidth": 1,
+      "targets": [
+        {
+          "expr": "count(k8s_batch_running_job_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"60\"})",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": "< 1m",
+          "refId": "A"
+        },
+        {
+          "expr": "count(k8s_batch_running_job_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"600\"} \n- k8s_batch_running_job_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"60\"} != 0)",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": "1 ~ 10m",
+          "refId": "B"
+        },
+        {
+          "expr": "count(k8s_batch_running_job_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"3600\"} \n- k8s_batch_running_job_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"60\"} != 0)",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": "10 ~ 60m",
+          "refId": "C"
+        },
+        {
+          "expr": "count(k8s_batch_running_job_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"21600\"} \n- k8s_batch_running_job_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"3600\"} != 0)",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": "1 ~ 6h",
+          "refId": "D"
+        },
+        {
+          "expr": "count(k8s_batch_running_job_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"43200\"} \n- k8s_batch_running_job_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"21600\"} != 0)",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": "6 ~ 12h",
+          "refId": "E"
+        },
+        {
+          "expr": "count(k8s_batch_running_job_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"86400\"} \n- k8s_batch_running_job_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"43200\"} != 0)",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": "12~24h",
+          "refId": "F"
+        },
+        {
+          "expr": "count(k8s_batch_running_job_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"+Inf\"} \n- k8s_batch_running_job_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"86400\"} != 0)",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": ">24h",
+          "refId": "G"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Running Job 创建时间分布",
+      "type": "grafana-piechart-panel",
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "columns": [],
+      "datasource": "$datasource",
+      "fontSize": "100%",
+      "gridPos": {
+        "h": 19,
+        "w": 24,
+        "x": 0,
+        "y": 35
+      },
+      "id": 46,
+      "links": [],
+      "pageSize": null,
+      "scroll": true,
+      "showHeader": true,
+      "sort": {
+        "col": 4,
+        "desc": false
+      },
+      "styles": [
+        {
+          "alias": "Time",
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "pattern": "Time",
+          "type": "date"
+        },
+        {
+          "alias": "< 1d",
+          "colorMode": "cell",
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "decimals": 2,
+          "pattern": "Value #A",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "1 ~ 3d",
+          "colorMode": "cell",
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "Value #B",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "3 ~ 7d",
+          "colorMode": "cell",
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": false,
+          "linkTooltip": "",
+          "linkUrl": "",
+          "mappingType": 1,
+          "pattern": "Value #C",
+          "preserveFormat": false,
+          "sanitize": false,
+          "thresholds": [
+            "0",
+            "100000000"
+          ],
+          "type": "string",
+          "unit": "short",
+          "valueMaps": []
+        },
+        {
+          "alias": "7 ~ 15d",
+          "colorMode": "cell",
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "Value #D",
+          "thresholds": [
+            "0",
+            "100000000"
+          ],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "15 ~ 30d",
+          "colorMode": "cell",
+          "colors": [
+            "#5794F2",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(245, 54, 54, 0.9)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "Value #E",
+          "thresholds": [
+            "0",
+            "10000000000"
+          ],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "> 30d",
+          "colorMode": "cell",
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "Value #F",
+          "thresholds": [
+            "0",
+            "1000000"
+          ],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "metrics",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "job",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        },
+        {
+          "alias": "cluster",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "exported_cluster",
+          "thresholds": [],
+          "type": "string",
+          "unit": "short"
+        }
+      ],
+      "targets": [
+        {
+          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"86400\"} > 0) by (exported_cluster, namespace, cronjob)",
+          "format": "table",
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": "< 1d",
+          "refId": "A"
+        },
+        {
+          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"259200\"} \n- ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"86400\"} != 0) by (exported_cluster, namespace, cronjob)",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": "1 ~ 3d",
+          "refId": "B"
+        },
+        {
+          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"604800\"}\n- ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"259200\"} != 0) by (exported_cluster, namespace, cronjob)",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": "3 ~ 7d",
+          "refId": "C"
+        },
+        {
+          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"1.296e+06\"}\n- ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"604800\"} != 0) by (exported_cluster, namespace, cronjob)",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": "7 ~ 15d",
+          "refId": "D"
+        },
+        {
+          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"2.592e+06\"}\n- ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"1.296e+06\"} != 0) by (exported_cluster, namespace, cronjob)",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": "15 ~ 30d",
+          "refId": "E"
+        },
+        {
+          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"+Inf\"}\n- ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~\"matrix-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"2.592e+06\"} != 0) by (exported_cluster, namespace, cronjob)",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": "> 30d",
+          "refId": "F"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Running CronJob 创建时间分布",
+      "transform": "table",
+      "type": "table"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 18,
+  "style": "dark",
+  "tags": [
+    "matrix-batch"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "text": "thanos",
+          "value": "thanos"
+        },
+        "hide": 0,
+        "label": "datasource",
+        "name": "datasource",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "regex": "thanos",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": "$datasource",
+        "definition": "label_values(k8s_batch_total_job_completed{job=\"matrix-batch-metrics\"}, exported_cluster)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "cluster",
+        "multi": true,
+        "name": "cluster",
+        "options": [],
+        "query": "label_values(k8s_batch_total_job_completed{job=\"matrix-batch-metrics\"}, exported_cluster)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": "$datasource",
+        "definition": "label_values(k8s_batch_total_job_completed{job=\"matrix-batch-metrics\", exported_cluster =~\"$cluster\"}, namespace)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "namespace",
+        "multi": true,
+        "name": "namespace",
+        "options": [],
+        "query": "label_values(k8s_batch_total_job_completed{job=\"matrix-batch-metrics\", exported_cluster =~\"$cluster\"}, namespace)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": "$datasource",
+        "definition": "label_values(k8s_batch_total_job_completed{job=\"matrix-batch-metrics\", exported_cluster =~\"$cluster\", namespace=~\"$namespace\"}, cronjob)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "cronjob",
+        "multi": true,
+        "name": "cronjob",
+        "options": [],
+        "query": "label_values(k8s_batch_total_job_completed{job=\"matrix-batch-metrics\", exported_cluster =~\"$cluster\", namespace=~\"$namespace\"}, cronjob)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "auto": true,
+        "auto_count": 500,
+        "auto_min": "2m",
+        "current": {
+          "text": "auto",
+          "value": "$__auto_interval_Interval"
+        },
+        "hide": 0,
+        "label": null,
+        "name": "Interval",
+        "options": [
+          {
+            "selected": true,
+            "text": "auto",
+            "value": "$__auto_interval_Interval"
+          },
+          {
+            "selected": false,
+            "text": "1m",
+            "value": "1m"
+          },
+          {
+            "selected": false,
+            "text": "2m",
+            "value": "2m"
+          },
+          {
+            "selected": false,
+            "text": "10m",
+            "value": "10m"
+          },
+          {
+            "selected": false,
+            "text": "2h",
+            "value": "2h"
+          }
+        ],
+        "query": "1m,2m,10m,2h",
+        "refresh": 2,
+        "skipUrlSync": false,
+        "type": "interval"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ],
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d",
+      "30d"
+    ]
+  },
+  "timezone": "browser",
+  "title": "Matrix - batch K8s层面监控",
+  "uid": "AJPvHVaWk",
+  "version": 82
+}
