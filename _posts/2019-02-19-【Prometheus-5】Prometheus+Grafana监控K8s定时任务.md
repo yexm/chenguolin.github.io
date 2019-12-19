@@ -79,106 +79,106 @@ func init() {
 
 // ResetPromMetrics prometheus metrics
 func ResetPromMetrics() {
-	promGaugeVecs["k8s_batch_total_cronjob_suspend"].Reset()
-	promGaugeVecs["k8s_batch_total_cronjob_running"].Reset()
-	promHistogramVecs["k8s_batch_running_cronjob_starttime"].Reset()
-	promGaugeVecs["k8s_batch_total_job_completed"].Reset()
-	promGaugeVecs["k8s_batch_total_job_running"].Reset()
-	promGaugeVecs["k8s_batch_total_job_failed"].Reset()
-	promGaugeVecs["k8s_batch_running_job_req_cpu"].Reset()
-	promGaugeVecs["k8s_batch_running_job_limit_cpu"].Reset()
-	promGaugeVecs["k8s_batch_running_job_req_mem"].Reset()
-	promGaugeVecs["k8s_batch_running_job_limit_mem"].Reset()
-	promHistogramVecs["k8s_batch_running_job_starttime"].Reset()
+    promGaugeVecs["k8s_batch_total_cronjob_suspend"].Reset()
+    promGaugeVecs["k8s_batch_total_cronjob_running"].Reset()
+    promHistogramVecs["k8s_batch_running_cronjob_starttime"].Reset()
+    promGaugeVecs["k8s_batch_total_job_completed"].Reset()
+    promGaugeVecs["k8s_batch_total_job_running"].Reset()
+    promGaugeVecs["k8s_batch_total_job_failed"].Reset()
+    promGaugeVecs["k8s_batch_running_job_req_cpu"].Reset()
+    promGaugeVecs["k8s_batch_running_job_limit_cpu"].Reset()
+    promGaugeVecs["k8s_batch_running_job_req_mem"].Reset()
+    promGaugeVecs["k8s_batch_running_job_limit_mem"].Reset()
+    promHistogramVecs["k8s_batch_running_job_starttime"].Reset()
 }
 
 // SetK8sCronJobPromMetrics add k8s cronJob prometheus metrics
 func SetK8sCronJobPromMetrics(cluster, ns, cronJob string, suspend bool) {
-	promLabels := make(Labels)
-	promLabels["cluster"] = cluster
-	promLabels["namespace"] = ns
-	promLabels["cronjob"] = cronJob
+    promLabels := make(Labels)
+    promLabels["cluster"] = cluster
+    promLabels["namespace"] = ns
+    promLabels["cronjob"] = cronJob
 
-	if suspend {
-	    promGaugeVecs["k8s_batch_total_cronjob_suspend"].Set(promLabels, 1)
-	} else {
-	    promGaugeVecs["k8s_batch_total_cronjob_running"].Set(promLabels, 1)
-	}
+    if suspend {
+        promGaugeVecs["k8s_batch_total_cronjob_suspend"].Set(promLabels, 1)
+    } else {
+	promGaugeVecs["k8s_batch_total_cronjob_running"].Set(promLabels, 1)
+    }
 }
 
 // SetK8sRunningCronJobStartTimePromMetrics add k8s running cronJob starttime prometheus metrics
 func SetK8sRunningCronJobStartTimePromMetrics(cluster, ns, cronJob string, starttime int64) {
-	promLabels := make(Labels)
-	promLabels["cluster"] = cluster
-	promLabels["namespace"] = ns
-	promLabels["cronjob"] = cronJob
-	promHistogramVecs["k8s_batch_running_cronjob_starttime"].Observe(promLabels, float64(time.Now().Unix()-starttime))
+    promLabels := make(Labels)
+    promLabels["cluster"] = cluster
+    promLabels["namespace"] = ns
+    promLabels["cronjob"] = cronJob
+    promHistogramVecs["k8s_batch_running_cronjob_starttime"].Observe(promLabels, float64(time.Now().Unix()-starttime))
 }
 
 // SetK8sJobPromMetrics add k8s Job prometheus metrics
 func SetK8sJobPromMetrics(cluster, ns, cronJob string, status types.JobRunningStatus, cnt int) {
-	promLabels := make(Labels)
-	promLabels["cluster"] = cluster
-	promLabels["namespace"] = ns
-	promLabels["cronjob"] = cronJob
+    promLabels := make(Labels)
+    promLabels["cluster"] = cluster
+    promLabels["namespace"] = ns
+    promLabels["cronjob"] = cronJob
 
-	if status == types.SuccessfulFinished {
-	    promGaugeVecs["k8s_batch_total_job_completed"].Set(promLabels, float64(cnt))
-	} else if status == types.Running {
-	    promGaugeVecs["k8s_batch_total_job_running"].Set(promLabels, float64(cnt))
-	} else {
-	    promGaugeVecs["k8s_batch_total_job_failed"].Set(promLabels, float64(cnt))
-	}
+    if status == types.SuccessfulFinished {
+	promGaugeVecs["k8s_batch_total_job_completed"].Set(promLabels, float64(cnt))
+    } else if status == types.Running {
+	promGaugeVecs["k8s_batch_total_job_running"].Set(promLabels, float64(cnt))
+    } else {
+        promGaugeVecs["k8s_batch_total_job_failed"].Set(promLabels, float64(cnt))
+    }
 }
 
 // SetK8sRunningJobStartTimePromMetrics add k8s running job starttime prometheus metrics
 func SetK8sRunningJobStartTimePromMetrics(cluster, ns, cronJob, job string, starttime int64) {
-	promLabels := make(Labels)
-	promLabels["cluster"] = cluster
-	promLabels["namespace"] = ns
-	promLabels["cronjob"] = cronJob
-	promLabels["job"] = job
-	promHistogramVecs["k8s_batch_running_job_starttime"].Observe(promLabels, float64(time.Now().Unix()-starttime))
+    promLabels := make(Labels)
+    promLabels["cluster"] = cluster
+    promLabels["namespace"] = ns
+    promLabels["cronjob"] = cronJob
+    promLabels["job"] = job
+    promHistogramVecs["k8s_batch_running_job_starttime"].Observe(promLabels, float64(time.Now().Unix()-starttime))
 }
 
 // SetK8sRunningJobReqCPUPromMetrics add k8s running job request cpu prometheus metrics
 func SetK8sRunningJobReqCPUPromMetrics(cluster, ns, cronJob, job string, cpu int64) {
-	promLabels := make(Labels)
-	promLabels["cluster"] = cluster
-	promLabels["namespace"] = ns
-	promLabels["cronjob"] = cronJob
-	promLabels["job"] = job
-	promGaugeVecs["k8s_batch_running_job_req_cpu"].Set(promLabels, float64(cpu))
+    promLabels := make(Labels)
+    promLabels["cluster"] = cluster
+    promLabels["namespace"] = ns
+    promLabels["cronjob"] = cronJob
+    promLabels["job"] = job
+    promGaugeVecs["k8s_batch_running_job_req_cpu"].Set(promLabels, float64(cpu))
 }
 
 // SetK8sRunningJobLimitCPUPromMetrics add k8s running job limit cpu prometheus metrics
 func SetK8sRunningJobLimitCPUPromMetrics(cluster, ns, cronJob, job string, cpu int64) {
-	promLabels := make(Labels)
-	promLabels["cluster"] = cluster
-	promLabels["namespace"] = ns
-	promLabels["cronjob"] = cronJob
-	promLabels["job"] = job
-	promGaugeVecs["k8s_batch_running_job_limit_cpu"].Set(promLabels, float64(cpu))
+    promLabels := make(Labels)
+    promLabels["cluster"] = cluster
+    promLabels["namespace"] = ns
+    promLabels["cronjob"] = cronJob
+    promLabels["job"] = job
+    promGaugeVecs["k8s_batch_running_job_limit_cpu"].Set(promLabels, float64(cpu))
 }
 
 // SetK8sRunningJobReqMemPromMetrics add k8s running job request memory prometheus metrics
 func SetK8sRunningJobReqMemPromMetrics(cluster, ns, cronJob, job string, mem int64) {
-	promLabels := make(Labels)
-	promLabels["cluster"] = cluster
-	promLabels["namespace"] = ns
-	promLabels["cronjob"] = cronJob
-	promLabels["job"] = job
-	promGaugeVecs["k8s_batch_running_job_req_mem"].Set(promLabels, float64(mem))
+    promLabels := make(Labels)
+    promLabels["cluster"] = cluster
+    promLabels["namespace"] = ns
+    promLabels["cronjob"] = cronJob
+    promLabels["job"] = job
+    promGaugeVecs["k8s_batch_running_job_req_mem"].Set(promLabels, float64(mem))
 }
 
 // SetK8sRunningJobLimitMemPromMetrics add k8s running job limit memory prometheus metrics
 func SetK8sRunningJobLimitMemPromMetrics(cluster, ns, cronJob, job string, mem int64) {
-	promLabels := make(Labels)
-	promLabels["cluster"] = cluster
-	promLabels["namespace"] = ns
-	promLabels["cronjob"] = cronJob
-	promLabels["job"] = job
-	promGaugeVecs["k8s_batch_running_job_limit_mem"].Set(promLabels, float64(mem))
+    promLabels := make(Labels)
+    promLabels["cluster"] = cluster
+    promLabels["namespace"] = ns
+    promLabels["cronjob"] = cronJob
+    promLabels["job"] = job
+    promGaugeVecs["k8s_batch_running_job_limit_mem"].Set(promLabels, float64(mem))
 }
 ```
 
@@ -190,7 +190,15 @@ func SetK8sRunningJobLimitMemPromMetrics(cluster, ns, cronJob, job string, mem i
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/grafana-k8s-cronjob-2.png?raw=true)
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/grafana-k8s-cronjob-3.png?raw=true)
 
+Grafana dashbord 的JSON格式配置文件 [K8s定时任务监控-Grafana.json](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/grafana/K8s%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1%E7%9B%91%E6%8E%A7-Grafana.json)，使用Grafana Import即可恢复dashbord。
 
+针对以上 Grafana 报表，具体的配置如下。注意，Prometheus 会自动添加 job 和 instance 两个label，其它label可以在 Prometheus server 采集配置文件里配置，或业务自行定义上报。
+
+## ① 总览
+
+## ② 资源消耗
+
+## ③ 定时任务
 
 
 
