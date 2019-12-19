@@ -7,7 +7,7 @@ tags:          #标签
 ---
 
 # 一. 背景
-`Prometheus`做为CNCF第二名成员，事实上已经是云原生生态监控的标准。云原生生态体系绝大多数的开源组件都是使用Golang进行编写，例如Kubernetes项目。因此，使用`Prometheus`监控Golang程序也就成了开发必须要掌握的一个技能。`Prometheus`虽然是监控的标准，但在报表的展示上却需要`Grafana`配合，实际上`Prometheus + Grafana`的监控方案已经是业内公认的一个标准。
+`Prometheus`做为CNCF第二名成员，事实上已经是云原生生态监控的标准。云原生生态体系绝大多数的开源组件都是使用Golang进行编写，例如Kubernetes项目。因此，使用`Prometheus`监控 HTTP API 服务也就成了开发必须要掌握的一个技能。`Prometheus`虽然是监控的标准，但在报表的展示上却需要`Grafana`配合，实际上`Prometheus + Grafana`的监控方案已经是业内公认的一个标准。
 
 这篇文章会总结下如何使用 `Prometheus + Grafana` 监控 Golang HTTP API 服务，包括实现细节、报表配置 以及报警配置。
 
@@ -143,71 +143,75 @@ func SetHTTPRequestLatencyMetrics(cluster, node, path, method string, statusCode
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/http-api-prometheus-grafana-2.png?raw=true)
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/http-api-prometheus-grafana-3.png?raw=true)
 
+Grafana dashbord 的JSON格式配置文件 [HTTP-API服务监控.json](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/grafana/HTTP-API%E6%9C%8D%E5%8A%A1%E7%9B%91%E6%8E%A7-Grafana.json)，使用Grafana Import即可恢复dashbord。
+
+针对以上 Grafana 报表，具体的配置如下。注意，Prometheus 会自动添加 job 和 instance 两个label，其它label可以在 Prometheus server 采集配置文件里配置，或业务自行定义上报。
+
 ## ① Variables
-1. datasource (数据源字段)
-   ```
-   1). General
-    * Type: Datasource
-    * Label: Datasource
-   2). Data source options
-    * Type: Prometheus
-    * Instance: thanos  //https://github.com/thanos-io/thanos  要求通过Thanos部署Prometheus集群  http://dockone.io/article/6019
-   ```
+1. datasource (数据源)
+    ```
+    1). General
+       * Type: Datasource
+       * Label: Datasource
+    2). Data source options
+       * Type: Prometheus
+       * Instance: thanos  //https://github.com/thanos-io/thanos  要求通过Thanos部署Prometheus集群  http://dockone.io/article/6019
+    ```
 2. cluster (集群)
-   ```
-   1). General
-    * Type: Query
-    * Label: cluster
-   2). Query Options
-    * Data source: $datasource
-    * Query: label_values(http_request_success_count_metrics{job="http-request-metrics"}, cluster)    //cluster 字段可以在 Prometheus Server采集配置文件里面配置
-   ```
+    ```
+    1). General
+       * Type: Query
+       * Label: cluster
+    2). Query Options
+       * Data source: $datasource
+       * Query: label_values(http_request_success_count_metrics{job="http-request-metrics"}, cluster)    //cluster 字段可以在 Prometheus Server采集配置文件里面配置
+    ```
 3. node (节点)
-   ```
-   1). General
-    * Type: Query
-    * Label: cluster
-   2). Query Options
-    * Data source: $datasource
-    * Query: label_values(http_request_success_count_metrics{job="http-request-metrics", cluster=~"$cluster"}, node)    //node 字段可以在Prometheus Server采集配置文件里面配置
-   ```
+    ```
+    1). General
+       * Type: Query
+       * Label: cluster
+    2). Query Options
+       * Data source: $datasource
+       * Query: label_values(http_request_success_count_metrics{job="http-request-metrics", cluster=~"$cluster"}, node)    //node 字段可以在Prometheus Server采集配置文件里面配置
+    ```
 4. method (方法)
-   ```
-   1). General
-    * Type: Query
-    * Label: method
-   2). Query Options
-    * Data source: $datasource
-    * Query: label_values(http_request_success_count_metrics{job="http-request-metrics", cluster=~"$cluster", node=~"$node"}, method) 
-   ```
+    ```
+    1). General
+       * Type: Query
+       * Label: method
+    2). Query Options
+       * Data source: $datasource
+       * Query: label_values(http_request_success_count_metrics{job="http-request-metrics", cluster=~"$cluster", node=~"$node"}, method) 
+    ```
 5. path (路径)
-   ```
-   1). General
-    * Type: Query
-    * Label: path
-   2). Query Options
-    * Data source: $datasource
-    * Query: label_values(http_request_success_count_metrics{job="http-request-metrics", cluster=~"$cluster", node=~"$node",   method=~"$method"}, path) 
-   ```
+    ```
+    1). General
+       * Type: Query
+       * Label: path
+    2). Query Options
+       * Data source: $datasource
+       * Query: label_values(http_request_success_count_metrics{job="http-request-metrics", cluster=~"$cluster", node=~"$node",   method=~"$method"}, path) 
+    ```
 6. status (状态码)
-   ```
-   1). General
-    * Type: Query
-    * Label: status
-   2). Query Options
-    * Data source: $datasource
-    * Query: label_values(http_request_success_count_metrics{job="http-request-metrics", cluster=~"$cluster", node=~"$node", method=~"$method", path=~"$path"}, status_code) 
-   ```
+    ```
+    1). General
+       * Type: Query
+       * Label: status
+    2). Query Options
+       * Data source: $datasource
+       * Query: label_values(http_request_success_count_metrics{job="http-request-metrics", cluster=~"$cluster", node=~"$node", method=~"$method", path=~"$path"}, status_code) 
+    ```
 7. Interval (一般情况下都需要设置Interval字段用来筛选数据)
-   ```
-   1). General
-    * Type: Interval
-    * Label: Interval
-   2) Interval options
-    * Values: 1m,2m,10m,2h
-    * Auto Option: 开
-    * Min Interval: 2m   //一般设置为Prometheus server抓取频率的2倍，如果是1m抓取一次metrics，则设置为2m
-   ```
+    ```
+    1). General
+       * Type: Interval
+       * Label: Interval
+    2) Interval options
+       * Values: 1m,2m,10m,2h
+       * Auto Option: 开
+       * Min Interval: 2m   //一般设置为Prometheus server抓取频率的2倍，如果是1m抓取一次metrics，则设置为2m
+    ```
 
 ## ② 总览
 1. 请求总数  (Singlestat)
@@ -248,11 +252,34 @@ func SetHTTPRequestLatencyMetrics(cluster, node, path, method string, statusCode
 `注意: 如果我们希望能够根据Grafana上的时间段进行数据展示，就需要用到 $__range 这个变量`
 
 ## ③ SLA
+1. SLA总体情况  (Graph)
+   ```
+   Success sql: sum(rate(http_request_latency_metrics_count{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path",status_code="200"}[$Interval])) /  sum(rate(http_request_latency_metrics_count{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path"}[$Interval]))
+   Error sql: sum(rate(http_request_latency_metrics_count{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path",status_code!="200"}[$Interval])) /  sum(rate(http_request_latency_metrics_count{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path"}[$Interval]))
+   ```
+2. 平均响应时间
+   ```
+   sql: sum(rate(http_request_latency_metrics_sum{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path",status_code=~"$status"}[$Interval])) / sum(rate(http_request_latency_metrics_count{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path",status_code=~"$status"}[$Interval]))
+   ```
 
 ## ④ 慢请求统计
+1. 慢请求明细表 (Table)
+   ```
+   sql: sum(increase((http_request_latency_metrics_bucket{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path",status_code=~"$status",le="+Inf"} - ignoring(le) http_request_latency_metrics_bucket{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path",status_code=~"$status",le="50"})[$__range:]) > 0)  by (cluster,method,path)
+   Instant: 开  //获取的是当前最新的时序数据
+   ```
  
 ## ⑤ 错误统计
-
+1. 错误请求分布  (Pie Chart)
+   ```
+   4xx sql: sum(increase(http_request_latency_metrics_count{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path",status_code=~"4.*"}[$__range:])) 
+   5xx sql: sum(increase(http_request_latency_metrics_count{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path",status_code=~"5.*"}[$__range:]))
+   Instant: 开  //获取的是当前最新的时序数据
+   ```
+2. 错误请求明细表 (Table)
+   ```
+   sql: sum(increase(http_request_latency_metrics_count{job=~"http-request-metrics",cluster=~"$cluster",node=~"$node",method=~"$method",path=~"$path",status_code!="200"}[$__range:]) > 0) by (cluster,method,path,status_code)
+   ```
 
 # 四. Prometheus告警
 Prometheus 自带告警模块，允许用户自定义告警规则，可以发送到邮件、企业微信，还可以自定义接口发送到短信，非常方便。具体可以参考 https://prometheus.io/docs/alerting/overview/
