@@ -12,7 +12,7 @@
       }
     ]
   },
-  "description": "Matrix - batch API服务监控",
+  "description": "HTTP API服务监控",
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
@@ -91,7 +91,7 @@
           "tableColumn": "Value",
           "targets": [
             {
-              "expr": "sum(increase(matrix_batch_http_request_latency_count{job=~\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=~\"$status\"}[$__range]))",
+              "expr": "sum(increase(http_request_latency_count{job=~\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=~\"$status\"}[$__range]))",
               "format": "time_series",
               "instant": true,
               "interval": "",
@@ -173,7 +173,7 @@
           "tableColumn": "",
           "targets": [
             {
-              "expr": "sum(increase(matrix_batch_http_request_latency_count{job=~\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\"}[$__range:])) \n-\nsum(increase(matrix_batch_http_request_latency_count{job=~\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=\"200\"}[$__range:]))",
+              "expr": "sum(increase(http_request_latency_count{job=~\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\"}[$__range:])) \n-\nsum(increase(http_request_latency_count{job=~\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=\"200\"}[$__range:]))",
               "format": "time_series",
               "instant": true,
               "intervalFactor": 1,
@@ -255,7 +255,7 @@
           "tableColumn": "",
           "targets": [
             {
-              "expr": "sum(increase((matrix_batch_http_request_latency_bucket{job=~\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=~\"$status\",le=\"+Inf\"}\n- ignoring(le)\nmatrix_batch_http_request_latency_bucket{job=~\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=~\"$status\",le=\"50\"})[$__range:]))",
+              "expr": "sum(increase((http_request_latency_bucket{job=~\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=~\"$status\",le=\"+Inf\"}\n- ignoring(le)\nhttp_request_latency_bucket{job=~\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=~\"$status\",le=\"50\"})[$__range:]))",
               "format": "time_series",
               "instant": true,
               "intervalFactor": 1,
@@ -337,7 +337,7 @@
           "tableColumn": "",
           "targets": [
             {
-              "expr": "sum(increase(matrix_batch_http_request_bigdata{job=~\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=~\"$status\"}[$__range]))",
+              "expr": "sum(increase(http_request_bigdata{job=~\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=~\"$status\"}[$__range]))",
               "format": "time_series",
               "instant": true,
               "intervalFactor": 1,
@@ -419,7 +419,7 @@
           "tableColumn": "",
           "targets": [
             {
-              "expr": "sum(increase(matrix_batch_http_request_latency_count{job=~\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=\"200\"}[$__range:]))\n/ \nsum(increase(matrix_batch_http_request_latency_count{job=~\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\"}[$__range:]))",
+              "expr": "sum(increase(http_request_latency_count{job=~\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=\"200\"}[$__range:]))\n/ \nsum(increase(http_request_latency_count{job=~\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\"}[$__range:]))",
               "format": "time_series",
               "instant": true,
               "intervalFactor": 1,
@@ -501,7 +501,7 @@
           "tableColumn": "",
           "targets": [
             {
-              "expr": "sum(increase(matrix_batch_http_request_latency_sum{job=~\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=~\"$status\"}[$__range:])) \n/\nsum(increase(matrix_batch_http_request_latency_count{job=~\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=~\"$status\"}[$__range:]))",
+              "expr": "sum(increase(http_request_latency_sum{job=~\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=~\"$status\"}[$__range:])) \n/\nsum(increase(http_request_latency_count{job=~\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=~\"$status\"}[$__range:]))",
               "format": "time_series",
               "instant": true,
               "intervalFactor": 1,
@@ -559,7 +559,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "sum(rate(matrix_batch_http_request_latency_count{job=~\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=~\"$status\"}[$Interval]))",
+              "expr": "sum(rate(http_request_latency_count{job=~\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=~\"$status\"}[$Interval]))",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "QPS",
@@ -640,7 +640,7 @@
           "strokeWidth": 1,
           "targets": [
             {
-              "expr": "sum(increase(matrix_batch_http_request_latency_count{job=~\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=~\"200\"}[$__range:])) ",
+              "expr": "sum(increase(http_request_latency_count{job=~\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=~\"200\"}[$__range:])) ",
               "format": "time_series",
               "instant": true,
               "intervalFactor": 1,
@@ -648,7 +648,7 @@
               "refId": "A"
             },
             {
-              "expr": "sum(increase(matrix_batch_http_request_latency_count{job=~\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=~\"$status\"}[$__range:])) \n-\nsum(increase(matrix_batch_http_request_latency_count{job=~\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=\"200\"}[$__range:]))",
+              "expr": "sum(increase(http_request_latency_count{job=~\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=~\"$status\"}[$__range:])) \n-\nsum(increase(http_request_latency_count{job=~\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=\"200\"}[$__range:]))",
               "format": "time_series",
               "instant": true,
               "intervalFactor": 1,
@@ -695,7 +695,7 @@
           "strokeWidth": 1,
           "targets": [
             {
-              "expr": "sum(increase(matrix_batch_http_request_bigdata{job=~\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"POST\",path=~\".*manually_trigger\",status_code=~\"$status\"}[$__range]))",
+              "expr": "sum(increase(http_request_bigdata{job=~\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"POST\",path=~\".*manually_trigger\",status_code=~\"$status\"}[$__range]))",
               "format": "time_series",
               "instant": true,
               "intervalFactor": 1,
@@ -703,7 +703,7 @@
               "refId": "A"
             },
             {
-              "expr": "sum(increase(matrix_batch_http_request_bigdata{job=~\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"POST\",path=~\".*info\",status_code=~\"$status\"}[$__range]))",
+              "expr": "sum(increase(http_request_bigdata{job=~\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"POST\",path=~\".*info\",status_code=~\"$status\"}[$__range]))",
               "format": "time_series",
               "instant": true,
               "intervalFactor": 1,
@@ -711,7 +711,7 @@
               "refId": "B"
             },
             {
-              "expr": "sum(increase(matrix_batch_http_request_bigdata{job=~\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"DELETE\",path=~\".*/job/.*\",status_code=~\"$status\"}[$__range]))",
+              "expr": "sum(increase(http_request_bigdata{job=~\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"DELETE\",path=~\".*/job/.*\",status_code=~\"$status\"}[$__range]))",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Delete Job",
@@ -791,7 +791,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(rate(matrix_batch_http_request_latency_count{job=~\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=\"200\"}[$Interval]))\n/ \nsum(rate(matrix_batch_http_request_latency_count{job=~\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\"}[$Interval]))",
+          "expr": "sum(rate(http_request_latency_count{job=~\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=\"200\"}[$Interval]))\n/ \nsum(rate(http_request_latency_count{job=~\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\"}[$Interval]))",
           "format": "time_series",
           "hide": false,
           "instant": false,
@@ -800,7 +800,7 @@
           "refId": "A"
         },
         {
-          "expr": "sum(rate(matrix_batch_http_request_latency_count{job=~\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code!=\"200\"}[$Interval]))\n/ \nsum(rate(matrix_batch_http_request_latency_count{job=~\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\"}[$Interval]))",
+          "expr": "sum(rate(http_request_latency_count{job=~\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code!=\"200\"}[$Interval]))\n/ \nsum(rate(http_request_latency_count{job=~\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\"}[$Interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Error",
@@ -888,7 +888,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(rate(matrix_batch_http_request_latency_sum{job=~\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=~\"$status\"}[$Interval])) \n/\nsum(rate(matrix_batch_http_request_latency_count{job=~\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=~\"$status\"}[$Interval]))",
+          "expr": "sum(rate(http_request_latency_sum{job=~\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=~\"$status\"}[$Interval])) \n/\nsum(rate(http_request_latency_count{job=~\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=~\"$status\"}[$Interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "ResponseTime",
@@ -989,7 +989,7 @@
           ],
           "targets": [
             {
-              "expr": "sum(increase((matrix_batch_http_request_latency_bucket{job=~\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=~\"$status\",le=\"+Inf\"}\n- ignoring(le)\nmatrix_batch_http_request_latency_bucket{job=~\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=~\"$status\",le=\"50\"})[$__range:]) > 0)  by (cluster,method,path)",
+              "expr": "sum(increase((http_request_latency_bucket{job=~\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=~\"$status\",le=\"+Inf\"}\n- ignoring(le)\nhttp_request_latency_bucket{job=~\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=~\"$status\",le=\"50\"})[$__range:]) > 0)  by (cluster,method,path)",
               "format": "table",
               "instant": true,
               "intervalFactor": 1,
@@ -1049,7 +1049,7 @@
           "strokeWidth": 1,
           "targets": [
             {
-              "expr": "sum(increase(matrix_batch_http_request_latency_count{job=~\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=~\"4.*\"}[$__range:])) ",
+              "expr": "sum(increase(http_request_latency_count{job=~\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=~\"4.*\"}[$__range:])) ",
               "format": "time_series",
               "instant": true,
               "intervalFactor": 1,
@@ -1057,7 +1057,7 @@
               "refId": "A"
             },
             {
-              "expr": "sum(increase(matrix_batch_http_request_latency_count{job=~\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=~\"5.*\"}[$__range:])) ",
+              "expr": "sum(increase(http_request_latency_count{job=~\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code=~\"5.*\"}[$__range:])) ",
               "format": "time_series",
               "instant": true,
               "intervalFactor": 1,
@@ -1130,7 +1130,7 @@
           ],
           "targets": [
             {
-              "expr": "sum(increase(matrix_batch_http_request_latency_count{job=~\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code!=\"200\"}[$__range:]) > 0) by (cluster,method,path,status_code)",
+              "expr": "sum(increase(http_request_latency_count{job=~\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\",method=~\"$method\",path=~\"$path\",status_code!=\"200\"}[$__range:]) > 0) by (cluster,method,path,status_code)",
               "format": "table",
               "instant": true,
               "intervalFactor": 1,
@@ -1152,7 +1152,7 @@
   "schemaVersion": 18,
   "style": "dark",
   "tags": [
-    "matrix-batch"
+    "http-request"
   ],
   "templating": {
     "list": [
@@ -1180,14 +1180,14 @@
           ]
         },
         "datasource": "$datasource",
-        "definition": "label_values(matrix_batch_http_request_latency_count{job=\"matrix-batch-metrics\"}, cluster)",
+        "definition": "label_values(http_request_latency_count{job=\"http-request-metrics\"}, cluster)",
         "hide": 0,
         "includeAll": true,
         "label": "cluster",
         "multi": true,
         "name": "cluster",
         "options": [],
-        "query": "label_values(matrix_batch_http_request_latency_count{job=\"matrix-batch-metrics\"}, cluster)",
+        "query": "label_values(http_request_latency_count{job=\"http-request-metrics\"}, cluster)",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -1205,14 +1205,14 @@
           "value": "$__all"
         },
         "datasource": "$datasource",
-        "definition": "label_values(matrix_batch_http_request_latency_count{job=\"matrix-batch-metrics\", cluster=~\"$cluster\"}, instance)",
+        "definition": "label_values(http_request_latency_count{job=\"http-request-metrics\", cluster=~\"$cluster\"}, instance)",
         "hide": 0,
         "includeAll": true,
         "label": "node",
         "multi": true,
         "name": "node",
         "options": [],
-        "query": "label_values(matrix_batch_http_request_latency_count{job=\"matrix-batch-metrics\", cluster=~\"$cluster\"}, instance)",
+        "query": "label_values(http_request_latency_count{job=\"http-request-metrics\", cluster=~\"$cluster\"}, instance)",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -1232,14 +1232,14 @@
           ]
         },
         "datasource": "$datasource",
-        "definition": "label_values(matrix_batch_http_request_latency_count{job=\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\"}, method)",
+        "definition": "label_values(http_request_latency_count{job=\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\"}, method)",
         "hide": 0,
         "includeAll": true,
         "label": "method",
         "multi": true,
         "name": "method",
         "options": [],
-        "query": "label_values(matrix_batch_http_request_latency_count{job=\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\"}, method)",
+        "query": "label_values(http_request_latency_count{job=\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\"}, method)",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -1259,14 +1259,14 @@
           ]
         },
         "datasource": "$datasource",
-        "definition": "label_values(matrix_batch_http_request_latency_count{job=\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\", method=~\"$method\"}, path)",
+        "definition": "label_values(http_request_latency_count{job=\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\", method=~\"$method\"}, path)",
         "hide": 0,
         "includeAll": true,
         "label": "path",
         "multi": true,
         "name": "path",
         "options": [],
-        "query": "label_values(matrix_batch_http_request_latency_count{job=\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\", method=~\"$method\"}, path)",
+        "query": "label_values(http_request_latency_count{job=\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\", method=~\"$method\"}, path)",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -1286,14 +1286,14 @@
           ]
         },
         "datasource": "$datasource",
-        "definition": "label_values(matrix_batch_http_request_latency_count{job=\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\", method=~\"$method\", path=~\"$path\"}, status_code)",
+        "definition": "label_values(http_request_latency_count{job=\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\", method=~\"$method\", path=~\"$path\"}, status_code)",
         "hide": 0,
         "includeAll": true,
         "label": "status",
         "multi": true,
         "name": "status",
         "options": [],
-        "query": "label_values(matrix_batch_http_request_latency_count{job=\"matrix-batch-metrics\",cluster=~\"$cluster\",instance=~\"$node\", method=~\"$method\", path=~\"$path\"}, status_code)",
+        "query": "label_values(http_request_latency_count{job=\"http-request-metrics\",cluster=~\"$cluster\",instance=~\"$node\", method=~\"$method\", path=~\"$path\"}, status_code)",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
