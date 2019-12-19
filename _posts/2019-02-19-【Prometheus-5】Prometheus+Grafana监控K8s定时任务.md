@@ -18,63 +18,63 @@ Golang 程序需要引入并使用 [go-prometheus](https://github.com/chenguolin
 
 ```
 var (
-	promCounterVecs   = make(map[string]*CounterVec)
-	promGaugeVecs     = make(map[string]*GaugeVec)
-	promHistogramVecs = make(map[string]*HistogramVec)
+    promCounterVecs   = make(map[string]*CounterVec)
+    promGaugeVecs     = make(map[string]*GaugeVec)
+    promHistogramVecs = make(map[string]*HistogramVec)
 )
 
 func init() {
-	// k8s cronJob
-	promGaugeVecs["k8s_batch_total_cronjob_running"] = NewGaugeVec(
-		"k8s_batch_total_cronjob_running",
-		"k8s batch total running cronjob",
-		[]string{"cluster", "namespace", "cronjob"})
-	promGaugeVecs["k8s_batch_total_cronjob_suspend"] = NewGaugeVec(
-		"k8s_batch_total_cronjob_suspend",
-		"k8s batch total suspend cronjob",
-		[]string{"cluster", "namespace", "cronjob"})
-	promHistogramVecs["k8s_batch_running_cronjob_starttime"] = NewHistogramVec(
-		"k8s_batch_running_cronjob_starttime",
-		"k8s batch running cronjob start time second",
-		[]float64{3600, 86400, 3 * 86400, 7 * 86400, 15 * 86400, 30 * 86400},
-		[]string{"cluster", "namespace", "cronjob"})
+    // k8s cronJob
+    promGaugeVecs["k8s_batch_total_cronjob_running"] = NewGaugeVec(
+        "k8s_batch_total_cronjob_running",
+	"k8s batch total running cronjob",
+	[]string{"cluster", "namespace", "cronjob"})
+    promGaugeVecs["k8s_batch_total_cronjob_suspend"] = NewGaugeVec(
+	"k8s_batch_total_cronjob_suspend",
+	"k8s batch total suspend cronjob",
+	[]string{"cluster", "namespace", "cronjob"})
+    promHistogramVecs["k8s_batch_running_cronjob_starttime"] = NewHistogramVec(
+	"k8s_batch_running_cronjob_starttime",
+	"k8s batch running cronjob start time second",
+	[]float64{3600, 86400, 3 * 86400, 7 * 86400, 15 * 86400, 30 * 86400},
+	[]string{"cluster", "namespace", "cronjob"})
 
-	// k8s job
-	promGaugeVecs["k8s_batch_total_job_completed"] = NewGaugeVec(
-		"k8s_batch_total_job_completed",
-		"k8s batch total completed job",
-		[]string{"cluster", "namespace", "cronjob"})
-	promGaugeVecs["k8s_batch_total_job_running"] = NewGaugeVec(
-		"k8s_batch_total_job_running",
-		"k8s batch total running job",
-		[]string{"cluster", "namespace", "cronjob"})
-	promGaugeVecs["k8s_batch_total_job_failed"] = NewGaugeVec(
-		"k8s_batch_total_job_failed",
-		"k8s batch total failed job",
-		[]string{"cluster", "namespace", "cronjob"})
+    // k8s job
+    promGaugeVecs["k8s_batch_total_job_completed"] = NewGaugeVec(
+	"k8s_batch_total_job_completed",
+	"k8s batch total completed job",
+	[]string{"cluster", "namespace", "cronjob"})
+    promGaugeVecs["k8s_batch_total_job_running"] = NewGaugeVec(
+	"k8s_batch_total_job_running",
+	"k8s batch total running job",
+	[]string{"cluster", "namespace", "cronjob"})
+    promGaugeVecs["k8s_batch_total_job_failed"] = NewGaugeVec(
+	"k8s_batch_total_job_failed",
+	"k8s batch total failed job",
+	[]string{"cluster", "namespace", "cronjob"})
 
-	promGaugeVecs["k8s_batch_running_job_req_cpu"] = NewGaugeVec(
-		"k8s_batch_running_job_req_cpu",
-		"k8s batch running job request cpu",
-		[]string{"cluster", "namespace", "cronjob", "job"})
-	promGaugeVecs["k8s_batch_running_job_limit_cpu"] = NewGaugeVec(
-		"k8s_batch_running_job_limit_cpu",
-		"k8s batch running job limit cpu",
-		[]string{"cluster", "namespace", "cronjob", "job"})
-	promGaugeVecs["k8s_batch_running_job_req_mem"] = NewGaugeVec(
-		"k8s_batch_running_job_req_mem",
-		"k8s batch running job request mem",
-		[]string{"cluster", "namespace", "cronjob", "job"})
-	promGaugeVecs["k8s_batch_running_job_limit_mem"] = NewGaugeVec(
-		"k8s_batch_running_job_limit_mem",
-		"k8s batch running job limit mem",
-		[]string{"cluster", "namespace", "cronjob", "job"})
+    promGaugeVecs["k8s_batch_running_job_req_cpu"] = NewGaugeVec(
+	"k8s_batch_running_job_req_cpu",
+	"k8s batch running job request cpu",
+	[]string{"cluster", "namespace", "cronjob", "job"})
+    promGaugeVecs["k8s_batch_running_job_limit_cpu"] = NewGaugeVec(
+	"k8s_batch_running_job_limit_cpu",
+	"k8s batch running job limit cpu",
+	[]string{"cluster", "namespace", "cronjob", "job"})
+    promGaugeVecs["k8s_batch_running_job_req_mem"] = NewGaugeVec(
+	"k8s_batch_running_job_req_mem",
+	"k8s batch running job request mem",
+	[]string{"cluster", "namespace", "cronjob", "job"})
+    promGaugeVecs["k8s_batch_running_job_limit_mem"] = NewGaugeVec(
+	"k8s_batch_running_job_limit_mem",
+	"k8s batch running job limit mem",
+	[]string{"cluster", "namespace", "cronjob", "job"})
 
-	promHistogramVecs["k8s_batch_running_job_starttime"] = NewHistogramVec(
-		"k8s_batch_running_job_starttime",
-		"k8s batch running job start time second",
-		[]float64{60, 10 * 60, 30 * 60, 3600, 6 * 3600, 12 * 3600, 86400},
-		[]string{"cluster", "namespace", "cronjob", "job"})
+    promHistogramVecs["k8s_batch_running_job_starttime"] = NewHistogramVec(
+	"k8s_batch_running_job_starttime",
+	"k8s batch running job start time second",
+	[]float64{60, 10 * 60, 30 * 60, 3600, 6 * 3600, 12 * 3600, 86400},
+	[]string{"cluster", "namespace", "cronjob", "job"})
 }
 
 // ResetPromMetrics prometheus metrics
@@ -100,9 +100,9 @@ func SetK8sCronJobPromMetrics(cluster, ns, cronJob string, suspend bool) {
 	promLabels["cronjob"] = cronJob
 
 	if suspend {
-		promGaugeVecs["k8s_batch_total_cronjob_suspend"].Set(promLabels, 1)
+	    promGaugeVecs["k8s_batch_total_cronjob_suspend"].Set(promLabels, 1)
 	} else {
-		promGaugeVecs["k8s_batch_total_cronjob_running"].Set(promLabels, 1)
+	    promGaugeVecs["k8s_batch_total_cronjob_running"].Set(promLabels, 1)
 	}
 }
 
@@ -123,11 +123,11 @@ func SetK8sJobPromMetrics(cluster, ns, cronJob string, status types.JobRunningSt
 	promLabels["cronjob"] = cronJob
 
 	if status == types.SuccessfulFinished {
-		promGaugeVecs["k8s_batch_total_job_completed"].Set(promLabels, float64(cnt))
+	    promGaugeVecs["k8s_batch_total_job_completed"].Set(promLabels, float64(cnt))
 	} else if status == types.Running {
-		promGaugeVecs["k8s_batch_total_job_running"].Set(promLabels, float64(cnt))
+	    promGaugeVecs["k8s_batch_total_job_running"].Set(promLabels, float64(cnt))
 	} else {
-		promGaugeVecs["k8s_batch_total_job_failed"].Set(promLabels, float64(cnt))
+	    promGaugeVecs["k8s_batch_total_job_failed"].Set(promLabels, float64(cnt))
 	}
 }
 
@@ -181,6 +181,17 @@ func SetK8sRunningJobLimitMemPromMetrics(cluster, ns, cronJob, job string, mem i
 	promGaugeVecs["k8s_batch_running_job_limit_mem"].Set(promLabels, float64(mem))
 }
 ```
+
+注意: 为什么代码里面会有一个 ResetPromMetrics 函数，主要的原因是 `因为我们定时的metrics的label值会一直变，如果没有及时reset对应的metrcs的话，会导致内存的Prometheus metrics指标无限膨胀，每次Prometheus server来pull数据的时候都会拉取到很多无用的数据，干扰了我们的监控，因此我们需要在每次set metrics之前做些reset。`
+
+# 三. Grafana配置
+
+![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/grafana-k8s-cronjob-1.png?raw=true)
+![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/grafana-k8s-cronjob-2.png?raw=true)
+![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/grafana-k8s-cronjob-3.png?raw=true)
+
+
+
 
 
 
