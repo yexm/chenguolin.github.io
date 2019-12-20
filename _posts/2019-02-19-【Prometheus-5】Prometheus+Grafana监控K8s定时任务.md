@@ -350,6 +350,11 @@ Grafana dashbord 的JSON格式配置文件 [K8s定时任务监控-Grafana.json](
     >24h sql: count(k8s_batch_running_job_starttime_bucket{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob",le="+Inf"} - k8s_batch_running_job_starttime_bucket{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob",le="86400"} != 0)
     Instant: 开  //获取的是当前最新的时序数据
     ```
+3. Running CronJob 创建时间分布 (Table)
+   同1
+
+# 四. Prometheus告警
+Prometheus 自带告警模块，允许用户自定义告警规则，可以发送到邮件、企业微信，还可以自定义接口发送到短信，非常方便。具体可以参考  https://prometheus.io/docs/alerting/overview/
 
 
 
