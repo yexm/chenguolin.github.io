@@ -243,11 +243,113 @@ Grafana dashbord 的JSON格式配置文件 [K8s定时任务监控-Grafana.json](
     ```
     
 ## ② 总览
+1. Running CronJob (Singlestat)
+    ```
+    sql: sum(k8s_batch_total_cronjob_running{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob"})
+    Instant: 开  //获取的是当前最新的时序数据
+    ```
+2. Suspend CronJob (Singlestat)
+    ```
+    sql: sum(k8s_batch_total_cronjob_suspend{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob"})
+    Instant: 开  //获取的是当前最新的时序数据
+    ```
+3. Running Job (Singlestat)
+    ```
+    sql: sum(k8s_batch_total_job_running{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob"})
+    Instant: 开  //获取的是当前最新的时序数据
+    ```
+4. Completed Job (Singlestat)
+    ```
+    sql: sum(k8s_batch_total_job_completed{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob"})
+    Instant: 开  //获取的是当前最新的时序数据
+    ```
+5. Failed Job (Singlestat)
+    ```
+    sum(k8s_batch_total_job_failed{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob"})
+    Instant: 开  //获取的是当前最新的时序数据
+    ```
+6. CronJob 分布 (Pie Chart)
+    ```
+    Running sql: sum(k8s_batch_total_cronjob_running{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob"})
+    Suspend sql: sum(k8s_batch_total_cronjob_suspend{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob"})
+    Instant: 开  //获取的是当前最新的时序数据
+    ```
+7. Job 分布 (Pie Chart)
+    ```
+    Running sql: sum(k8s_batch_total_job_running{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob"})
+    Completed sql: sum(k8s_batch_total_job_completed{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob"})
+    Failed sql: sum(k8s_batch_total_job_failed{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob"})
+    Instant: 开  //获取的是当前最新的时序数据
+    ```
+ 8. CronJob (Graph)
+    ```
+    Running sql: sum(k8s_batch_total_cronjob_running{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob"})
+    Suspend sql: sum(k8s_batch_total_cronjob_suspend{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob"})
+    ```
+9. Job (Graph)
+    ```
+    Running sql: sum(k8s_batch_total_job_running{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob"})
+    Completed sql: sum(k8s_batch_total_job_completed{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob"})
+    Failed sql: sum(k8s_batch_total_job_failed{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob"})
+    ```
 
 ## ③ 资源消耗
+1. Running Job Request CPU (Singlestat)
+    ```
+    sql: sum(k8s_batch_running_job_req_cpu{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob"})
+    Instant: 开  //获取的是当前最新的时序数据
+    ```
+2. Running Job Limit CPU (Singlestat)
+    ```
+    sql: sum(k8s_batch_running_job_limit_cpu{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob"})
+    Instant: 开  //获取的是当前最新的时序数据
+    ```
+3. Running Job Request Memory (Singlestat)
+    ```
+    sql: sum(k8s_batch_running_job_req_mem{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob"})
+    Instant: 开  //获取的是当前最新的时序数据
+    ```
+
+4. Running Job Limit Memory (Singlestat)
+    ```
+    sql: sum(k8s_batch_running_job_limit_mem{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob"})
+    Instant: 开  //获取的是当前最新的时序数据
+    ```
+
+5. Running Job CPU (Graph)
+    ```
+    Req sql: sum(k8s_batch_running_job_req_cpu{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob"})
+    Limit sql: sum(k8s_batch_running_job_limit_cpu{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob"})
+    ```
+
+6. Running Job Memory (Graph)
+    ```
+    Req sql: sum(k8s_batch_running_job_req_mem{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob"})
+    Limit sql: sum(k8s_batch_running_job_limit_mem{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob"})
+    ```
 
 ## ④ 定时任务
-
+1. Running CronJob 创建时间分布 (Pie Chart)
+    ```
+    < 1d sql: count(k8s_batch_running_cronjob_starttime_bucket{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob",le="86400"} > 0 )
+    1d ~ 3d sql: count(k8s_batch_running_cronjob_starttime_bucket{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob",le="259200"} - ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob",le="86400"} != 0)
+    3d ~ 7d sql: count(k8s_batch_running_cronjob_starttime_bucket{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob",le="604800"} - ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob",le="259200"} != 0)
+    7d ~ 15d sql: count(k8s_batch_running_cronjob_starttime_bucket{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob",le="1.296e+06"} - ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob",le="604800"} != 0)
+    15d ~ 30d sql: count(k8s_batch_running_cronjob_starttime_bucket{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob",le="2.592e+06"} - ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob",le="1.296e+06"} != 0)
+    > 30d sql: count(k8s_batch_running_cronjob_starttime_bucket{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob",le="+Inf"} - ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob",le="2.592e+06"} != 0)
+    Instant: 开  //获取的是当前最新的时序数据
+    ```
+2. Running Job 创建时间分布 (Pie Chart)
+    ```
+    < 1m sql: count(k8s_batch_running_job_starttime_bucket{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob",le="60"})
+    1 ~ 10m sql: count(k8s_batch_running_job_starttime_bucket{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob",le="600"} - k8s_batch_running_job_starttime_bucket{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob",le="60"} != 0)
+    10 ~ 60m sql: count(k8s_batch_running_job_starttime_bucket{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob",le="3600"} - k8s_batch_running_job_starttime_bucket{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob",le="60"} != 0)
+    1 ~ 6h sql: count(k8s_batch_running_job_starttime_bucket{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob",le="21600"} - k8s_batch_running_job_starttime_bucket{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob",le="3600"} != 0)
+    6 ~ 12h sql: count(k8s_batch_running_job_starttime_bucket{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob",le="43200"} - k8s_batch_running_job_starttime_bucket{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob",le="21600"} != 0)
+    12~24h sql: count(k8s_batch_running_job_starttime_bucket{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob",le="86400"} - k8s_batch_running_job_starttime_bucket{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob",le="43200"} != 0)
+    >24h sql: count(k8s_batch_running_job_starttime_bucket{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob",le="+Inf"} - k8s_batch_running_job_starttime_bucket{job=~"k8s-batch-metrics",cluster=~"$cluster",namespace=~"$namespace",cronjob=~"$cronjob",le="86400"} != 0)
+    Instant: 开  //获取的是当前最新的时序数据
+    ```
 
 
 
