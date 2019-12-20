@@ -194,11 +194,13 @@ Grafana dashbord 的JSON格式配置文件 [K8s定时任务监控-Grafana.json](
 
 针对以上 Grafana 报表，具体的配置如下。注意，Prometheus 会自动添加 job 和 instance 两个label，其它label可以在 Prometheus server 采集配置文件里配置，或业务自行定义上报。
 
-## ① 总览
+## ① Variables
 
-## ② 资源消耗
+## ② 总览
 
-## ③ 定时任务
+## ③ 资源消耗
+
+## ④ 定时任务
 
 
 
