@@ -195,7 +195,53 @@ Grafana dashbord 的JSON格式配置文件 [K8s定时任务监控-Grafana.json](
 针对以上 Grafana 报表，具体的配置如下。注意，Prometheus 会自动添加 job 和 instance 两个label，其它label可以在 Prometheus server 采集配置文件里配置，或业务自行定义上报。
 
 ## ① Variables
-
+1. datasource (数据源)
+    ```
+    1). General
+      * Type: Datasource
+      * Label: Datasource
+    2). Data source options
+      * Type: Prometheus
+      * Instance: thanos  //https://github.com/thanos-io/thanos  要求通过Thanos部署Prometheus集群  http://dockone.io/article/6019
+    ```
+2. cluster (集群)
+    ```
+    1). General
+      * Type: Query
+      * Label: cluster
+    2). Query Options
+      * Data source: $datasource
+      * Query: label_values(k8s_batch_total_job_completed{job="k8s-batch-metrics"}, cluster)    //cluster 字段可以在 Prometheus Server采集配置文件里面配置
+    ```
+3. namespace (命名空间)
+    ```
+    1). General
+      * Type: Query
+      * Label: namespace
+    2). Query Options
+      * Data source: $datasource
+      * Query: label_values(k8s_batch_total_job_completed{job="k8s-batch-metrics", cluster=~"$cluster"}, namespace)
+    ```
+4. cronjob (定时任务)
+    ```
+    1). General
+      * Type: Query
+      * Label: cronjob
+    2). Query Options
+      * Data source: $datasource
+      * Query: label_values(k8s_batch_total_job_completed{job="k8s-batch-metrics", cluster=~"$cluster", namespace=~"$namespace"}, cronjob)
+    ```
+5. Interval (一般情况下都需要设置Interval字段用来筛选数据)
+    ```
+    1). General
+      * Type: Interval
+      * Label: Interval
+    2) Interval options
+      * Values: 1m,2m,10m,2h
+      * Auto Option: 开
+      * Min Interval: 2m   //一般设置为Prometheus server抓取频率的2倍，如果是1m抓取一次metrics，则设置为2m
+    ```
+    
 ## ② 总览
 
 ## ③ 资源消耗
