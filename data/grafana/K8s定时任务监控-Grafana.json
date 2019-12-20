@@ -94,7 +94,7 @@
       "tableColumn": "Value",
       "targets": [
         {
-          "expr": "sum(k8s_batch_total_cronjob_running{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "expr": "sum(k8s_batch_total_cronjob_running{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
           "format": "time_series",
           "instant": true,
           "interval": "",
@@ -176,7 +176,7 @@
       "tableColumn": "Value",
       "targets": [
         {
-          "expr": "sum(k8s_batch_total_cronjob_suspend{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "expr": "sum(k8s_batch_total_cronjob_suspend{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
           "format": "time_series",
           "instant": true,
           "interval": "",
@@ -259,7 +259,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum(k8s_batch_total_job_running{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "expr": "sum(k8s_batch_total_job_running{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -340,7 +340,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum(k8s_batch_total_job_completed{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "expr": "sum(k8s_batch_total_job_completed{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -421,7 +421,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum(k8s_batch_total_job_failed{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "expr": "sum(k8s_batch_total_job_failed{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -502,7 +502,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum(k8s_batch_total_job_running{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"BIGDATA_TASK\"})",
+          "expr": "sum(k8s_batch_total_job_running{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"BIGDATA_TASK\"})",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -560,7 +560,7 @@
       "strokeWidth": 1,
       "targets": [
         {
-          "expr": "sum(k8s_batch_total_cronjob_suspend{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "expr": "sum(k8s_batch_total_cronjob_suspend{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
           "format": "time_series",
           "instant": true,
           "interval": "",
@@ -569,7 +569,7 @@
           "refId": "A"
         },
         {
-          "expr": "sum(k8s_batch_total_cronjob_running{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "expr": "sum(k8s_batch_total_cronjob_running{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -614,7 +614,7 @@
       "strokeWidth": 1,
       "targets": [
         {
-          "expr": "sum(k8s_batch_total_job_running{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "expr": "sum(k8s_batch_total_job_running{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
           "format": "time_series",
           "instant": true,
           "interval": "",
@@ -623,7 +623,7 @@
           "refId": "A"
         },
         {
-          "expr": "sum(k8s_batch_total_job_completed{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "expr": "sum(k8s_batch_total_job_completed{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -631,7 +631,7 @@
           "refId": "B"
         },
         {
-          "expr": "sum(k8s_batch_total_job_failed{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "expr": "sum(k8s_batch_total_job_failed{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -676,7 +676,7 @@
       "strokeWidth": 1,
       "targets": [
         {
-          "expr": "sum(k8s_batch_total_job_running{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"BIGDATA_TASK\"})",
+          "expr": "sum(k8s_batch_total_job_running{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"BIGDATA_TASK\"})",
           "format": "time_series",
           "instant": true,
           "interval": "",
@@ -685,7 +685,7 @@
           "refId": "A"
         },
         {
-          "expr": "sum(k8s_batch_total_job_completed{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"BIGDATA_TASK\"})",
+          "expr": "sum(k8s_batch_total_job_completed{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"BIGDATA_TASK\"})",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -693,7 +693,7 @@
           "refId": "B"
         },
         {
-          "expr": "sum(k8s_batch_total_job_failed{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"BIGDATA_TASK\"})",
+          "expr": "sum(k8s_batch_total_job_failed{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"BIGDATA_TASK\"})",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -743,7 +743,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(k8s_batch_total_cronjob_running{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "expr": "sum(k8s_batch_total_cronjob_running{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
           "format": "time_series",
           "instant": false,
           "intervalFactor": 1,
@@ -751,7 +751,7 @@
           "refId": "A"
         },
         {
-          "expr": "sum(k8s_batch_total_cronjob_suspend{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "expr": "sum(k8s_batch_total_cronjob_suspend{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
           "format": "time_series",
           "instant": false,
           "intervalFactor": 1,
@@ -838,21 +838,21 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(k8s_batch_total_job_running{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "expr": "sum(k8s_batch_total_job_running{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Running",
           "refId": "A"
         },
         {
-          "expr": "sum(k8s_batch_total_job_completed{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "expr": "sum(k8s_batch_total_job_completed{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Completed",
           "refId": "B"
         },
         {
-          "expr": "sum(k8s_batch_total_job_failed{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "expr": "sum(k8s_batch_total_job_failed{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Failed",
@@ -938,21 +938,21 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(k8s_batch_total_job_running{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"BIGDATA_TASK\"})",
+          "expr": "sum(k8s_batch_total_job_running{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"BIGDATA_TASK\"})",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Running Job",
           "refId": "A"
         },
         {
-          "expr": "sum(k8s_batch_total_job_completed{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"BIGDATA_TASK\"})",
+          "expr": "sum(k8s_batch_total_job_completed{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"BIGDATA_TASK\"})",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Completed",
           "refId": "B"
         },
         {
-          "expr": "sum(k8s_batch_total_job_failed{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"BIGDATA_TASK\"})",
+          "expr": "sum(k8s_batch_total_job_failed{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"BIGDATA_TASK\"})",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Failed",
@@ -1074,7 +1074,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum(k8s_batch_running_job_req_cpu{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "expr": "sum(k8s_batch_running_job_req_cpu{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -1157,7 +1157,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum(k8s_batch_running_job_limit_cpu{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "expr": "sum(k8s_batch_running_job_limit_cpu{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -1240,7 +1240,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum(k8s_batch_running_job_req_mem{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "expr": "sum(k8s_batch_running_job_req_mem{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -1323,7 +1323,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum(k8s_batch_running_job_limit_mem{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "expr": "sum(k8s_batch_running_job_limit_mem{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -1383,14 +1383,14 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(k8s_batch_running_job_req_cpu{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "expr": "sum(k8s_batch_running_job_req_cpu{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Req",
           "refId": "A"
         },
         {
-          "expr": "sum(k8s_batch_running_job_limit_cpu{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "expr": "sum(k8s_batch_running_job_limit_cpu{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Limit",
@@ -1476,14 +1476,14 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(k8s_batch_running_job_req_mem{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "expr": "sum(k8s_batch_running_job_req_mem{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Req",
           "refId": "A"
         },
         {
-          "expr": "sum(k8s_batch_running_job_limit_mem{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
+          "expr": "sum(k8s_batch_running_job_limit_mem{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\"})",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Limit",
@@ -1577,7 +1577,7 @@
       "strokeWidth": 1,
       "targets": [
         {
-          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"86400\"} > 0 )",
+          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"86400\"} > 0 )",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -1585,7 +1585,7 @@
           "refId": "A"
         },
         {
-          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"259200\"} \n- ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"86400\"} != 0)",
+          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"259200\"} \n- ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"86400\"} != 0)",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -1593,7 +1593,7 @@
           "refId": "B"
         },
         {
-          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"604800\"}\n- ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"259200\"} != 0)",
+          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"604800\"}\n- ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"259200\"} != 0)",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -1601,7 +1601,7 @@
           "refId": "C"
         },
         {
-          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"1.296e+06\"}\n- ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"604800\"} != 0)",
+          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"1.296e+06\"}\n- ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"604800\"} != 0)",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -1609,7 +1609,7 @@
           "refId": "D"
         },
         {
-          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"2.592e+06\"}\n- ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"1.296e+06\"} != 0)",
+          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"2.592e+06\"}\n- ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"1.296e+06\"} != 0)",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -1617,7 +1617,7 @@
           "refId": "E"
         },
         {
-          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"+Inf\"}\n- ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"2.592e+06\"} != 0)",
+          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"+Inf\"}\n- ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"2.592e+06\"} != 0)",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -1663,7 +1663,7 @@
       "strokeWidth": 1,
       "targets": [
         {
-          "expr": "count(k8s_batch_running_job_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"60\"})",
+          "expr": "count(k8s_batch_running_job_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"60\"})",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -1671,7 +1671,7 @@
           "refId": "A"
         },
         {
-          "expr": "count(k8s_batch_running_job_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"600\"} \n- k8s_batch_running_job_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"60\"} != 0)",
+          "expr": "count(k8s_batch_running_job_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"600\"} \n- k8s_batch_running_job_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"60\"} != 0)",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -1679,7 +1679,7 @@
           "refId": "B"
         },
         {
-          "expr": "count(k8s_batch_running_job_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"3600\"} \n- k8s_batch_running_job_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"60\"} != 0)",
+          "expr": "count(k8s_batch_running_job_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"3600\"} \n- k8s_batch_running_job_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"60\"} != 0)",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -1687,7 +1687,7 @@
           "refId": "C"
         },
         {
-          "expr": "count(k8s_batch_running_job_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"21600\"} \n- k8s_batch_running_job_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"3600\"} != 0)",
+          "expr": "count(k8s_batch_running_job_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"21600\"} \n- k8s_batch_running_job_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"3600\"} != 0)",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -1695,7 +1695,7 @@
           "refId": "D"
         },
         {
-          "expr": "count(k8s_batch_running_job_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"43200\"} \n- k8s_batch_running_job_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"21600\"} != 0)",
+          "expr": "count(k8s_batch_running_job_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"43200\"} \n- k8s_batch_running_job_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"21600\"} != 0)",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -1703,7 +1703,7 @@
           "refId": "E"
         },
         {
-          "expr": "count(k8s_batch_running_job_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"86400\"} \n- k8s_batch_running_job_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"43200\"} != 0)",
+          "expr": "count(k8s_batch_running_job_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"86400\"} \n- k8s_batch_running_job_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"43200\"} != 0)",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -1711,7 +1711,7 @@
           "refId": "F"
         },
         {
-          "expr": "count(k8s_batch_running_job_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"+Inf\"} \n- k8s_batch_running_job_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"86400\"} != 0)",
+          "expr": "count(k8s_batch_running_job_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"+Inf\"} \n- k8s_batch_running_job_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"86400\"} != 0)",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -1899,7 +1899,7 @@
       ],
       "targets": [
         {
-          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"86400\"} > 0) by (exported_cluster, namespace, cronjob)",
+          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"86400\"} > 0) by (exported_cluster, namespace, cronjob)",
           "format": "table",
           "instant": true,
           "intervalFactor": 1,
@@ -1907,7 +1907,7 @@
           "refId": "A"
         },
         {
-          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"259200\"} \n- ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"86400\"} != 0) by (exported_cluster, namespace, cronjob)",
+          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"259200\"} \n- ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"86400\"} != 0) by (exported_cluster, namespace, cronjob)",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -1916,7 +1916,7 @@
           "refId": "B"
         },
         {
-          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"604800\"}\n- ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"259200\"} != 0) by (exported_cluster, namespace, cronjob)",
+          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"604800\"}\n- ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"259200\"} != 0) by (exported_cluster, namespace, cronjob)",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -1925,7 +1925,7 @@
           "refId": "C"
         },
         {
-          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"1.296e+06\"}\n- ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"604800\"} != 0) by (exported_cluster, namespace, cronjob)",
+          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"1.296e+06\"}\n- ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"604800\"} != 0) by (exported_cluster, namespace, cronjob)",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -1934,7 +1934,7 @@
           "refId": "D"
         },
         {
-          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"2.592e+06\"}\n- ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"1.296e+06\"} != 0) by (exported_cluster, namespace, cronjob)",
+          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"2.592e+06\"}\n- ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"1.296e+06\"} != 0) by (exported_cluster, namespace, cronjob)",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -1943,7 +1943,7 @@
           "refId": "E"
         },
         {
-          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"+Inf\"}\n- ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",instance=~\"192.168.199.36:28899|192.168.130.133:28899|10.10.32.205:28899\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"2.592e+06\"} != 0) by (exported_cluster, namespace, cronjob)",
+          "expr": "count(k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"+Inf\"}\n- ignoring(le) k8s_batch_running_cronjob_starttime_bucket{job=~\"k8s-batch-metrics\",exported_cluster=~\"$cluster\",namespace=~\"$namespace\",cronjob=~\"$cronjob\",le=\"2.592e+06\"} != 0) by (exported_cluster, namespace, cronjob)",
           "format": "table",
           "hide": false,
           "instant": true,
