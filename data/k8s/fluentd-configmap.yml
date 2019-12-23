@@ -1,0 +1,593 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluentd-config.d-v0.0.1
+  namespace: kube-system
+  labels:
+    k8s-app: fluentd-config
+data:
+  containers.input.conf: |-
+    # 这里不能使用 ** 做为匹配pattern，因为detect_exceptions这个插件会把数据重新扔回input
+    # 如果使用 ** 会导致input的统计数据double
+    <filter raw.**>
+       @type prometheus
+       <metric>
+         name fluentd_input_records
+         type counter
+         desc The total number of incoming records
+       </metric>
+    </filter>
+
+    <match fluent.**>
+       @type null
+    </match>
+
+    <match **fluentd**>
+       @type null
+    </match>
+
+    <match raw.**>
+       @type detect_exceptions
+       remove_tag_prefix raw
+       languages java,phpslow
+       message log
+       stream stream
+       multiline_flush_interval 0.1
+       max_bytes 500000
+       max_lines 1000
+    </match>
+
+    <filter kubernetes.**>
+       @type concatdocker
+       key log
+       stream_identity_key stream
+       use_first_timestamp true
+       separator ""
+       multiline_end_regexp /\n$/
+    </filter>
+
+    <filter kubernetes.**>
+       @type prune_log
+       max_raw_log_bytes 1M
+       prefix_reserve_bytes 1K
+       suffix_reserve_bytes 1K
+    </filter>
+
+    <filter kubernetes.**>
+       @type kubernetes_metadata
+       cache_size 5000
+       cache_ttl 3600
+       annotation_match ["^log-.*"]
+       merge_json_log false
+    </filter>
+
+    <filter kubernetes.**>
+       @type addtopic
+       topic_prefix "#{ENV['KAFKA_TOPIC_PREFIX']}"
+    </filter>
+
+    <filter kubernetes.**>
+       @type json_in_json
+       convert_non_json_log true
+    </filter>
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluentd-config-v0.0.1
+  namespace: kube-system
+  labels:
+    k8s-app: fluentd-config
+data:
+  fluent.conf: |-
+    <source>
+       @type multiprocess
+       <process>
+          cmdline -c /etc/fluent/config/fluent-commons.conf -p /etc/fluent/plugins -q -o /tmp/fluent-commons.log
+          sleep_before_start 1s
+          sleep_before_shutdown 5s
+       </process>
+       <process>
+          cmdline -c /etc/fluent/config/fluent-containers-0-3.conf -p /etc/fluent/plugins -q -o /tmp/fluent-containers-0-3.log
+          sleep_before_start 1s
+          sleep_before_shutdown 5s
+       </process>
+       <process>
+          cmdline -c /etc/fluent/config/fluent-containers-4-7.conf -p /etc/fluent/plugins -q -o /tmp/fluent-containers-4-7.log
+          sleep_before_start 1s
+          sleep_before_shutdown 5s
+       </process>
+       <process>
+          cmdline -c /etc/fluent/config/fluent-containers-8-b.conf -p /etc/fluent/plugins -q -o /tmp/fluent-containers-8-b.log
+          sleep_before_start 1s
+          sleep_before_shutdown 5s
+       </process>
+       <process>
+          cmdline -c /etc/fluent/config/fluent-containers-c-f.conf -p /etc/fluent/plugins -q -o /tmp/fluent-containers-c-f.log
+          sleep_before_start 1s
+          sleep_before_shutdown 5s
+       </process>
+       <process>
+          cmdline -c /etc/fluent/config/fluent-itself.conf -p /etc/fluent/plugins -q
+          sleep_before_start 1s
+          sleep_before_shutdown 5s
+       </process>
+    </source>
+
+
+  fluent-commons.conf: |-
+    <match fluent.**>
+       @type null
+    </match>
+
+    <match **fluentd**>
+       @type null
+    </match>
+
+    <source>
+       @type tail
+       tag kubernetes_core
+       path /var/log/calico/*/current
+       pos_file /var/log/fluentd-calico.log.pos
+       read_from_head true
+       format none
+    </source>
+
+    <source>
+       @type systemd
+       tag kubernetes_core
+       path /var/log/journal
+       filters [{ "_SYSTEMD_UNIT": ["kubelet.service", "etcd.service", "docker.service"]}]
+       read_from_head true
+       pos_file /var/log/fluentd-systemd.log.pos
+    </source>
+
+    <filter **>
+       @type prometheus
+       <metric>
+          name fluentd_input_records
+          type counter
+          desc The total number of incoming records
+       </metric>
+    </filter>
+
+    <match **>
+       @type copy_ex
+       <store ignore_error>
+          @type kafka_buffered
+
+          brokers "#{ENV['FLUENT_KAFKA_BROKERS']}"
+          default_topic k8s_unexpected-logs
+          get_kafka_client_log true
+
+          output_include_tag false
+          output_include_time false
+          exclude_topic_key false
+          exclude_partition_key true
+
+          output_data_type json
+
+          buffer_type file
+          buffer_path /var/log/td-agent/buffer/td
+          buffer_chunk_limit 64M
+          buffer_queue_limit 512
+          flush_interval 3s
+
+          kafka_agg_max_bytes 3M
+          max_send_limit_bytes 3M
+          compression_codec gzip
+          required_acks 1
+          num_threads 4
+          max_send_retries 5
+          discard_kafka_delivery_failed true
+          disable_retry_limit false
+          max_retry_wait 1
+       </store>
+       <store ignore_error>
+          @type mt_flowcounter
+       </store>
+    </match>
+
+    # input plugin that is required to expose metrics by other prometheus
+    # plugins, such as the prometheus_monitor input below.
+    <source>
+       @type prometheus
+       bind 0.0.0.0
+       port 24234
+       metrics_path /metrics
+    </source>
+
+    # input plugin that collects metrics from MonitorAgent and exposes them
+    # as prometheus metrics
+    <source>
+       @type prometheus_monitor
+       # update the metrics every 5 seconds
+       interval 5
+       <labels>
+          name k8s_core
+       </labels>
+    </source>
+
+    <source>
+       @type prometheus_output_monitor
+       interval 5
+       <labels>
+          name k8s_core
+       </labels>
+    </source>
+
+
+  fluent-containers-0-3.conf: |-
+    <source>
+       @type tail
+       tag raw.kubernetes.*
+       path /var/log/containers/*0.log,/var/log/containers/*1.log,/var/log/containers/*2.log,/var/log/containers/*3.log
+       pos_file /var/log/fluentd-containers0-3.log.pos
+       format json
+       time_key not-parse-time
+       read_from_head true
+       refresh_interval 3
+       enable_watch_timer true
+    </source>
+
+    @include /etc/fluent/config.d/*.conf
+
+    <match **>
+       @type copy_ex
+       <store ignore_error>
+          @type kafka_buffered
+
+          brokers "#{ENV['FLUENT_KAFKA_BROKERS']}"
+          default_topic k8s_unexpected-logs
+          get_kafka_client_log true
+
+          output_include_tag false
+          output_include_time false
+          exclude_topic_key false
+          exclude_partition_key true
+
+          output_data_type json
+
+          buffer_type file
+          buffer_path /var/log/td-agent/buffer/td0-3
+          buffer_chunk_limit 64M
+          buffer_queue_limit 512
+          flush_interval 3s
+
+          kafka_agg_max_bytes 3M
+          max_send_limit_bytes 3M
+          compression_codec gzip
+          required_acks 1
+          num_threads 4
+          max_send_retries 5
+          discard_kafka_delivery_failed true
+          disable_retry_limit false
+          max_retry_wait 1
+       </store>
+       <store ignore_error>
+          @type mt_flowcounter
+       </store>
+    </match>
+
+    # input plugin that is required to expose metrics by other prometheus
+    # plugins, such as the prometheus_monitor input below.
+    <source>
+       @type prometheus
+       bind 0.0.0.0
+       port 24230
+       metrics_path /metrics
+    </source>
+
+    # input plugin that collects metrics from MonitorAgent and exposes them
+    # as prometheus metrics
+    <source>
+       @type prometheus_monitor
+       # update the metrics every 5 seconds
+       interval 5
+       <labels>
+          name log0_3
+       </labels>
+    </source>
+
+    <source>
+       @type prometheus_output_monitor
+       interval 5
+       <labels>
+          name log0_3
+       </labels>
+    </source>
+
+
+  fluent-containers-4-7.conf: |-
+    <source>
+       @type tail
+       tag raw.kubernetes.*
+       path /var/log/containers/*4.log,/var/log/containers/*5.log,/var/log/containers/*6.log,/var/log/containers/*7.log
+       pos_file /var/log/fluentd-containers4-7.log.pos
+       format json
+       time_key not-parse-time
+       read_from_head true
+       refresh_interval 3
+       enable_watch_timer true
+    </source>
+
+    @include /etc/fluent/config.d/*.conf
+
+    <match **>
+       @type copy_ex
+       <store ignore_error>
+          @type kafka_buffered
+
+          brokers "#{ENV['FLUENT_KAFKA_BROKERS']}"
+          default_topic k8s_unexpected-logs
+          get_kafka_client_log true
+
+          output_include_tag false
+          output_include_time false
+          exclude_topic_key false
+          exclude_partition_key true
+
+          output_data_type json
+
+          buffer_type file
+          buffer_path /var/log/td-agent/buffer/td4-7
+          buffer_chunk_limit 64M
+          buffer_queue_limit 512
+          flush_interval 3s
+
+          kafka_agg_max_bytes 3M
+          max_send_limit_bytes 3M
+          compression_codec gzip
+          required_acks 1
+          num_threads 4
+          max_send_retries 5
+          discard_kafka_delivery_failed true
+          disable_retry_limit false
+          max_retry_wait 1
+       </store>
+       <store ignore_error>
+          @type mt_flowcounter
+       </store>
+    </match>
+
+    # input plugin that is required to expose metrics by other prometheus
+    # plugins, such as the prometheus_monitor input below.
+    <source>
+       @type prometheus
+       bind 0.0.0.0
+       port 24231
+       metrics_path /metrics
+    </source>
+
+    # input plugin that collects metrics from MonitorAgent and exposes them
+    # as prometheus metrics
+    <source>
+       @type prometheus_monitor
+       # update the metrics every 5 seconds
+       interval 5
+       <labels>
+          name log4_7
+       </labels>
+    </source>
+
+    <source>
+       @type prometheus_output_monitor
+       interval 5
+       <labels>
+          name log4_7
+       </labels>
+    </source>
+
+  fluent-containers-8-b.conf: |-
+    <source>
+       @type tail
+       tag raw.kubernetes.*
+       path /var/log/containers/*8.log,/var/log/containers/*9.log,/var/log/containers/*a.log,/var/log/containers/*b.log
+       pos_file /var/log/fluentd-containers8-b.log.pos
+       format json
+       time_key not-parse-time
+       read_from_head true
+       refresh_interval 3
+       enable_watch_timer true
+    </source>
+
+    @include /etc/fluent/config.d/*.conf
+
+    <match **>
+       @type copy_ex
+       <store ignore_error>
+          @type kafka_buffered
+
+          brokers "#{ENV['FLUENT_KAFKA_BROKERS']}"
+          default_topic k8s_unexpected-logs
+          get_kafka_client_log true
+
+          output_include_tag false
+          output_include_time false
+          exclude_topic_key false
+          exclude_partition_key true
+
+          output_data_type json
+
+          buffer_type file
+          buffer_path /var/log/td-agent/buffer/td8-b
+          buffer_chunk_limit 64M
+          buffer_queue_limit 512
+          flush_interval 3s
+
+          kafka_agg_max_bytes 3M
+          max_send_limit_bytes 3M
+          compression_codec gzip
+          required_acks 1
+          num_threads 4
+          max_send_retries 5
+          discard_kafka_delivery_failed true
+          disable_retry_limit false
+          max_retry_wait 1
+       </store>
+       <store ignore_error>
+          @type mt_flowcounter
+       </store>
+    </match>
+
+    # input plugin that is required to expose metrics by other prometheus
+    # plugins, such as the prometheus_monitor input below.
+    <source>
+       @type prometheus
+       bind 0.0.0.0
+       port 24232
+       metrics_path /metrics
+    </source>
+
+    # input plugin that collects metrics from MonitorAgent and exposes them
+    # as prometheus metrics
+    <source>
+       @type prometheus_monitor
+       # update the metrics every 5 seconds
+       interval 5
+       <labels>
+          name log8_b
+       </labels>
+    </source>
+
+    <source>
+       @type prometheus_output_monitor
+       interval 5
+       <labels>
+          name log8_b
+       </labels>
+    </source>
+
+  fluent-containers-c-f.conf: |-
+    <source>
+       @type tail
+       tag raw.kubernetes.*
+       path /var/log/containers/*c.log,/var/log/containers/*d.log,/var/log/containers/*e.log,/var/log/containers/*f.log
+       pos_file /var/log/fluentd-containersc-f.log.pos
+       format json
+       time_key not-parse-time
+       read_from_head true
+       refresh_interval 3
+       enable_watch_timer true
+    </source>
+
+    @include /etc/fluent/config.d/*.conf
+
+    <match **>
+       @type copy_ex
+       <store ignore_error>
+          @type kafka_buffered
+
+          brokers "#{ENV['FLUENT_KAFKA_BROKERS']}"
+          default_topic k8s_unexpected-logs
+          get_kafka_client_log true
+
+          output_include_tag false
+          output_include_time false
+          exclude_topic_key false
+          exclude_partition_key true
+
+          output_data_type json
+
+          buffer_type file
+          buffer_path /var/log/td-agent/buffer/tdc-f
+          buffer_chunk_limit 64M
+          buffer_queue_limit 512
+          flush_interval 3s
+
+          kafka_agg_max_bytes 3M
+          max_send_limit_bytes 3M
+          compression_codec gzip
+          required_acks 1
+          num_threads 4
+          max_send_retries 5
+          discard_kafka_delivery_failed true
+          disable_retry_limit false
+          max_retry_wait 1
+       </store>
+       <store ignore_error>
+          @type mt_flowcounter
+       </store>
+    </match>
+
+    # input plugin that is required to expose metrics by other prometheus
+    # plugins, such as the prometheus_monitor input below.
+    <source>
+       @type prometheus
+       bind 0.0.0.0
+       port 24233
+       metrics_path /metrics
+    </source>
+
+    # input plugin that collects metrics from MonitorAgent and exposes them
+    # as prometheus metrics
+    <source>
+       @type prometheus_monitor
+       # update the metrics every 5 seconds
+       interval 5
+       <labels>
+          name logc_f
+       </labels>
+    </source>
+
+    <source>
+       @type prometheus_output_monitor
+       interval 5
+       <labels>
+          name logc_f
+       </labels>
+    </source>
+
+
+  fluent-itself.conf: |-
+    <source>
+       @type tail
+       tag raw.fluent.*
+       path /tmp/fluent*.log
+       pos_file /var/log/fluentd-itself.log.pos
+       read_from_head true
+       format none
+       refresh_interval 3
+       enable_watch_timer true
+    </source>
+
+    <match **>
+      @type copy_ex
+      <store ignore_error>
+        @type rawstdout
+      </store>
+
+      <store ignore_error>
+        @type fluentd_monitor
+      </store>
+    </match>
+
+    # input plugin that is required to expose metrics by other prometheus
+    # plugins, such as the prometheus_monitor input below.
+    <source>
+       @type prometheus
+       bind 0.0.0.0
+       port 24235
+       metrics_path /metrics
+    </source>
+
+    # input plugin that collects metrics from MonitorAgent and exposes them
+    # as prometheus metrics
+    <source>
+       @type prometheus_monitor
+       # update the metrics every 5 seconds
+       interval 5
+       <labels>
+          name fluent_log
+       </labels>
+    </source>
+
+    <source>
+       @type prometheus_output_monitor
+       interval 5
+       <labels>
+          name fluent_log
+       </labels>
+    </source>
+
