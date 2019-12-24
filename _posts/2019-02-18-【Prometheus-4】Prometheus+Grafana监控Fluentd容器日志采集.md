@@ -14,6 +14,8 @@ Prometheus 做为CNCF第二名成员，事实上已经是云原生生态监控�
 # 二. 监控实现
 k8s fluentd 项目可以参考 [k8s-fluentd](https://github.com/chenguolin/k8s-fluentd)，fluentd 监控实现分为2个部分，一部分是fluentd自带的插件会使用 Prometheus进行相关的数据统计，另外一部分是需要业务自行编写插件实现。
 
+Prometheus 通过服务发现功能获取资源暴露的监控点，主动拉取所有监控数据，具体包括集群所有pod，service-endpoints，node的kubelet及其cadvisor的metric信息。业务只需要把相关的 `/metrics` 接口暴露出来即可，Prometheus server会自动发现并定期拉取数据。
+
 1. fluentd自带插件可以参考 [Fluentd-Prometheus监控](https://chenguolin.github.io/2019/03/05/Fluentd-6-Fluentd-Prometheus%E7%9B%91%E6%8E%A7/)，主要是以下几个插件
     + [in_prometheus](https://github.com/fluent/fluent-plugin-prometheus/blob/master/lib/fluent/plugin/in_prometheus.rb): 插件用于暴露监控metrics指标，提供HTTP接口供Prometheus服务采集
     + [in_prometheus_monitor](https://github.com/fluent/fluent-plugin-prometheus/blob/master/lib/fluent/plugin/in_prometheus_monitor.rb): 插件用于Fluentd Output带buffer插件监控
@@ -25,7 +27,32 @@ k8s fluentd 项目可以参考 [k8s-fluentd](https://github.com/chenguolin/k8s-f
     + [out_flowcounter](https://github.com/chenguolin/k8s-fluentd/blob/master/plugins/out_flowcounter.rb): 插件用于统计output records、output bytes等指标
     + [out_fluentd_monitor](https://github.com/chenguolin/k8s-fluentd/blob/master/plugins/out_fluentd_monitor.rb): 插件用于统计fluentd进程自身的指标，例如error log、write kafka failed 等指标
     
+k8s集群pod和service-endpoints常用字段如下，需要业务在annotations里面加上这些字段
+```
+prometheus_io_scrape: annotation中增加这个字段为true后才能被Prometheus监控
+prometheus_io_scheme: Prometheus拉取协议，https或者http
+prometheus_io_path: Prometheus拉取监控数据的路径，默认为/metrics
+prometheus_io_port: Prometheus拉取监控数据的端口号
+```
+    
 # 三. Grafana配置
-## ① 
+## ① Fluentd采集监控
+Grafana dashbord 的JSON格式配置文件 [Fluentd-采集监控-Grafana.json](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/grafana/Fluentd-%E9%87%87%E9%9B%86%E7%9B%91%E6%8E%A7-Grafana.json)，使用Grafana Import即可恢复dashbord。
+
+![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/fluentd-prometheus-grafana-1.png?raw=true)
+![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/fluentd-prometheus-grafana-2.png?raw=true)
+![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/fluentd-prometheus-grafana-3.png?raw=true)
+![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/fluentd-prometheus-grafana-4.png?raw=true)
+
+## ② Fluentd进程监控
+Grafana dashbord 的JSON格式配置文件 [Fluentd-进程监控-Grafana.json](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/grafana/Fluentd-%E8%BF%9B%E7%A8%8B%E7%9B%91%E6%8E%A7-Grafana.json)，使用Grafana Import即可恢复dashbord。
+
+![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/fluentd-process-prometheus-grafana-1.png?raw=true)
+![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/fluentd-process-prometheus-grafana-2.png?raw=true)
+![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/fluentd-process-prometheus-grafana-3.png?raw=true)
+
+## ③ 
+
+
 
 
