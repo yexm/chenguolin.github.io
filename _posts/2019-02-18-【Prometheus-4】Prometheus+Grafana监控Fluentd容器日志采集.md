@@ -27,7 +27,7 @@ Prometheus 通过服务发现功能获取资源暴露的监控点，主动拉取
     + [out_flowcounter](https://github.com/chenguolin/k8s-fluentd/blob/master/plugins/out_flowcounter.rb): 插件用于统计output records、output bytes等指标
     + [out_fluentd_monitor](https://github.com/chenguolin/k8s-fluentd/blob/master/plugins/out_fluentd_monitor.rb): 插件用于统计fluentd进程自身的指标，例如error log、write kafka failed 等指标
     
-k8s集群pod和service-endpoints常用字段如下，需要业务在annotations里面加上这些字段
+k8s集群 `pod` 和 `service-endpoints` 常用资源类型，需要业务在annotations里面加上以下这些字段，才能被Prometheus监控到。
 ```
 prometheus_io_scrape: annotation中增加这个字段为true后才能被Prometheus监控
 prometheus_io_scheme: Prometheus拉取协议，https或者http
