@@ -51,7 +51,8 @@ Grafana dashbord 的JSON格式配置文件 [Fluentd-进程监控-Grafana.json](h
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/fluentd-process-prometheus-grafana-2.png?raw=true)
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/fluentd-process-prometheus-grafana-3.png?raw=true)
 
-## ③ 
+# 四. 监控报警
+Prometheus 自带告警模块，允许用户自定义告警规则，可以发送到邮件、企业微信，还可以自定义接口发送到短信，非常方便。具体可以参考 https://prometheus.io/docs/alerting/overview/
 
 
 
