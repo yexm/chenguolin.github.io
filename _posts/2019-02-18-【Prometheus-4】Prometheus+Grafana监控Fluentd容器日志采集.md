@@ -29,10 +29,10 @@ Prometheus 通过服务发现功能获取资源暴露的监控点，主动拉取
     
 k8s集群 `pod` 和 `service-endpoints` 常用资源类型，需要业务在annotations里面加上以下这些字段，才能被Prometheus监控到。
 ```
-prometheus_io_scrape: annotation中增加这个字段为true后才能被Prometheus监控
-prometheus_io_scheme: Prometheus拉取协议，https或者http
-prometheus_io_path: Prometheus拉取监控数据的路径，默认为/metrics
-prometheus_io_port: Prometheus拉取监控数据的端口号
+prometheus_io_scrape: true   //annotation中增加这个字段为true后才能被Prometheus监控
+prometheus_io_scheme: HTTP   //Prometheus拉取协议，https或者http
+prometheus_io_path: /metrics //Prometheus拉取监控数据的路径，默认为/metrics
+prometheus_io_port: 8888     //Prometheus拉取监控数据的端口号
 ```
     
 # 三. Grafana配置
