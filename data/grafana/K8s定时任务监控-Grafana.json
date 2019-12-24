@@ -12,7 +12,7 @@
       }
     ]
   },
-  "description": "batch K8s层面监控",
+  "description": "K8s定时任务监控",
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
@@ -2138,7 +2138,7 @@
     ]
   },
   "timezone": "browser",
-  "title": "batch K8s层面监控",
+  "title": "K8s定时任务监控",
   "uid": "AJPvHVaWk",
   "version": 82
 }

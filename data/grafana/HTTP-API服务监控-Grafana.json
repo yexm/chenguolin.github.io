@@ -1379,7 +1379,7 @@
     ]
   },
   "timezone": "browser",
-  "title": "Matrix - batch API服务监控",
+  "title": "HTTP API服务监控",
   "uid": "12J4YjOTm2",
   "version": 100
 }
