@@ -37,7 +37,7 @@ HTTP API接口安全性演进如下
 6. 客户端请求的时候把参数传给服务端 `sig_timestamp={sig_timestamp}&signature={signature}`
 
 服务端验证签名
-1. 解析参数获取`sig_timestamp`和`signature`2个字段
+1. 解析参数获取`sig_timestamp`和`signature`2个字段 (防止 重放攻击)
 2. 确认`sig_timestamp`是否小于当前时间，如果是说明签名已经过期了
 3. 按照相同的算法计算一遍签名，比较计算的结果和signature是否一致，如果是验证通过
 
@@ -86,7 +86,7 @@ sig := fmt.Sprintf("%x", md5.Sum([]byte(str)))
 
 服务端验证签名
 1. 解析参数得到公钥 public_key，sig_timestamp，和签名结果 signature
-2. 确认 sig_timestamp 是否小于当前时间，如果是说明签名已经过期了
+2. 确认 sig_timestamp 是否小于当前时间，如果是说明签名已经过期了   (防止 重放攻击)
 3. 服务端使用公钥验证签名结果 signature，验证通过说明请求参数没有被篡改
 
 简单的代码如下
