@@ -6,58 +6,32 @@ tags:          #标签
     - Kubernetes
 ---
 # 一. Kubectl
-## ① kubectl 所有选项
-1. `--alsologtostderr[=false]`: 同时输出日志到标准错误控制台和文件。
-2. `--api-version=""`: 和服务端交互使用的API版本。
-3. `--certificate-authority=""`: 用以进行认证授权的.cert文件路径。
-4. `--client-certificate=""`: TLS使用的客户端证书路径。
-5. `--client-key=""`: TLS使用的客户端密钥路径。
-6. `--cluster=""`: 指定使用的kubeconfig配置文件中的集群名。
-7. `--context=""`: 指定使用的kubeconfig配置文件中的环境名。
-8. `--insecure-skip-tls-verify[=false]`: 如果为true，将不会检查服务器凭证的有效性，这会导致你的HTTPS链接变得不安全。
-9. `--kubeconfig=""`: 命令行请求使用的配置文件路径。
-10. `--log-backtrace-at=0`: 当日志长度超过定义的行数时，忽略堆栈信息。
-11. `--log-dir=""`: 如果不为空，将日志文件写入此目录。
-12. `--log-flush-frequency=5s`: 刷新日志的最大时间间隔。
-13. `--logtostderr[=true]`: 输出日志到标准错误控制台，不输出到文件。
-14. `--match-server-version[=false]`: 要求服务端和客户端版本匹配。
-15. `-n, --namespace=""`: 如果不为空，命令将使用此namespace。
-16. `--password=""`: API Server进行简单认证使用的密码。
-17. `-s, --server=""`: Kubernetes API Server的地址和端口号。
-18. `--stderrthreshold=2`: 高于此级别的日志将被输出到错误控制台。
-19. `--token=""`: 认证到API Server使用的令牌。
-20. `--user=""`: 指定使用的kubeconfig配置文件中的用户名。
-21. `--username=""`: API Server进行简单认证使用的用户名。
-22. `-v, --v=0`: 指定输出日志的级别。
-23. `--vmodule=`: 指定输出日志的模块，格式如下：pattern=N，使用逗号分隔。
-
-## ② kubectl命令
 1. `kubectl annotate` 更新资源的注解，支持的资源包括但不限于（大小写不限）pods (po)、services (svc)、 replicationcontrollers (rc)、nodes (no)、events (ev)、componentstatuses (cs)、 limitranges (limits)、persistentvolumes (pv)、persistentvolumeclaims (pvc)、 resourcequotas (quota)和secrets。
 2. `kubectl api-versions` 以“组/版本”的格式输出服务端支持的API版本。
 3. `kubectl apply` 通过文件名或控制台输入，对资源进行配置，接受JSON或者YAML格式的描述文件
 4. `kubectl attach` 连接到一个正在运行的容器
 5. `kubectl autoscale` 对replication controller进行自动伸缩
 6. `kubectl cluster-info` 输出集群信息
-7. `kubectl config` 修改kubeconfig配置文件。
-8. `kubectl create` 通过文件名或控制台输入，创建资源。
-9. `kubectl delete` 通过文件名、控制台输入、资源名或者label selector删除资源。
-10. `kubectl describe` 输出指定的一个/多个资源的详细信息。
-11. `kubectl edit` 编辑服务端的资源。
+7. `kubectl config` 修改kubeconfig配置文件
+8. `kubectl create` 通过文件名或控制台输入，创建资源
+9. `kubectl delete` 通过文件名、控制台输入、资源名或者label selector删除资源
+10. `kubectl describe` 输出指定的一个/多个资源的详细信息
+11. `kubectl edit` 编辑服务端的资源
 12. `kubectl exec` 在容器内部执行命令
-13. `kubectl expose` 输入replication controller，service或者pod，并将其暴露为新的kubernetes service。
-14. `kubectl get` 输出一个/多个资源。
-15. `kubectl label` 更新资源的label。
-16. `kubectl logs` 输出pod中一个容器的日志。
-17. `kubectl namespace` （已停用）设置或查看当前使用的namespace。
-18. `kubectl patch` 通过控制台输入更新资源中的字段。
-19. `kubectl port-forward` 将本地端口转发到Pod。
-20. `kubectl proxy` 为Kubernetes API server启动代理服务器。
-21. `kubectl replace` 通过文件名或控制台输入替换资源。
-22. `kubectl rolling-update` 对指定的replication controller执行滚动升级。
-23. `kubectl run` 在集群中使用指定镜像启动容器。
-24. `kubectl scale` 为replication controller设置新的副本数。
-25. `kubectl stop`（已停用）通过资源名或控制台输入安全删除资源。
-26. `kubectl version` 输出服务端和客户端的版本信息。
+13. `kubectl expose` 输入replication controller，service或者pod，并将其暴露为新的kubernetes service
+14. `kubectl get` 输出一个/多个资源
+15. `kubectl label` 更新资源的label
+16. `kubectl logs` 输出pod中一个容器的日志
+17. `kubectl namespace` （已停用）设置或查看当前使用的namespace
+18. `kubectl patch` 通过控制台输入更新资源中的字段
+19. `kubectl port-forward` 将本地端口转发到Pod
+20. `kubectl proxy` 为Kubernetes API server启动代理服务器
+21. `kubectl replace` 通过文件名或控制台输入替换资源
+22. `kubectl rolling-update` 对指定的replication controller执行滚动升级
+23. `kubectl run` 在集群中使用指定镜像启动容器
+24. `kubectl scale` 为replication controller设置新的副本数
+25. `kubectl stop`（已停用）通过资源名或控制台输入安全删除资源
+26. `kubectl version` 输出服务端和客户端的版本信息
 
 # 二. 问题排查
 ## ① 常用命令
@@ -153,7 +127,7 @@ tags:          #标签
    `$ journalctl -l -u etcd`
 
 ## ③ 相关目录
-1. Linux K8s(操作系统为Centos)，使用device mapper做为storage driver
+1. Linux容器使用device mapper做为storage driver
     * rootfs(镜像)挂载点文件: `/var/lib/docker/image/devicemapper/layerdb/mounts/{container_id}/mount-id`
     * rootfs挂载点目录: `/var/lib/docker/devicemapper/mnt/{mount_id}/rootfs`
     * 容器输出stdout/stderr日志目录: `/var/log/containers`
@@ -163,7 +137,7 @@ tags:          #标签
     * docker runc状态目录: `/run/docker/runtime-runc/moby/{container_id}/state.json`
     * docker runtime目录: `/run/docker/containerd/daemon/io.containerd.runtime.v1.linux/moby/{container_id}`
     * emptyDir Volume在Node上目录: `/var/lib/kubelet/pods/{pod_id}/volumes/kubernetes.io~empty-dir/`
-2. Mac K8s，使用overlay2做为storage driver
+2. Linux容器使用overlay2做为storage driver
     * rootfs(镜像)挂载点文件: `/var/lib/docker/image/overlay2/layerdb/mounts/{container_id}/mount-id`
     * rootfs挂载点目录: `/var/lib/docker/overlay2/{mount_id}/merged`
     * 容器输出stdout/stderr日志目录: `/var/log/containers`
