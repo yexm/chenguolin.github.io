@@ -3,7 +3,7 @@ layout:  post  # 使用的布局（不需要改）
 catalog: true  # 是否归档
 author: 陈国林 # 作者
 tags:          #标签
-    - K8s
+    - Kubernetes
 ---
 
 docker run 创建Docker容器时，可以用`--net`选项指定容器的网络模式，Docker有以下4种网络模式
