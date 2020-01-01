@@ -52,7 +52,7 @@ docker run --log-driver json-file --log-opt max-size=10m alpine echo hello world
 ```
 
 # 二. Docker日志实现
-对于业务容器，我们分成2种情况。一种是业务容器内日志文件，这种情况Docker daemon 不可能也不应该深入应用内部，截获并接管日志文件内容，这只会破坏 Docker 的通用性。另外一种是业务输出到stdout日志，这种情况上文我们说到Docker daemon会通过 logging driver 接管stdout，并根据具体的logging driver进行日志分发。
+对于业务容器日志，我们分成2种情况。一种是业务容器内日志文件，这种情况Docker daemon 不可能也不应该深入应用内部，截获并接管日志文件内容，这只会破坏 Docker 的通用性。另外一种是业务输出到stdout日志，这种情况上文我们说到Docker daemon会通过 logging driver 接管stdout，并根据具体的logging driver进行日志分发。
 
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/docker-logging-driver.png?raw=true)
 
