@@ -56,6 +56,53 @@ docker run --log-driver json-file --log-opt max-size=10m alpine echo hello world
 
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/docker-logging-driver.png?raw=true)
 
-`实现原理: Docker Daemon 在运行容器时会创建一个 goroutine，负责接管容器 stdout 日志。由于此 goroutine 绑定了整个容器内所有进程的 stdout 文件描述符，因此容器内应用的所有 stdout 日志都会被 goroutine 接收。goroutine 接收到容器的 stdout 日志时，立即根据对应的 logging driver 进行日志分发。默认使用 json-file 则会把日志按 json 格式写入到 /var/lib/docker/containers/{container-id}/{container_id}-json.log 文件，并根据配置进行滚动切割和压缩。`
+`实现原理: Docker Daemon 在运行容器时会创建一个 goroutine，负责接管容器 stdout 日志。由于此 goroutine 绑定了整个容器内所有进程的 stdout 文件描述符，因此容器内应用的所有 stdout 日志都会被 goroutine 接收。goroutine 接收到容器的 stdout 日志时，立即根据对应的 logging driver 进行日志分发。默认使用 json-file 则会把日志按 json 格式写入到 /var/lib/docker/containers/{container-id}/{container_id}-json.log 文件，并根据配置进行滚动切割和压缩。` 具体可以参考源码 [docker container startLogging](https://github.com/moby/moby/blob/master/container/container.go#L609)
 
-关于 json-file 的
+关于 json-file 的具体实现，可以参考 [docker daemon logger jsonfile](https://github.com/moby/moby/tree/master/daemon/logger/jsonfilelog)，`特别注意的是 Docker logging driver 默认 buffer size 为16KB，也就是说 业务容器输出到 stdout 的日志单行超过 16KB 的话，将会被 logging driver 切割成多行。`
+
+拼接日志为 json 格式的核心的代码如下
+```
+func (mj *JSONLogs) MarshalJSONBuf(buf *bytes.Buffer) error {
+	var first = true
+
+	buf.WriteString(`{`)
+	if len(mj.Log) != 0 {
+		first = false
+		buf.WriteString(`"log":`)
+		ffjsonWriteJSONBytesAsString(buf, mj.Log)
+	}
+	if len(mj.Stream) != 0 {
+		if first {
+			first = false
+		} else {
+			buf.WriteString(`,`)
+		}
+		buf.WriteString(`"stream":`)
+		ffjsonWriteJSONBytesAsString(buf, []byte(mj.Stream))
+	}
+	if len(mj.RawAttrs) > 0 {
+		if first {
+			first = false
+		} else {
+			buf.WriteString(`,`)
+		}
+		buf.WriteString(`"attrs":`)
+		buf.Write(mj.RawAttrs)
+	}
+	if !first {
+		buf.WriteString(`,`)
+	}
+
+	created, err := fastTimeMarshalJSON(mj.Created)
+	if err != nil {
+		return err
+	}
+
+	buf.WriteString(`"time":`)
+	buf.WriteString(created)
+	buf.WriteString(`}`)
+	return nil
+}
+```
+
+
