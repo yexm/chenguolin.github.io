@@ -63,45 +63,45 @@ docker run --log-driver json-file --log-opt max-size=10m alpine echo hello world
 拼接日志为 json 格式的核心的代码如下
 ```
 func (mj *JSONLogs) MarshalJSONBuf(buf *bytes.Buffer) error {
-	var first = true
+    var first = true
 
-	buf.WriteString(`{`)
-	if len(mj.Log) != 0 {
-		first = false
-		buf.WriteString(`"log":`)
-		ffjsonWriteJSONBytesAsString(buf, mj.Log)
+    buf.WriteString(`{`)
+    if len(mj.Log) != 0 {
+	first = false
+	buf.WriteString(`"log":`)
+	ffjsonWriteJSONBytesAsString(buf, mj.Log)
+    }
+    if len(mj.Stream) != 0 {
+        if first {
+	    first = false
+	} else {
+	    buf.WriteString(`,`)
 	}
-	if len(mj.Stream) != 0 {
-		if first {
-			first = false
-		} else {
-			buf.WriteString(`,`)
-		}
-		buf.WriteString(`"stream":`)
-		ffjsonWriteJSONBytesAsString(buf, []byte(mj.Stream))
+	buf.WriteString(`"stream":`)
+	ffjsonWriteJSONBytesAsString(buf, []byte(mj.Stream))
+    }
+    if len(mj.RawAttrs) > 0 {
+	if first {
+	    first = false
+	} else {
+	    buf.WriteString(`,`)
 	}
-	if len(mj.RawAttrs) > 0 {
-		if first {
-			first = false
-		} else {
-			buf.WriteString(`,`)
-		}
-		buf.WriteString(`"attrs":`)
-		buf.Write(mj.RawAttrs)
-	}
-	if !first {
-		buf.WriteString(`,`)
-	}
+	buf.WriteString(`"attrs":`)
+	buf.Write(mj.RawAttrs)
+    }
+    if !first {
+	buf.WriteString(`,`)
+    }
 
-	created, err := fastTimeMarshalJSON(mj.Created)
-	if err != nil {
-		return err
-	}
+    created, err := fastTimeMarshalJSON(mj.Created)
+    if err != nil {
+	return err
+    }
 
-	buf.WriteString(`"time":`)
-	buf.WriteString(created)
-	buf.WriteString(`}`)
-	return nil
+    buf.WriteString(`"time":`)
+    buf.WriteString(created)
+    buf.WriteString(`}`)
+    return nil
 }
 ```
 
