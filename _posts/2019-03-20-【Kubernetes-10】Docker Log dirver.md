@@ -14,7 +14,7 @@ tags:          #标签
 1. 我们通过配置 `logging driver` 把日志发送到文件 或 外部存储
 2. 容器进程并不是把日志打印到 `STDOUT`和`STDERR`，而是输出到容器内文件
 
-Docker包含多种日志实现机制，这些机制我们称为 `logging drivers`，Docker目前支持以下几种类型 logging drivers [docker logging](https://docs.docker.com/config/containers/logging/configure/)
+Docker包含多种日志实现机制，这些机制我们称为 `logging drivers`，Docker目前支持以下几种类型 logging drivers [docker logging](https://docs.docker.com/config/containers/logging/configure/)，相关的源代码可以参考 [docker daemon logger](https://github.com/moby/moby/tree/master/daemon/logger)
 
 | Driver     | 描述 |
 | ---------- | --- |
@@ -46,5 +46,9 @@ Docker daemon启动的时候可以设置 logging driver，我们可以通过 `ps
 ```
 
 除了可以给Docker daemon配置logging driver之外，我们也可以给某个容器配置。当要运行容器的时候，我们可以通过 `--log-driver` 选项进行配置不同的logging driver
+
+```
+docker run --log-driver json-file --log-opt max-size=10m alpine echo hello world
+```
 
 # 
