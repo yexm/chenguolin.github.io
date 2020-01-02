@@ -6,8 +6,23 @@ tags:          #标签
     - Kubernetes
 ---
 
-TODO (@玄苦)
+# 一. 概述
+前几篇文章我们提到了在Docker中持久化数据可以使用 [Docker数据挂载](https://chenguolin.github.io/2019/03/17/Kubernetes-8-Docker%E6%95%B0%E6%8D%AE%E6%8C%82%E8%BD%BD/) 的方式，我们知道容器启动之后会在镜像层、init层之上加上读写层，在读写层我们可以临时存储容器内变更的相关文件。容器读写层允许临时存储文件底层原理是通过 Storage drivers 实现的，但是当容器删除的时候这些数据会一起被删除，这篇文章会介绍 Docker Storage drivers 几种实现机制。
 
-参考  
-1. https://www.bladewan.com/2018/01/25/docker_storage_driver/
-2. https://docs.docker.com/storage/storagedriver/
+在了解  Storage drivers 之前，我们先来回顾一下 容器镜像分层的概念。容器镜像是分层的，每一层代表Dockerfile文件的一个指令。例如以下 Dockerfile 的内容，利用这个 Dockerfile 构建的镜像会有4层，文件每一行会构建出一层，每一层只存储和上一层的差异，最终镜像由这4层组成。
+
+```
+FROM ubuntu:15.04
+COPY . /app
+RUN make /app
+CMD python /app/app.py
+```
+
+![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/docker-image-layer-1.jpg?raw=true)
+
+当我们使用这个镜像运行一个容器的时候，会在最上层添加一个读写层也称为 `容器层`，容器运行期间所有的变更都会存储在读写层。`容器和镜像最大的不同在于，容器启动之后会基于镜像加上读写层`，因此如果使用相同的镜像启动多个容器，那么底层的镜像会被共享，当容器被删除的时候读写层会被删除，但是镜像并不会有任何的改变。
+
+![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/docker-container-layer-2.jpg?raw=true)
+
+
+# 二. 
