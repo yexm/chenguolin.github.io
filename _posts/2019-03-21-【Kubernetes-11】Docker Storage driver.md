@@ -20,9 +20,24 @@ CMD python /app/app.py
 
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/docker-image-layer-1.jpg?raw=true)
 
-当我们使用这个镜像运行一个容器的时候，会在最上层添加一个读写层也称为 `容器层`，容器运行期间所有的变更都会存储在读写层。`容器和镜像最大的不同在于，容器启动之后会基于镜像加上读写层`，因此如果使用相同的镜像启动多个容器，那么底层的镜像会被共享，当容器被删除的时候读写层会被删除，但是镜像并不会有任何的改变。
+当我们使用这个镜像运行一个容器的时候，会在最上层添加一个读写层也称为 `容器层`，容器运行期间所有的变更都会存储在读写层。当容器被删除的时候读写层会被删除，但是镜像并不会有任何的改变。`容器和镜像最大的不同在于，容器启动之后会基于镜像加上读写层`，因此如果使用相同的镜像启动多个容器，那么底层的镜像会被共享，极大提高了宿主机的磁盘空间利用率。(可以通过 `docker ps -s` 命令查看容器大概的磁盘空间占用)
 
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/docker-container-layer-2.jpg?raw=true)
 
+`Docker使用 Storage drivers 去管理镜像和容器的读写层的数据存储，不同 Storage driver 实现机制不同，但是分层和CoW是默认都会实现的。` Cow 指的是copy-on-write，表示当上一层想要访问下一层的某个文件的时候并不会立即copy到上一层，而是在真正要访问该文件的时候才进行copy，这样可以保证每一层都尽可能的小。
 
-# 二. 
+# 二. Storage drivers
+
+## ① aufs
+
+## ② devicemapper
+
+## ③ overlay2
+
+
+
+
+
+
+
+
