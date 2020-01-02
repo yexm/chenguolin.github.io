@@ -16,7 +16,7 @@ FROM alpine:3.5
 RUN echo "10.10.0.14 cgl.test.com" >> /etc/hosts
 ```
 
-问题的根本原因是 hosts 文件其实并不是存储在Docker镜像中的，/etc/hosts, /etc/resolv.conf 和 /etc/hostname，是存在主机上的 /var/lib/docker/containers/{docker_id} 目录下，容器启动时是通过 mount 将这些文件挂载到容器内部的。因此如果在容器中修改这些文件，修改部分不会存在于容器的可读写层，而是直接写入这3个文件中。容器重启后修改内容不存在的原因是Docker每次创建新容器时，会根据当前 docker0 下的所有节点的IP信息重新建立hosts文件。也就是说，你的修改会被Docker给自动覆盖掉。
+问题的根本原因是 hosts 文件其实并不是存储在Docker镜像中的，`/etc/hosts, /etc/resolv.conf 和 /etc/hostname，是存在主机上的 /var/lib/docker/containers/{docker_id} 目录下，容器启动时是通过 mount 将这些文件挂载到容器内部的`。因此如果在容器中修改这些文件，修改部分不会存在于容器的可读写层，而是直接写入这3个文件中。容器重启后修改内容不存在的原因是Docker每次创建新容器时，会根据当前 docker0 下的所有节点的IP信息重新建立hosts文件。也就是说，你的修改会被Docker给自动覆盖掉。
 
 # 二. 解决方案
 ## ① docker run 添加 --add-host 参数
