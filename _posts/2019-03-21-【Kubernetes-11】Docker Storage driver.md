@@ -27,6 +27,7 @@ CMD python /app/app.py
 `Docker使用 Storage drivers 去管理镜像和容器的读写层的数据存储，不同 Storage driver 实现机制不同，但是分层和CoW是默认都会实现的。` Cow 指的是copy-on-write，表示当上一层想要访问下一层的某个文件的时候并不会立即copy到上一层，而是在真正要访问该文件的时候才进行copy，这样可以保证每一层都尽可能的小。
 
 # 二. Storage drivers
+Docker
 
 ## ① aufs
 
