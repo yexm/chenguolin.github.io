@@ -27,7 +27,7 @@ CMD python /app/app.py
 `Docker使用 Storage drivers 去管理镜像和容器的读写层的数据存储，不同 Storage driver 实现机制不同，但是分层和CoW是默认都会实现的。` Cow 指的是copy-on-write，表示当上一层想要访问下一层的某个文件的时候并不会立即copy到上一层，而是在真正要访问该文件的时候才进行copy，这样可以保证每一层都尽可能的小。
 
 # 二. Storage drivers
-Docker支持几种不同的 [storage driver](https://docs.docker.com/storage/storagedriver/select-storage-driver/)，storage driver控制镜像和容器如何存储在宿主机文件系统上，最常见的有以下几种。源码可以参考 [docker daemon storage driver](https://github.com/moby/moby/tree/master/daemon/graphdriver)
+Docker支持几种不同的 [storage driver](https://docs.docker.com/storage/storagedriver/select-storage-driver/)，storage driver控制镜像和容器如何存储在宿主机文件系统上，最常见的有以下3种，另外几种由于使用比较少就不再这里介绍。相关源码可以参考 [docker daemon storage driver](https://github.com/moby/moby/tree/master/daemon/graphdriver)
 
 1. `overlay2`: 推荐首选，支持所有的Linux发行版本，不需要额外的配置，但对内核版本有些要求，支持的后端文件系统为 `xfs、ext4`
 2. `aufs`: 不能使用 overlay2 情况下，Ubuntu 和 Debian 推荐使用 aufs，支持的后端文件系统为 `xfs、ext4`
@@ -40,7 +40,7 @@ Docker支持几种不同的 [storage driver](https://docs.docker.com/storage/sto
 | CentOS | `overlay2` | overlay、devicemapper |
 | Fedora | `overlay2` | overlay、devicemapper |
 
-`overlay 和 devicemapper 社区已经标记为deprecated，推荐使用 overlay2`
+`备注: overlay 和 devicemapper 社区已经标记为deprecated，推荐使用 overlay2`
 
 我们可以使用 `docker info` 查看当前docker daemon 配置的storage driver
 
