@@ -107,7 +107,7 @@ Status: Downloaded newer image for ubuntu:18.04
 $ ls /var/lib/docker/aufs/
 diff  layers  mnt
 
-## 查看 diff 目录
+// 查看 diff 目录
 $ ls /var/lib/docker/aufs/diff    (共4个子目录，子目录和层ID不是一一对应的)
 45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587  6cad8d280e1cbb27586db468bdeb2ecdaa89b3940a3bbd0264da22828fa90b5e
 62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd  ec9a24ea2d4f0f729e2952f13c0afb5c6792b6cf843278666ea26a51c3673b60
@@ -124,7 +124,7 @@ bin  boot  dev	etc  home  lib	lib64  media  mnt  opt	proc  root  run  sbin  srv 
 $ ls /var/lib/docker/aufs/diff/ec9a24ea2d4f0f729e2952f13c0afb5c6792b6cf843278666ea26a51c3673b60
 run
 
-## 查看 layers 目录
+// 查看 layers 目录
 $ ls /var/lib/docker/aufs/layers  (共4个文件，文件名和层ID不是一一对应的)
 45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587  6cad8d280e1cbb27586db468bdeb2ecdaa89b3940a3bbd0264da22828fa90b5e
 62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd  ec9a24ea2d4f0f729e2952f13c0afb5c6792b6cf843278666ea26a51c3673b60
@@ -143,7 +143,7 @@ $ cat /var/lib/docker/aufs/layers/ec9a24ea2d4f0f729e2952f13c0afb5c6792b6cf843278
 45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587
 62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd
 
-## 查看 mnt 目录
+// 查看 mnt 目录
 $ ls /var/lib/docker/aufs/mnt  (共4个子目录，子目录和层ID不是一一对应的)
 45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587  6cad8d280e1cbb27586db468bdeb2ecdaa89b3940a3bbd0264da22828fa90b5e
 62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd  ec9a24ea2d4f0f729e2952f13c0afb5c6792b6cf843278666ea26a51c3673b60
@@ -165,7 +165,7 @@ $ docker run -it -d ubuntu:18.04
 $ ls /var/lib/docker/aufs/       //没变，还是3个子目录
 diff  layers  mnt
 
-## 查看 diff 目录
+// 查看 diff 目录
 $ ls /var/lib/docker/aufs/diff    (共6个子目录，有2个是新增的)
 45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587  6cad8d280e1cbb27586db468bdeb2ecdaa89b3940a3bbd0264da22828fa90b5e
 62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd  ec9a24ea2d4f0f729e2952f13c0afb5c6792b6cf843278666ea26a51c3673b60
@@ -177,7 +177,7 @@ $ ls /var/lib/docker/aufs/diff/fc40c28dc98a1b467f27d6196414eac9623666c344c615b7c
 $ ls /var/lib/docker/aufs/diff/fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277-init
 dev  etc
 
-## 查看 layers 目录
+// 查看 layers 目录
 $ ls /var/lib/docker/aufs/layers  (共6个文件，有2个是新增的)
 45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587  6cad8d280e1cbb27586db468bdeb2ecdaa89b3940a3bbd0264da22828fa90b5e
 62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd  ec9a24ea2d4f0f729e2952f13c0afb5c6792b6cf843278666ea26a51c3673b60
@@ -198,7 +198,7 @@ ec9a24ea2d4f0f729e2952f13c0afb5c6792b6cf843278666ea26a51c3673b60
 45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587
 62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd
 
-## 查看 mnt 目录
+// 查看 mnt 目录
 $ ls /var/lib/docker/aufs/mnt  (共6个子目录，有2个是新增的)
 45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587  6cad8d280e1cbb27586db468bdeb2ecdaa89b3940a3bbd0264da22828fa90b5e
 62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd  ec9a24ea2d4f0f729e2952f13c0afb5c6792b6cf843278666ea26a51c3673b60
