@@ -57,7 +57,7 @@ Storage Driver: overlay2
 `特别注意: 如果我们修改了docker daemon的 storage driver，那么当前存在的镜像和容器都会变得不可访问，因为老的层没有办法被新的 storage driver 兼容使用。`
 
 ## ① aufs
-[aufs](https://docs.docker.com/storage/storagedriver/aufs-driver/) 指的是联合文件系统，内核低于4.0 Ubuntu 和 Debian操作系统上推荐使用 `aufs` storage driver，如果内核版本高于 4.0 则推荐使用 `overlay2`， 可以按照以下步骤为 Docker daemon 配置 使用 aufs 做为 storage driver
+[aufs](https://docs.docker.com/storage/storagedriver/aufs-driver/) 指的是联合文件系统，内核低于4.0 Ubuntu 和 Debian操作系统上推荐使用 `aufs` storage driver，如果内核版本高于 4.0 则推荐使用 `overlay2`，因为 aufs 比 overlay2 性能差一些。
 
 联合文件系统的意思指的是把多个目录联合挂载到一个目录下，这个目录可以看到所有层的数据。如下图所示，镜像层和容器层联合挂载到 /var/lib/docker/aufs/mnt 某个子目录下。
 
