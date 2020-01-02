@@ -73,143 +73,155 @@ aufs 默认把镜像和容器读写层存储到宿主机 /var/lib/docker/aufs/ �
 我们可以验证一下，先在公有云申请一个虚拟机，使用Ubuntu操作系统，然后安装好 docker 并使用 aufs 做为 storage driver
 
 1. 查看docker基础信息，确认使用 aufs 做为storage driver，并且当前没有任何镜像和容器
-```
-$ docker info
-Containers: 0
- Running: 0
- Paused: 0
- Stopped: 0
-Images: 0
-Server Version: 18.09.7
-Storage Driver: aufs                   //使用aufs
- Root Dir: /var/lib/docker/aufs
- Backing Filesystem: extfs
- Dirs: 4
- Dirperm1 Supported: true
-Logging Driver: json-file
-Cgroup Driver: cgroupfs
-```
+   ```
+   $ docker info
+   Containers: 0
+    Running: 0
+    Paused: 0
+    Stopped: 0
+   Images: 0
+   Server Version: 18.09.7
+   Storage Driver: aufs                   //使用aufs
+    Root Dir: /var/lib/docker/aufs
+    Backing Filesystem: extfs
+    Dirs: 4
+    Dirperm1 Supported: true
+   Logging Driver: json-file
+   Cgroup Driver: cgroupfs
+   ```
 
 2. 下载 ubuntu:18.04 镜像
-```
-$ docker pull ubuntu:18.04             //镜像总共4层
-18.04: Pulling from library/ubuntu
-2746a4a261c9: Pull complete
-4c1d20cdee96: Pull complete
-0d3160e1d0de: Pull complete
-c8e37668deea: Pull complete
-Digest: sha256:250cc6f3f3ffc5cdaa9d8f4946ac79821aafb4d3afc93928f0de9336eba21aa4
-Status: Downloaded newer image for ubuntu:18.04
-```
+   ```
+   $ docker pull ubuntu:18.04             //镜像总共4层
+   18.04: Pulling from library/ubuntu
+   2746a4a261c9: Pull complete
+   4c1d20cdee96: Pull complete
+   0d3160e1d0de: Pull complete
+   c8e37668deea: Pull complete
+   Digest: sha256:250cc6f3f3ffc5cdaa9d8f4946ac79821aafb4d3afc93928f0de9336eba21aa4
+   Status: Downloaded newer image for ubuntu:18.04
+   ```
 
 3. 查看 /var/lib/docker/aufs/ 目录内容
-```
-$ ls /var/lib/docker/aufs/
-diff  layers  mnt
+   ```
+   $ ls /var/lib/docker/aufs/
+   diff  layers  mnt
 
-// 查看 diff 目录
-$ ls /var/lib/docker/aufs/diff    (共4个子目录，子目录和层ID不是一一对应的)
-45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587  6cad8d280e1cbb27586db468bdeb2ecdaa89b3940a3bbd0264da22828fa90b5e
-62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd  ec9a24ea2d4f0f729e2952f13c0afb5c6792b6cf843278666ea26a51c3673b60
+   // 查看 diff 目录
+   $ ls /var/lib/docker/aufs/diff    (共4个子目录，子目录和层ID不是一一对应的)
+   45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587      
+   6cad8d280e1cbb27586db468bdeb2ecdaa89b3940a3bbd0264da22828fa90b5e
+   62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd 
+   ec9a24ea2d4f0f729e2952f13c0afb5c6792b6cf843278666ea26a51c3673b60
 
-$ ls /var/lib/docker/aufs/diff/45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587
-var
+   $ ls /var/lib/docker/aufs/diff/45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587
+   var
 
-$ ls /var/lib/docker/aufs/diff/6cad8d280e1cbb27586db468bdeb2ecdaa89b3940a3bbd0264da22828fa90b5e
-etc  sbin  usr	var
+   $ ls /var/lib/docker/aufs/diff/6cad8d280e1cbb27586db468bdeb2ecdaa89b3940a3bbd0264da22828fa90b5e
+   etc  sbin  usr	var
 
-$ ls /var/lib/docker/aufs/diff/62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd
-bin  boot  dev	etc  home  lib	lib64  media  mnt  opt	proc  root  run  sbin  srv  sys  tmp  usr  var
+   $ ls /var/lib/docker/aufs/diff/62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd
+   bin  boot  dev	etc  home  lib	lib64  media  mnt  opt	proc  root  run  sbin  srv  sys  tmp  usr  var
+  
+   $ ls /var/lib/docker/aufs/diff/ec9a24ea2d4f0f729e2952f13c0afb5c6792b6cf843278666ea26a51c3673b60
+   run
 
-$ ls /var/lib/docker/aufs/diff/ec9a24ea2d4f0f729e2952f13c0afb5c6792b6cf843278666ea26a51c3673b60
-run
+   // 查看 layers 目录
+   $ ls /var/lib/docker/aufs/layers  (共4个文件，文件名和层ID不是一一对应的)
+   45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587  
+   6cad8d280e1cbb27586db468bdeb2ecdaa89b3940a3bbd0264da22828fa90b5e
+   62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd  
+   ec9a24ea2d4f0f729e2952f13c0afb5c6792b6cf843278666ea26a51c3673b60
 
-// 查看 layers 目录
-$ ls /var/lib/docker/aufs/layers  (共4个文件，文件名和层ID不是一一对应的)
-45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587  6cad8d280e1cbb27586db468bdeb2ecdaa89b3940a3bbd0264da22828fa90b5e
-62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd  ec9a24ea2d4f0f729e2952f13c0afb5c6792b6cf843278666ea26a51c3673b60
+   $ cat /var/lib/docker/aufs/layers/45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587
+   62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd
 
-$ cat /var/lib/docker/aufs/layers/45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587
-62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd
+   $ cat /var/lib/docker/aufs/layers/6cad8d280e1cbb27586db468bdeb2ecdaa89b3940a3bbd0264da22828fa90b5e
+   45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587
+   62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd
 
-$ cat /var/lib/docker/aufs/layers/6cad8d280e1cbb27586db468bdeb2ecdaa89b3940a3bbd0264da22828fa90b5e
-45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587
-62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd
+   $ cat /var/lib/docker/aufs/layers/62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd  (第一层)
 
-$ cat /var/lib/docker/aufs/layers/62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd  (第一层)
+   $ cat /var/lib/docker/aufs/layers/ec9a24ea2d4f0f729e2952f13c0afb5c6792b6cf843278666ea26a51c3673b60
+   6cad8d280e1cbb27586db468bdeb2ecdaa89b3940a3bbd0264da22828fa90b5e
+   45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587
+   62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd
 
-$ cat /var/lib/docker/aufs/layers/ec9a24ea2d4f0f729e2952f13c0afb5c6792b6cf843278666ea26a51c3673b60
-6cad8d280e1cbb27586db468bdeb2ecdaa89b3940a3bbd0264da22828fa90b5e
-45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587
-62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd
+   // 查看 mnt 目录
+   $ ls /var/lib/docker/aufs/mnt  (共4个子目录，子目录和层ID不是一一对应的)
+   45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587     
+   6cad8d280e1cbb27586db468bdeb2ecdaa89b3940a3bbd0264da22828fa90b5e
+   62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd  
+   ec9a24ea2d4f0f729e2952f13c0afb5c6792b6cf843278666ea26a51c3673b60
 
-// 查看 mnt 目录
-$ ls /var/lib/docker/aufs/mnt  (共4个子目录，子目录和层ID不是一一对应的)
-45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587  6cad8d280e1cbb27586db468bdeb2ecdaa89b3940a3bbd0264da22828fa90b5e
-62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd  ec9a24ea2d4f0f729e2952f13c0afb5c6792b6cf843278666ea26a51c3673b60
-
-$ ls /var/lib/docker/aufs/mnt/45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587
-$ ls /var/lib/docker/aufs/mnt/6cad8d280e1cbb27586db468bdeb2ecdaa89b3940a3bbd0264da22828fa90b5e
-$ ls /var/lib/docker/aufs/mnt/62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd
-$ ls /var/lib/docker/aufs/mnt/ec9a24ea2d4f0f729e2952f13c0afb5c6792b6cf843278666ea26a51c3673b60
-```
+   $ ls /var/lib/docker/aufs/mnt/45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587
+   $ ls /var/lib/docker/aufs/mnt/6cad8d280e1cbb27586db468bdeb2ecdaa89b3940a3bbd0264da22828fa90b5e
+   $ ls /var/lib/docker/aufs/mnt/62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd
+   $ ls /var/lib/docker/aufs/mnt/ec9a24ea2d4f0f729e2952f13c0afb5c6792b6cf843278666ea26a51c3673b60
+   ```
 
 4. 使用 ubuntu:18.04 启动一个容器
-```
-$ docker run -it -d ubuntu:18.04
-2563a860d2a8cd85473eff64ef1b0e8270bd388d6f4c95eadce4524602c55494
-```
+   ```
+   $ docker run -it -d ubuntu:18.04
+   2563a860d2a8cd85473eff64ef1b0e8270bd388d6f4c95eadce4524602c55494
+   ```
 
 5. 查看 /var/lib/docker/aufs/ 目录内容
-```
-$ ls /var/lib/docker/aufs/       //没变，还是3个子目录
-diff  layers  mnt
+   ```
+   $ ls /var/lib/docker/aufs/       //没变，还是3个子目录
+   diff  layers  mnt
 
-// 查看 diff 目录
-$ ls /var/lib/docker/aufs/diff    (共6个子目录，有2个是新增的)
-45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587  6cad8d280e1cbb27586db468bdeb2ecdaa89b3940a3bbd0264da22828fa90b5e
-62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd  ec9a24ea2d4f0f729e2952f13c0afb5c6792b6cf843278666ea26a51c3673b60
-fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277             //新增的子目录，容器读写层
-fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277-init        //新增的子目录，容器init层
+   // 查看 diff 目录
+   $ ls /var/lib/docker/aufs/diff    (共6个子目录，有2个是新增的)
+   45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587  
+   6cad8d280e1cbb27586db468bdeb2ecdaa89b3940a3bbd0264da22828fa90b5e
+   62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd  
+   ec9a24ea2d4f0f729e2952f13c0afb5c6792b6cf843278666ea26a51c3673b60
+   fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277             //新增的子目录，容器读写层
+   fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277-init        //新增的子目录，容器init层
 
-$ ls /var/lib/docker/aufs/diff/fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277
+   $ ls /var/lib/docker/aufs/diff/fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277
 
-$ ls /var/lib/docker/aufs/diff/fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277-init
-dev  etc
+   $ ls /var/lib/docker/aufs/diff/fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277-init
+   dev  etc
 
-// 查看 layers 目录
-$ ls /var/lib/docker/aufs/layers  (共6个文件，有2个是新增的)
-45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587  6cad8d280e1cbb27586db468bdeb2ecdaa89b3940a3bbd0264da22828fa90b5e
-62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd  ec9a24ea2d4f0f729e2952f13c0afb5c6792b6cf843278666ea26a51c3673b60
-fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277             //新增的子目录，容器读写层
-fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277-init        //新增的子目录，容器init层
+   // 查看 layers 目录
+   $ ls /var/lib/docker/aufs/layers  (共6个文件，有2个是新增的)
+   45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587   
+   6cad8d280e1cbb27586db468bdeb2ecdaa89b3940a3bbd0264da22828fa90b5e
+   62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd  
+   ec9a24ea2d4f0f729e2952f13c0afb5c6792b6cf843278666ea26a51c3673b60
+   fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277             //新增的子目录，容器读写层
+   fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277-init        //新增的子目录，容器init层
 
-$ cat /var/lib/docker/aufs/layers/fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277  
-fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277-init
-ec9a24ea2d4f0f729e2952f13c0afb5c6792b6cf843278666ea26a51c3673b60
-6cad8d280e1cbb27586db468bdeb2ecdaa89b3940a3bbd0264da22828fa90b5e
-45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587
-62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd
+   $ cat /var/lib/docker/aufs/layers/fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277  
+   fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277-init
+   ec9a24ea2d4f0f729e2952f13c0afb5c6792b6cf843278666ea26a51c3673b60
+   6cad8d280e1cbb27586db468bdeb2ecdaa89b3940a3bbd0264da22828fa90b5e
+   45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587
+   62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd
 
-$ cat /var/lib/docker/aufs/layers/fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277-init
-fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277-init
-ec9a24ea2d4f0f729e2952f13c0afb5c6792b6cf843278666ea26a51c3673b60
-6cad8d280e1cbb27586db468bdeb2ecdaa89b3940a3bbd0264da22828fa90b5e
-45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587
-62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd
+   $ cat /var/lib/docker/aufs/layers/fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277-init
+   fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277-init
+   ec9a24ea2d4f0f729e2952f13c0afb5c6792b6cf843278666ea26a51c3673b60
+   6cad8d280e1cbb27586db468bdeb2ecdaa89b3940a3bbd0264da22828fa90b5e
+   45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587
+   62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd
 
-// 查看 mnt 目录
-$ ls /var/lib/docker/aufs/mnt  (共6个子目录，有2个是新增的)
-45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587  6cad8d280e1cbb27586db468bdeb2ecdaa89b3940a3bbd0264da22828fa90b5e
-62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd  ec9a24ea2d4f0f729e2952f13c0afb5c6792b6cf843278666ea26a51c3673b60
-fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277             //新增的子目录，容器读写层
-fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277-init        //新增的子目录，容器init层
+   // 查看 mnt 目录
+   $ ls /var/lib/docker/aufs/mnt  (共6个子目录，有2个是新增的)
+   45f79978fefa2597c8df8c2aa4a987ce9b5949c3a7814528d35edeaf3c90f587    
+   6cad8d280e1cbb27586db468bdeb2ecdaa89b3940a3bbd0264da22828fa90b5e
+   62f2e3793e1671456d994c9638fceb8c7715c2625145185e41df5a6be5488cdd  
+   ec9a24ea2d4f0f729e2952f13c0afb5c6792b6cf843278666ea26a51c3673b60
+   fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277             //新增的子目录，容器读写层
+   fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277-init        //新增的子目录，容器init层
 
-$ ls /var/lib/docker/aufs/mnt/fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277
-bin  boot  dev	etc  home  lib	lib64  media  mnt  opt	proc  root  run  sbin  srv  sys  tmp  usr  var
+   $ ls /var/lib/docker/aufs/mnt/fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277
+   bin  boot  dev	etc  home  lib	lib64  media  mnt  opt	proc  root  run  sbin  srv  sys  tmp  usr  var
 
-$ ls /var/lib/docker/aufs/mnt/fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277-init
-```
+   $ ls /var/lib/docker/aufs/mnt/fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277-init
+   ```
 
 了解了 aufs 的实现原理之后，我们看下使用 aufs 做为 storage driver 是如何控制容器是读写文件的。
 
