@@ -231,8 +231,8 @@ aufs 默认把镜像和容器读写层存储到宿主机 /var/lib/docker/aufs/ �
     + `文件存在容器读写层和镜像层`: 直接从读写层读取，镜像层对应的文件会被屏蔽
 2. 写文件 (考虑以下4种场景)
     + `第一次写文件`: 如果文件存在镜像层，则从镜像层拷贝到读写层，并进行写入；如果文件不存在镜像层，则在读写层创建一个新文件并写入
-    + `删除文件`: 直接在读写层创建一个 whiteout 文件，阻止容器访问被删除文件，看起来像删除文件。实际上是屏蔽掉镜像层文件，镜像层并没有改动（因为镜像层是只读）
-    + `删除目录`: 直接在读写层创建一个 opaque 文件，阻止容器访问被删除目录，看起来像删除了目录。实际上是屏蔽掉镜像层目录，镜像层并没有改动（因为镜像层是只读）
+    + `删除文件`: 直接在读写层创建一个 [whiteout](https://github.com/opencontainers/image-spec/blob/master/layer.md#whiteouts) 文件，阻止容器访问被删除文件，看起来像删除文件。实际上是屏蔽掉镜像层文件，镜像层并没有改动（因为镜像层是只读）
+    + `删除目录`: 直接在读写层创建一个 [opaque-whiteout](https://github.com/opencontainers/image-spec/blob/master/layer.md#opaque-whiteout) 文件，阻止容器访问被删除目录，看起来像删除了目录。实际上是屏蔽掉镜像层目录，镜像层并没有改动（因为镜像层是只读）
     + `重命名目录`: aufs没有完全支持 [rename(2)](http://man7.org/linux/man-pages/man2/rename.2.html) 系统调用，业务需要校验是否发生错误
 
 ## ② devicemapper
