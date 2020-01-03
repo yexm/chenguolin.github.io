@@ -16,7 +16,95 @@ FROM alpine:3.5
 RUN echo "10.10.0.14 cgl.test.com" >> /etc/hosts
 ```
 
-问题的根本原因是 hosts 文件其实并不是存储在Docker镜像中的，`/etc/hosts, /etc/resolv.conf 和 /etc/hostname，是存在主机上的 /var/lib/docker/containers/{docker_id} 目录下，容器启动时是通过 mount 将这些文件挂载到容器内部的`。因此如果在容器中修改这些文件，修改部分不会存在于容器的可读写层，而是直接写入这3个文件中。容器重启后修改内容不存在的原因是Docker每次创建新容器时，会根据当前 docker0 下的所有节点的IP信息重新建立hosts文件。也就是说，你的修改会被Docker给自动覆盖掉。
+问题的根本原因是 hosts 文件其实并不是存储在Docker镜像中的，`/etc/hosts, /etc/resolv.conf 和 /etc/hostname，是存在宿主机 /var/lib/docker/containers/{container-id}/ 这个目录，容器启动时是通过 mount 将这些文件挂载到容器内部的`。因此如果在容器中修改这些文件，修改部分不会存在于容器的可读写层，而是直接写入这3个文件中。Docker每次创建新容器时，会根据当前 docker0 下的所有节点的IP信息重新建立hosts文件。也就是说，你的修改会被Docker给自动覆盖掉。可以参考源码 [setupPathsAndSandboxOptions](https://github.com/moby/moby/blob/master/daemon/container_operations_unix.go#L376)
+
+我们可以来验证一下上面提到的点，docker daemon 使用 aufs 做为storage driver
+
+
+1. 运行一个容器
+   ```
+   $ docker run -it -d ubuntu:18.04
+   6a702140194255457943a8976564289b5036a838e9abe10b6518d6f2d1dcebb2
+   ```
+   
+2. 查看容器内的 /etc/hosts 等文件内容
+   ```
+   $ docker exec -it 6a7021401942 /bin/sh
+   
+   $ cat /etc/hosts
+   127.0.0.1	localhost 
+   ::1	localhost ip6-localhost ip6-loopback
+   fe00::0	ip6-localnet
+   ff00::0	ip6-mcastprefix
+   ff02::1	ip6-allnodes
+   ff02::2	ip6-allrouters
+   172.18.0.3	6a7021401942
+
+   $ cat /etc/resolv.conf
+   # This file is managed by man:systemd-resolved(8). Do not edit.
+   #
+   # This is a dynamic resolv.conf file for connecting local clients directly to
+   # all known uplink DNS servers. This file lists all configured search domains.
+   #
+   # Third party programs must not access this file directly, but only through the
+   # symlink at /etc/resolv.conf. To manage man:resolv.conf(5) in a different way,
+   # replace this symlink by a static file or a different symlink.
+   #
+   # See man:systemd-resolved.service(8) for details about the supported modes of
+   # operation for /etc/resolv.conf.
+   nameserver 183.60.83.19
+   nameserver 183.60.82.98
+
+   $ cat /etc/hostname
+   6a7021401942
+   ```
+  
+3. 查看宿主机 /var/lib/docker/containers/6a702140194255457943a8976564289b5036a838e9abe10b6518d6f2d1dcebb2/ 目录内容，发现 hosts、resolv.conf、hostname 文件和容器内一致
+   ```
+   $ sudo ls /var/lib/docker/containers/6a702140194255457943a8976564289b5036a838e9abe10b6518d6f2d1dcebb2
+   6a702140194255457943a8976564289b5036a838e9abe10b6518d6f2d1dcebb2-json.log  config.v2.json   hostname  mounts	      
+   resolv.conf.hash              checkpoints								  hostconfig.json  hosts     resolv.conf
+   
+   $ sudo cat /var/lib/docker/containers/6a702140194255457943a8976564289b5036a838e9abe10b6518d6f2d1dcebb2/hosts
+   127.0.0.1	localhost
+   ::1	localhost ip6-localhost ip6-loopback
+   fe00::0	ip6-localnet
+   ff00::0	ip6-mcastprefix
+   ff02::1	ip6-allnodes
+   ff02::2	ip6-allrouters
+   172.18.0.3	6a7021401942
+ 
+   $ sudo cat /var/lib/docker/containers/6a702140194255457943a8976564289b5036a838e9abe10b6518d6f2d1dcebb2/resolv.conf
+   # This file is managed by man:systemd-resolved(8). Do not edit.
+   #
+   # This is a dynamic resolv.conf file for connecting local clients directly to
+   # all known uplink DNS servers. This file lists all configured search domains.
+   #
+   # Third party programs must not access this file directly, but only through the
+   # symlink at /etc/resolv.conf. To manage man:resolv.conf(5) in a different way,
+   # replace this symlink by a static file or a different symlink. 
+   #
+   # See man:systemd-resolved.service(8) for details about the supported modes of
+   # operation for /etc/resolv.conf.
+   nameserver 183.60.83.19
+   nameserver 183.60.82.98
+   
+   $ sudo cat /var/lib/docker/containers/6a702140194255457943a8976564289b5036a838e9abe10b6518d6f2d1dcebb2/hostname
+   6a7021401942
+   ```
+
+4. 查看容器读写层对应 /etc/hosts 等文件内容，发现 hosts、resolv.conf、hostname 文件内容都是空的
+   ```
+   $ sudo cat /var/lib/docker/aufs/mnt/4382a1de34d0aada2f0300955a8e720f97c667756b4b2c02e2f24a3f8e0e0e29/etc/hosts
+   $ sudo cat /var/lib/docker/aufs/mnt/4382a1de34d0aada2f0300955a8e720f97c667756b4b2c02e2f24a3f8e0e0e29/etc/resolv.conf
+   $ sudo cat /var/lib/docker/aufs/mnt/4382a1de34d0aada2f0300955a8e720f97c667756b4b2c02e2f24a3f8e0e0e29/etc/hostname
+   ```
+   
+5. 我们可以尝试在容器内修改 /etc/hosts 文件，你会发现 /var/lib/docker/containers/{container-id}/hosts 这个文件跟着变了。于此同时，如果我们把当前容器删除并创建一个新的容器之后，会发现之前的变更会重置了。这些就不再这里验证了，验证起来也很简单。
+
+6. 从上面的验证过程可以验证 /etc/hosts, /etc/resolv.conf 和 /etc/hostname 等文件确实是在容器启动的时候生成的，同时存储到 /var/lib/docker/containers/{container-id}/ 目录下。除此之外，容器启动的时候会把 /var/lib/docker/containers/{container-id}/ 目录下 hosts、resolv.conf、hostname 等文件挂载到容器内，这些文件不是存储在容器读写层。
+
+因此，如果我们有需要改变容器 /etc/hosts 的需求，具体的解决方案详见下文。
 
 # 二. 解决方案
 ## ① docker run 添加 --add-host 参数
