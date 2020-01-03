@@ -271,6 +271,7 @@ devicemapper 默认把镜像和容器读写层存储到宿主机 /var/lib/docker
 
 2. 下载 ubuntu:18.04 镜像
    ```
+   $ docker pull ubuntu:18.04
    18.04: Pulling from library/ubuntu
    2746a4a261c9: Pull complete
    4c1d20cdee96: Pull complete
@@ -393,10 +394,85 @@ devicemapper 默认把镜像和容器读写层存储到宿主机 /var/lib/docker
 2. 写文件 [device-mapper-driver writing-files](https://docs.docker.com/storage/storagedriver/device-mapper-driver/#writing-files)
 
 ## ③ overlay2
+OverlayFS 是和 aufs 类似的联合文件系统，但是比 aufs 更快实现更简单，Docker 基于 OverlayFS 实现了 2种 storage driver，原生的 `overlay` 和 更稳定的 `overlay2`。推荐使用 overlay2，因为它在 inode 利用率上比 overlay 更好，但是要求 Linux 内核版本要在 4.0 以上。
 
+overlay2 默认把镜像和容器读写层存储到宿主机 /var/lib/docker/overlay2/ 目录下，`子目录 l 内是一序列软链接，用来避免挂载时超出页面大小的限制`。 可以参考源码 [devicemapper storage driver](https://github.com/moby/moby/tree/master/daemon/graphdriver/overlay2)。
 
+![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/docker-storage-driver-overlay2.jpg?raw=true)
 
+我们可以验证一下，先在公有云申请一个虚拟机，使用Centos操作系统，然后安装好 docker 并使用 overlay2 做为 storage driver
 
+1. 查看docker基础信息，确认使用 overlay2 做为storage driver，并且当前没有任何镜像和容器
+   ```
+   $ docker info
+   Containers: 0
+    Running: 0
+    Paused: 0
+    Stopped: 0
+   Images: 0
+   Server Version: 18.09.7
+   Storage Driver: overlay2
+    Backing Filesystem: extfs
+    Supports d_type: true
+    Native Overlay Diff: true
+   Logging Driver: json-file
+   ...
+   ```
+
+2. 下载 ubuntu:18.04 镜像
+   ```
+   $ docker pull ubuntu:18.04
+   18.04: Pulling from library/ubuntu
+   2746a4a261c9: Pull complete
+   4c1d20cdee96: Pull complete
+   0d3160e1d0de: Pull complete
+   c8e37668deea: Pull complete
+   Digest: sha256:250cc6f3f3ffc5cdaa9d8f4946ac79821aafb4d3afc93928f0de9336eba21aa4
+   ```
+
+3. 查看 /var/lib/docker/overlay2/ 目录内容
+   ```
+   $  ls -lsrt /var/lib/docker/overlay2   （总共5个子目录，有4个是镜像层子目录）
+   total 20
+   4 drwx------ 2 root root 4096 Jan  3 09:36 l
+   4 drwx------ 3 root root 4096 Jan  3 09:36 047be5ac5412a89993002441f0923e41be8d16f35bcb6dd439d4b06bf1a8f874
+   4 drwx------ 4 root root 4096 Jan  3 09:36 ada356abbf425aa2cabdec1d143428c7c74a1e496c34d420d5f6b1ebce49edf0
+   4 drwx------ 4 root root 4096 Jan  3 09:36 622a0001387cbf29dda4bee820753663bc8cb2b494f908645d015782d62ec81a
+   4 drwx------ 4 root root 4096 Jan  3 09:36 fd9af11a1ea6213093ebc6e7825169600619e2e103241e64fa3a2cca31f511bd
+   
+   $ ls -lsrt /var/lib/docker/overlay2/l
+   total 16
+   4 lrwxrwxrwx 1 root root 72 Jan  3 09:36 FCRJ5STD2UA4NPGVWMKHLO5XAI ->  ../047be5ac5412a89993002441f0923e41be8d16f35bcb6dd439d4b06bf1a8f874/diff
+   4 lrwxrwxrwx 1 root root 72 Jan  3 09:36 TVWRIBSWMGT2IWS3XC2DZNJYKC -> ../ada356abbf425aa2cabdec1d143428c7c74a1e496c34d420d5f6b1ebce49edf0/diff
+   4 lrwxrwxrwx 1 root root 72 Jan  3 09:36 PV7QAP3BQHWRQUFGO55NCUZI4T -> ../622a0001387cbf29dda4bee820753663bc8cb2b494f908645d015782d62ec81a/diff
+   4 lrwxrwxrwx 1 root root 72 Jan  3 09:36 IH5WPOJD3VL2UYCG5PJSELFWFB -> ../fd9af11a1ea6213093ebc6e7825169600619e2e103241e64fa3a2cca31f511bd/diff
+
+   $ ls -lsrt /var/lib/docker/overlay2/047be5ac5412a89993002441f0923e41be8d16f35bcb6dd439d4b06bf1a8f874
+   total 8
+   4 -rw-r--r--  1 root root   26 Jan  3 09:36 link
+   4 drwxr-xr-x 21 root root 4096 Jan  3 09:36 diff
+   
+   $ ls -lsrt /var/lib/docker/overlay2/ada356abbf425aa2cabdec1d143428c7c74a1e496c34d420d5f6b1ebce49edf0
+   total 16
+   4 drwx------ 2 root root 4096 Jan  3 09:36 work
+   4 -rw-r--r-- 1 root root   28 Jan  3 09:36 lower
+   4 -rw-r--r-- 1 root root   26 Jan  3 09:36 link
+   4 drwxr-xr-x 3 root root 4096 Jan  3 09:36 diff
+ 
+   $ ls -lsrt /var/lib/docker/overlay2/622a0001387cbf29dda4bee820753663bc8cb2b494f908645d015782d62ec81a
+   total 16
+   4 drwx------ 2 root root 4096 Jan  3 09:36 work
+   4 -rw-r--r-- 1 root root   57 Jan  3 09:36 lower
+   4 -rw-r--r-- 1 root root   26 Jan  3 09:36 link
+   4 drwxr-xr-x 6 root root 4096 Jan  3 09:36 diff
+
+   $ ls -slrt /var/lib/docker/overlay2/fd9af11a1ea6213093ebc6e7825169600619e2e103241e64fa3a2cca31f511bd
+   total 16
+   $ drwx------ 2 root root 4096 Jan  3 09:36 work
+   4 -rw-r--r-- 1 root root   86 Jan  3 09:36 lower
+   4 -rw-r--r-- 1 root root   26 Jan  3 09:36 link
+   4 drwxr-xr-x 3 root root 4096 Jan  3 09:36 diff
+   ```
 
 
 
