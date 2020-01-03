@@ -61,11 +61,11 @@ RUN echo "10.10.0.14 cgl.test.com" >> /etc/hosts
   
 3. 查看宿主机 /var/lib/docker/containers/6a702140194255457943a8976564289b5036a838e9abe10b6518d6f2d1dcebb2/ 目录内容，发现 hosts、resolv.conf、hostname 文件和容器内一致
    ```
-   $ sudo ls /var/lib/docker/containers/6a702140194255457943a8976564289b5036a838e9abe10b6518d6f2d1dcebb2
+   $ ls /var/lib/docker/containers/6a702140194255457943a8976564289b5036a838e9abe10b6518d6f2d1dcebb2
    6a702140194255457943a8976564289b5036a838e9abe10b6518d6f2d1dcebb2-json.log  config.v2.json   hostname  mounts	      
    resolv.conf.hash              checkpoints								  hostconfig.json  hosts     resolv.conf
    
-   $ sudo cat /var/lib/docker/containers/6a702140194255457943a8976564289b5036a838e9abe10b6518d6f2d1dcebb2/hosts
+   $ cat /var/lib/docker/containers/6a702140194255457943a8976564289b5036a838e9abe10b6518d6f2d1dcebb2/hosts
    127.0.0.1	localhost
    ::1	localhost ip6-localhost ip6-loopback
    fe00::0	ip6-localnet
@@ -74,7 +74,7 @@ RUN echo "10.10.0.14 cgl.test.com" >> /etc/hosts
    ff02::2	ip6-allrouters
    172.18.0.3	6a7021401942
  
-   $ sudo cat /var/lib/docker/containers/6a702140194255457943a8976564289b5036a838e9abe10b6518d6f2d1dcebb2/resolv.conf
+   $ cat /var/lib/docker/containers/6a702140194255457943a8976564289b5036a838e9abe10b6518d6f2d1dcebb2/resolv.conf
    # This file is managed by man:systemd-resolved(8). Do not edit.
    #
    # This is a dynamic resolv.conf file for connecting local clients directly to
@@ -89,15 +89,15 @@ RUN echo "10.10.0.14 cgl.test.com" >> /etc/hosts
    nameserver 183.60.83.19
    nameserver 183.60.82.98
    
-   $ sudo cat /var/lib/docker/containers/6a702140194255457943a8976564289b5036a838e9abe10b6518d6f2d1dcebb2/hostname
+   $ cat /var/lib/docker/containers/6a702140194255457943a8976564289b5036a838e9abe10b6518d6f2d1dcebb2/hostname
    6a7021401942
    ```
 
 4. 查看容器读写层对应 /etc/hosts 等文件内容，发现 hosts、resolv.conf、hostname 文件内容都是空的
    ```
-   $ sudo cat /var/lib/docker/aufs/mnt/4382a1de34d0aada2f0300955a8e720f97c667756b4b2c02e2f24a3f8e0e0e29/etc/hosts
-   $ sudo cat /var/lib/docker/aufs/mnt/4382a1de34d0aada2f0300955a8e720f97c667756b4b2c02e2f24a3f8e0e0e29/etc/resolv.conf
-   $ sudo cat /var/lib/docker/aufs/mnt/4382a1de34d0aada2f0300955a8e720f97c667756b4b2c02e2f24a3f8e0e0e29/etc/hostname
+   $ cat /var/lib/docker/aufs/mnt/4382a1de34d0aada2f0300955a8e720f97c667756b4b2c02e2f24a3f8e0e0e29/etc/hosts
+   $ cat /var/lib/docker/aufs/mnt/4382a1de34d0aada2f0300955a8e720f97c667756b4b2c02e2f24a3f8e0e0e29/etc/resolv.conf
+   $ cat /var/lib/docker/aufs/mnt/4382a1de34d0aada2f0300955a8e720f97c667756b4b2c02e2f24a3f8e0e0e29/etc/hostname
    ```
    
 5. 我们可以尝试在容器内修改 /etc/hosts 文件，你会发现 /var/lib/docker/containers/{container-id}/hosts 这个文件跟着变了。于此同时，如果我们把当前容器删除并创建一个新的容器之后，会发现之前的变更会重置了。这些就不再这里验证了，验证起来也很简单。
