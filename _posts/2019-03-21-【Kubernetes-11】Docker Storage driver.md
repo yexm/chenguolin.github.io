@@ -54,7 +54,7 @@ Storage Driver: overlay2
 ...
 ```
 
-`特别注意: 如果我们修改了docker daemon的 storage driver，那么当前存在的镜像和容器都会变得不可访问，因为老的层没有办法被新的 storage driver 兼容使用。`
+`特别注意: 如果我们修改了docker daemon的 storage driver，那么当前存在的镜像和容器都会变得不可访问，因为老的层没有办法被新的 storage driver 兼容使用。另外，不建议在容器的读写层临时存储大量的数据，一般来说如果有比较大的存储需要建议使用 Docker数据挂载 的方式。`
 
 ## ① aufs
 [aufs](https://docs.docker.com/storage/storagedriver/aufs-driver/) 指的是联合文件系统，内核低于4.0 Ubuntu 和 Debian操作系统上推荐使用 `aufs` storage driver，如果内核版本高于 4.0 则推荐使用 `overlay2`，因为 aufs 比 overlay2 性能差一些。
@@ -68,7 +68,7 @@ aufs 默认把镜像和容器读写层存储到宿主机 /var/lib/docker/aufs/ �
 
 1. `diff/`: 存储每一层具体内容，包括镜像的每一层，以及容器的可读写层，当运行一个容器的时候会在该子目录下创建2个子目录，表示容器 `init层` 和 `读写层`
 2. `layers/`: 存储每一层的meta信息，记录当前这层是基于哪些层构建而来
-3. ·`mnt/`: 如果是镜像层则都是空目录，如果是容器读写层则表示联合挂载的目录
+3. ·`mnt/`: 如果是镜像层则都是空目录，如果是容器读写层则表示联合挂载的目录，做为容器rootfs使用
 
 我们可以验证一下，先在公有云申请一个虚拟机，使用Ubuntu操作系统，然后安装好 docker 并使用 aufs 做为 storage driver
 
@@ -217,7 +217,7 @@ aufs 默认把镜像和容器读写层存储到宿主机 /var/lib/docker/aufs/ �
    fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277             //新增的子目录，容器读写层
    fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277-init        //新增的子目录，容器init层
 
-   $ ls /var/lib/docker/aufs/mnt/fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277
+   $ ls /var/lib/docker/aufs/mnt/fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277   (容器rootfs)
    bin  boot  dev	etc  home  lib	lib64  media  mnt  opt	proc  root  run  sbin  srv  sys  tmp  usr  var
 
    $ ls /var/lib/docker/aufs/mnt/fc40c28dc98a1b467f27d6196414eac9623666c344c615b7cb480fe630c9e277-init
@@ -236,6 +236,161 @@ aufs 默认把镜像和容器读写层存储到宿主机 /var/lib/docker/aufs/ �
     + `重命名目录`: aufs没有完成支持 [rename(2)](http://man7.org/linux/man-pages/man2/rename.2.html) 系统调用，业务需要校验是否发生错误
 
 ## ② devicemapper
+Device Mapper 是Linux内核卷管理技术框架，[devicemapper](https://docs.docker.com/storage/storagedriver/device-mapper-driver/) 正是使用该框架的部分功能来管理宿主机镜像和容器的。devicemapper 使用块级别操作块设备，而不是文件级别。
+
+devicemapper 默认把镜像和容器读写层存储到宿主机 /var/lib/docker/devicemapper/ 目录下，主要是以下3个子目录，可以参考源码 [devicemapper storage driver](https://github.com/moby/moby/tree/master/daemon/graphdriver/devmapper)。`注意: 使用 devicemapper 默认会限制每个每个device存储空间为10GB，也就是说容器读写层临时存储空间不能超过10GB，这点和其它 storage driver 会有些区别。`
+
+1. `devicemapper`: 记录每个镜像和容器层的基础设备的数据，由Device Mapper实现
+2. `metadata`: 镜像和容器每层的meta信息
+3. `mnt`: 如果是镜像层则子目录为空，如果是容器读写层表示挂载点，做为容器rootfs使用
+
+![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/docker-storage-driver-devicemapper.jpg?raw=true)
+
+我们可以验证一下，先在公有云申请一个虚拟机，使用Centos操作系统，然后安装好 docker 并使用 devicemapper 做为 storage driver
+
+1. 查看docker基础信息，确认使用 devicemapper 做为storage driver，并且当前没有任何镜像和容器
+   ```
+   $ docker info
+   Containers: 0
+    Running: 0
+    Paused: 0
+    Stopped: 0
+   Images: 0
+   Server Version: 17.05.0-ce
+   Storage Driver: devicemapper
+    Pool Name: docker-253:1-134591-pool
+    Pool Blocksize: 65.54kB
+    Base Device Size: 10.74GB
+    Backing Filesystem: xfs
+    Data file: /dev/loop0
+    Metadata file: /dev/loop1
+    Data Space Used: 11.73MB
+    Data Space Total: 107.4GB
+    ...
+   ```
+
+2. 下载 ubuntu:18.04 镜像
+   ```
+   18.04: Pulling from library/ubuntu
+   2746a4a261c9: Pull complete
+   4c1d20cdee96: Pull complete
+   0d3160e1d0de: Pull complete
+   c8e37668deea: Pull complete
+   Digest: sha256:250cc6f3f3ffc5cdaa9d8f4946ac79821aafb4d3afc93928f0de9336eba21aa4
+   ```
+
+3. 查看 /var/lib/docker/devicemapper/ 目录内容
+   ```
+   $ cd /var/lib/docker/devicemapper/
+   $ ls
+   devicemapper  metadata  mnt
+   
+   // 查看devicemapper目录
+   $ ls devicemapper/
+   data  metadata
+   
+   // 查看metadata目录
+   $ ls metadata
+   base             
+   transaction-metadata
+   deviceset-metadata
+   15648f4feb33eb9eb2043e85bfe428601781b3c9822e4360190b91c1f7049aa3  
+   c5dda0293b58cc885407f9b74916cfdbb258e2df812211dd52bfb66c98c420a7
+   24e076ed9f38f0531899bee72e388b41793ee89f8d110038580f5526c4a49d3d                                                    
+   eef5460abf44ffd0c9dc2a6555707d682f9da3cfd70c8da7d539a1510fc20d02
+   
+   $ cat metadata/base
+   {"device_id":1,"size":10737418240,"transaction_id":1,"initialized":true,"deleted":false}
+   
+   $ cat metadata/transaction-metadata
+   {"open_transaction_id":5,"device_hash":"c5dda0293b58cc885407f9b74916cfdbb258e2df812211dd52bfb66c98c420a7","device_id":5} 
+   
+   $ cat metadata/deviceset-metadata
+   {"next_device_id":1,"BaseDeviceUUID":"1a08da9a-c394-476f-a0c5-09769024c1ba","BaseDeviceFilesystem":"xfs"}
+   
+   $ cat metadata/15648f4feb33eb9eb2043e85bfe428601781b3c9822e4360190b91c1f7049aa3
+   {"device_id":2,"size":10737418240,"transaction_id":2,"initialized":false,"deleted":false}
+   
+   $ cat metadata/c5dda0293b58cc885407f9b74916cfdbb258e2df812211dd52bfb66c98c420a7
+   {"device_id":5,"size":10737418240,"transaction_id":5,"initialized":false,"deleted":false}
+   
+   $ cat metadata/24e076ed9f38f0531899bee72e388b41793ee89f8d110038580f5526c4a49d3d
+   {"device_id":3,"size":10737418240,"transaction_id":3,"initialized":false,"deleted":false}
+   
+   $ cat metadata/eef5460abf44ffd0c9dc2a6555707d682f9da3cfd70c8da7d539a1510fc20d02
+   {"device_id":4,"size":10737418240,"transaction_id":4,"initialized":false,"deleted":false}
+   
+   // 查看mnt目录
+   $ ls mnt/                  （共4个子目录，目录名和镜像层ID不是一一对应的)
+   15648f4feb33eb9eb2043e85bfe428601781b3c9822e4360190b91c1f7049aa3     
+   c5dda0293b58cc885407f9b74916cfdbb258e2df812211dd52bfb66c98c420a7
+   24e076ed9f38f0531899bee72e388b41793ee89f8d110038580f5526c4a49d3d  
+   eef5460abf44ffd0c9dc2a6555707d682f9da3cfd70c8da7d539a1510fc20d02
+   $ ls mnt/15648f4feb33eb9eb2043e85bfe428601781b3c9822e4360190b91c1f7049aa3/   (镜像层，子目录为空)
+   $ ls mnt/c5dda0293b58cc885407f9b74916cfdbb258e2df812211dd52bfb66c98c420a7/   (镜像层，子目录为空)
+   $ ls mnt/24e076ed9f38f0531899bee72e388b41793ee89f8d110038580f5526c4a49d3d/   (镜像层，子目录为空)
+   $ ls mnt/eef5460abf44ffd0c9dc2a6555707d682f9da3cfd70c8da7d539a1510fc20d02/   (镜像层，子目录为空)
+   ```
+
+4. 使用 ubuntu:18.04 启动一个容器
+   ```
+   $ docker run -it -d ubuntu:18.04
+   a4385ee8c358683fcb2bdebb9a9fac6fe902b18f36daf22655e6552761547a45
+   ```
+
+5. 继续查看 /var/lib/docker/devicemapper/ 目录内容
+   ```
+   $ cd /var/lib/docker/devicemapper/
+   $ ls
+   devicemapper  metadata  mnt
+   
+   // 查看devicemapper目录
+   $ ls devicemapper/
+   data  metadata
+   
+   // 查看metadata目录       （多了2个文件，代表容器启动后的init层和读写层）
+   $ ls metadata
+   base             
+   transaction-metadata
+   deviceset-metadata
+   15648f4feb33eb9eb2043e85bfe428601781b3c9822e4360190b91c1f7049aa3  
+   c5dda0293b58cc885407f9b74916cfdbb258e2df812211dd52bfb66c98c420a7
+   24e076ed9f38f0531899bee72e388b41793ee89f8d110038580f5526c4a49d3d                                                    
+   eef5460abf44ffd0c9dc2a6555707d682f9da3cfd70c8da7d539a1510fc20d02
+   ceae62f8d450d03e56a9c5adab60be9b3eedecdb95b0709d60c6f499c68cac11-init  //新增的文件，容器init层
+   ceae62f8d450d03e56a9c5adab60be9b3eedecdb95b0709d60c6f499c68cac11       //新增的文件，容器读写层
+   
+   $ cat metadata/ceae62f8d450d03e56a9c5adab60be9b3eedecdb95b0709d60c6f499c68cac11-init
+   {"device_id":6,"size":10737418240,"transaction_id":6,"initialized":false,"deleted":false}
+   
+   $ cat metadata/ceae62f8d450d03e56a9c5adab60be9b3eedecdb95b0709d60c6f499c68cac11
+   {"device_id":7,"size":10737418240,"transaction_id":7,"initialized":false,"deleted":false}
+   
+   // 查看mnt目录
+   $ ls mnt/                  （多了2个子目录，代表容器启动后的init层和读写层)
+   15648f4feb33eb9eb2043e85bfe428601781b3c9822e4360190b91c1f7049aa3     
+   c5dda0293b58cc885407f9b74916cfdbb258e2df812211dd52bfb66c98c420a7
+   24e076ed9f38f0531899bee72e388b41793ee89f8d110038580f5526c4a49d3d  
+   eef5460abf44ffd0c9dc2a6555707d682f9da3cfd70c8da7d539a1510fc20d02
+   ceae62f8d450d03e56a9c5adab60be9b3eedecdb95b0709d60c6f499c68cac11-init
+   ceae62f8d450d03e56a9c5adab60be9b3eedecdb95b0709d60c6f499c68cac11
+   
+   $ ls mnt/ceae62f8d450d03e56a9c5adab60be9b3eedecdb95b0709d60c6f499c68cac11-init/   (空目录)
+   
+   $ ls mnt/ceae62f8d450d03e56a9c5adab60be9b3eedecdb95b0709d60c6f499c68cac11   (id 为文件，rootfs为目录)
+   id  rootfs
+   
+   $ cat mnt/ceae62f8d450d03e56a9c5adab60be9b3eedecdb95b0709d60c6f499c68cac11/id
+   15648f4feb33eb9eb2043e85bfe428601781b3c9822e4360190b91c1f7049aa3
+   
+   $ ls mnt/ceae62f8d450d03e56a9c5adab60be9b3eedecdb95b0709d60c6f499c68cac11/rootfs/  (容器rootfs)
+   bin  boot  dev  etc  home  lib  lib64  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
+   ```
+   
+了解了 devicemapper 的实现原理之后，我们看下使用 devicemapper 做为 storage driver 是如何控制容器是读写文件的。
+
+1. 读文件 [device-mapper-driver reading-files](https://docs.docker.com/storage/storagedriver/device-mapper-driver/#reading-files)
+2. 写文件 [device-mapper-driver writing-files](https://docs.docker.com/storage/storagedriver/device-mapper-driver/#writing-files)
 
 ## ③ overlay2
 
