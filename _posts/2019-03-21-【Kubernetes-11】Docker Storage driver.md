@@ -229,11 +229,11 @@ aufs 默认把镜像和容器读写层存储到宿主机 /var/lib/docker/aufs/ �
     + `文件不在容器读写层`: 从镜像上层到下层搜索要读的文件，找到之后直接读取
     + `文件只存在容器读写层`: 直接从读写层读取
     + `文件存在容器读写层和镜像层`: 直接从读写层读取，镜像层对应的文件会被屏蔽
-2. 写文件 (考虑以下3种场景)
+2. 写文件 (考虑以下4种场景)
     + `第一次写文件`: 如果文件存在镜像层，则从镜像层拷贝到读写层，并进行写入；如果文件不存在镜像层，则在读写层创建一个新文件并写入
     + `删除文件`: 直接在读写层创建一个 whiteout 文件，阻止容器访问被删除文件，看起来像删除文件。实际上是屏蔽掉镜像层文件，镜像层并没有改动（因为镜像层是只读）
     + `删除目录`: 直接在读写层创建一个 opaque 文件，阻止容器访问被删除目录，看起来像删除了目录。实际上是屏蔽掉镜像层目录，镜像层并没有改动（因为镜像层是只读）
-    + `重命名目录`: aufs没有完成支持 [rename(2)](http://man7.org/linux/man-pages/man2/rename.2.html) 系统调用，业务需要校验是否发生错误
+    + `重命名目录`: aufs没有完全支持 [rename(2)](http://man7.org/linux/man-pages/man2/rename.2.html) 系统调用，业务需要校验是否发生错误
 
 ## ② devicemapper
 Device Mapper 是Linux内核卷管理技术框架，[devicemapper](https://docs.docker.com/storage/storagedriver/device-mapper-driver/) 正是使用该框架的部分功能来管理宿主机镜像和容器的。devicemapper 使用块级别操作块设备，而不是文件级别。
@@ -450,30 +450,116 @@ overlay2 默认把镜像和容器读写层存储到宿主机 /var/lib/docker/ove
    $ ls -lsrt /var/lib/docker/overlay2/047be5ac5412a89993002441f0923e41be8d16f35bcb6dd439d4b06bf1a8f874
    total 8
    4 -rw-r--r--  1 root root   26 Jan  3 09:36 link
-   4 drwxr-xr-x 21 root root 4096 Jan  3 09:36 diff
+   4 drwxr-xr-x 21 root root 4096 Jan  3 09:36 diff     （当前这层的内容）
    
    $ ls -lsrt /var/lib/docker/overlay2/ada356abbf425aa2cabdec1d143428c7c74a1e496c34d420d5f6b1ebce49edf0
    total 16
-   4 drwx------ 2 root root 4096 Jan  3 09:36 work
-   4 -rw-r--r-- 1 root root   28 Jan  3 09:36 lower
+   4 drwx------ 2 root root 4096 Jan  3 09:36 work      （OverlayFS内部使用目录）
+   4 -rw-r--r-- 1 root root   28 Jan  3 09:36 lower     （记录它的下一层）
    4 -rw-r--r-- 1 root root   26 Jan  3 09:36 link
-   4 drwxr-xr-x 3 root root 4096 Jan  3 09:36 diff
+   4 drwxr-xr-x 3 root root 4096 Jan  3 09:36 diff      （当前这层的内容）
  
    $ ls -lsrt /var/lib/docker/overlay2/622a0001387cbf29dda4bee820753663bc8cb2b494f908645d015782d62ec81a
    total 16
-   4 drwx------ 2 root root 4096 Jan  3 09:36 work
-   4 -rw-r--r-- 1 root root   57 Jan  3 09:36 lower
+   4 drwx------ 2 root root 4096 Jan  3 09:36 work      （OverlayFS内部使用目录）
+   4 -rw-r--r-- 1 root root   57 Jan  3 09:36 lower     （记录它的下一层）
    4 -rw-r--r-- 1 root root   26 Jan  3 09:36 link
-   4 drwxr-xr-x 6 root root 4096 Jan  3 09:36 diff
+   4 drwxr-xr-x 6 root root 4096 Jan  3 09:36 diff      （当前这层的内容）
 
    $ ls -slrt /var/lib/docker/overlay2/fd9af11a1ea6213093ebc6e7825169600619e2e103241e64fa3a2cca31f511bd
    total 16
-   $ drwx------ 2 root root 4096 Jan  3 09:36 work
-   4 -rw-r--r-- 1 root root   86 Jan  3 09:36 lower
+   $ drwx------ 2 root root 4096 Jan  3 09:36 work      （OverlayFS内部使用目录）
+   4 -rw-r--r-- 1 root root   86 Jan  3 09:36 lower     （记录它的下一层）
    4 -rw-r--r-- 1 root root   26 Jan  3 09:36 link
-   4 drwxr-xr-x 3 root root 4096 Jan  3 09:36 diff
+   4 drwxr-xr-x 3 root root 4096 Jan  3 09:36 diff      （当前这层的内容）
    ```
 
+4. 使用 ubuntu:18.04 启动一个容器
+   ```
+   $ docker run -it -d ubuntu:18.04
+   f488754f6f7d6c0d441f58108a6721cb6b1eba0e5a586fc74f520e18f4ca52dd
+   ```
 
+5. 继续查看 /var/lib/docker/overlay2/ 目录内容
+   ```
+   $ ls -lsrt /var/lib/docker/overlay2   （新增2个子目录，表示容器init层和读写层）
+   total 20
+   4 drwx------ 2 root root 4096 Jan  3 09:36 l
+   4 drwx------ 3 root root 4096 Jan  3 09:36 047be5ac5412a89993002441f0923e41be8d16f35bcb6dd439d4b06bf1a8f874
+   4 drwx------ 4 root root 4096 Jan  3 09:36 ada356abbf425aa2cabdec1d143428c7c74a1e496c34d420d5f6b1ebce49edf0
+   4 drwx------ 4 root root 4096 Jan  3 09:36 622a0001387cbf29dda4bee820753663bc8cb2b494f908645d015782d62ec81a
+   4 drwx------ 4 root root 4096 Jan  3 09:36 fd9af11a1ea6213093ebc6e7825169600619e2e103241e64fa3a2cca31f511bd
+   4 drwx------ 4 root root 4096 Jan  3 10:10 4d2283401faac9253bf6ecbc47bf1068e6d83ae62b1037e96b73e0b0a0442341-init
+   4 drwx------ 5 root root 4096 Jan  3 10:10 4d2283401faac9253bf6ecbc47bf1068e6d83ae62b1037e96b73e0b0a0442341
+   
+   $ ls -lsrt /var/lib/docker/overlay2/4d2283401faac9253bf6ecbc47bf1068e6d83ae62b1037e96b73e0b0a0442341-init
+   total 16
+   4 drwx------ 3 root root 4096 Jan  3 10:10 work
+   4 -rw-r--r-- 1 root root  115 Jan  3 10:10 lower
+   4 -rw-r--r-- 1 root root   26 Jan  3 10:10 link
+   4 drwxr-xr-x 4 root root 4096 Jan  3 10:10 diff
 
+   $ ls -lsrt /var/lib/docker/overlay2/4d2283401faac9253bf6ecbc47bf1068e6d83ae62b1037e96b73e0b0a0442341
+   total 20
+   4 drwxr-xr-x 1 root root 4096 Jan  3 10:10 merged    (lowerdir 和 upperdir联合挂载点，做为容器rootfs)
+   4 -rw-r--r-- 1 root root  144 Jan  3 10:10 lower
+   4 -rw-r--r-- 1 root root   26 Jan  3 10:10 link
+   4 drwxr-xr-x 2 root root 4096 Jan  3 10:10 diff
+   4 drwx------ 3 root root 4096 Jan  3 10:10 work
+   
+   // 查看项目的子目录
+   $ ls -lsrt /var/lib/docker/overlay2/4d2283401faac9253bf6ecbc47bf1068e6d83ae62b1037e96b73e0b0a0442341-init/diff/etc
+   total 0
+   0 -rwxr-xr-x 1 root root  0 Jan  3 10:10 resolv.conf
+   0 lrwxrwxrwx 1 root root 12 Jan  3 10:10 mtab -> /proc/mounts
+   0 -rwxr-xr-x 1 root root  0 Jan  3 10:10 hosts
+   0 -rwxr-xr-x 1 root root  0 Jan  3 10:10 hostname
+
+   $ ls -lsrt /var/lib/docker/overlay2/4d2283401faac9253bf6ecbc47bf1068e6d83ae62b1037e96b73e0b0a0442341-init/diff/dev
+   total 8
+   4 drwxr-xr-x 2 root root 4096 Jan  3 10:10 shm
+   4 drwxr-xr-x 2 root root 4096 Jan  3 10:10 pts
+   0 -rwxr-xr-x 1 root root    0 Jan  3 10:10 console
+   
+   $ ls -lsrt /var/lib/docker/overlay2/4d2283401faac9253bf6ecbc47bf1068e6d83ae62b1037e96b73e0b0a0442341/merged
+   total 76
+   4 drwxr-xr-x 8 root root 4096 May 23  2017 lib
+   4 drwxr-xr-x 2 root root 4096 Apr 24  2018 sys
+   4 drwxr-xr-x 2 root root 4096 Apr 24  2018 proc
+   4 drwxr-xr-x 2 root root 4096 Apr 24  2018 home
+   4 drwxr-xr-x 2 root root 4096 Apr 24  2018 boot
+   4 drwxr-xr-x 1 root root 4096 Dec  2 20:43 usr
+   4 drwxr-xr-x 2 root root 4096 Dec  2 20:43 srv
+   4 drwxr-xr-x 2 root root 4096 Dec  2 20:43 opt
+   4 drwxr-xr-x 2 root root 4096 Dec  2 20:43 mnt
+   4 drwxr-xr-x 2 root root 4096 Dec  2 20:43 media
+   4 drwxr-xr-x 2 root root 4096 Dec  2 20:43 lib64
+   4 drwxr-xr-x 1 root root 4096 Dec  2 20:43 var
+   4 drwx------ 2 root root 4096 Dec  2 20:43 root
+   4 drwxr-xr-x 2 root root 4096 Dec  2 20:43 bin
+   4 drwxrwxrwt 2 root root 4096 Dec  2 20:43 tmp
+   4 drwxr-xr-x 1 root root 4096 Dec 19 12:21 sbin
+   4 drwxr-xr-x 1 root root 4096 Dec 19 12:21 run
+   4 drwxr-xr-x 1 root root 4096 Jan  3 10:10 etc
+   4 drwxr-xr-x 1 root root 4096 Jan  3 10:10 dev
+
+   $ ls -lsrt /var/lib/docker/overlay2/4d2283401faac9253bf6ecbc47bf1068e6d83ae62b1037e96b73e0b0a0442341/diff
+   total 0
+   
+   $ ls -lsrt /var/lib/docker/overlay2/4d2283401faac9253bf6ecbc47bf1068e6d83ae62b1037e96b73e0b0a0442341/work
+   total 4
+   4 d--------- 2 root root 4096 Jan  3 10:10 work
+   ```
+
+了解了 overlay2 的实现原理之后，我们看下使用 overlay2 做为 storage driver 是如何控制容器是读写文件的。
+
+1. 读文件 [reading-files](https://docs.docker.com/storage/storagedriver/overlayfs-driver/#reading-files) (考虑以下3种场景)
+    + `文件不在容器读写层`: 从镜像上层到下层搜索要读的文件，找到之后直接读取
+    + `文件只存在容器读写层`: 直接从读写层读取
+    + `文件存在容器读写层和镜像层`: 直接从读写层读取，镜像层对应的文件会被屏蔽
+2. 写文件 [modifying-files-or-directories](https://docs.docker.com/storage/storagedriver/overlayfs-driver/#modifying-files-or-directories) (考虑以下4种场景)
+    + `第一次写文件`: 如果文件存在镜像层，则从镜像层拷贝到读写层，并进行写入；如果文件不存在镜像层，则在读写层创建一个新文件并写入
+    + `删除文件`: 直接在读写层创建一个 whiteout 文件，阻止容器访问被删除文件，看起来像删除文件。实际上是屏蔽掉镜像层文件，镜像层并没有改动（因为镜像层是只读）
+    + `删除目录`: 直接在读写层创建一个 opaque 文件，阻止容器访问被删除目录，看起来像删除了目录。实际上是屏蔽掉镜像层目录，镜像层并没有改动（因为镜像层是只读）
+    + `重命名目录`: overlay2只支持源和目标目录都是在读写层，没有完全支持 [rename(2)](http://man7.org/linux/man-pages/man2/rename.2.html) 系统调用，业务需要校验是否发生错误
 
