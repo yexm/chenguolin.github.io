@@ -66,6 +66,27 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
    ...
    ```
 
+3. 配置Kubernetes yum repo
+   ```
+   $ cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+   [kubernetes]
+   name=Kubernetes
+   baseurl=http://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64
+   enabled=1
+   gpgcheck=0
+   repo_gpgcheck=0
+   gpgkey=http://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg
+          http://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg
+   EOF
+   
+   注意: Kubernetes官网给的yum源是packages.cloud.google.com，但国内访问不了，我们使用阿里云的yum仓库镜像来代替
+   ```
+
+4. 安装kubeadm
+   ```
+   $ yum install -y kubeadm
+   ```
+
 ## ③ 配置worker
 1. 安装Docker
    ```
