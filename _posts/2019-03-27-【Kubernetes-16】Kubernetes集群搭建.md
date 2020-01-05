@@ -26,7 +26,31 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/kubernetes-deploy-node.png?raw=true)
 
 ## ② 配置master
+1. 安装Docker
+   ```
+   $ yum install -y yum-utils    //安装依赖
+   $ yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo   //add docker-ce.repo
+   $ yum list docker-ce --showduplicates  //查看所有的docker-ce rpm包版本
+   $ yum install docker-ce-18.03.1.ce-1.el7.centos  //安装18.03.1.ce-1.el7.centos这个版本
+   $ docker version   //确认docker安装成功
+   Client:
+    Version:      18.03.1-ce
+    API version:  1.37
+    Go version:   go1.9.5
+    Git commit:   9ee9f40
+    Built:        Thu Apr 26 07:20:16 2018
+    OS/Arch:      linux/amd64
+    Experimental: false
+    Orchestrator: swarm
+   ```
+
+2. 启动Docker daemon
 
 ## ③ 配置worker
+1. 安装Docker
+   ```
+   $ yum install -y https://download.docker.com/linux/centos/7/x86_64/stable/Packages/docker-ce-19.03.5-3.el7.x86_64.rpm
+   
+   ```
 
 ## ④ 测试
