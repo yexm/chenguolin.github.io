@@ -29,9 +29,13 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
 1. 安装Docker
    ```
    $ yum install -y yum-utils    //安装依赖
+  
    $ yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo   //add docker-ce.repo
+   
    $ yum list docker-ce --showduplicates  //查看所有的docker-ce rpm包版本
+   
    $ yum install docker-ce-18.03.1.ce-1.el7.centos  //安装18.03.1.ce-1.el7.centos这个版本
+   
    $ docker version   //确认docker安装成功
    Client:
     Version:      18.03.1-ce
@@ -45,6 +49,22 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
    ```
 
 2. 启动Docker daemon
+   ```
+   $ dockerd --data-root=/var/lib/docker --log-opt max-size=100m --log-opt max-file=5 --iptables=false --metrics-addr=192.168.0.14:10270 --experimental=true --storage-driver overlay2 --dns 100.125.1.250 --dns 100.125.129.250 --dns 127.0.0.1 --dns 192.168.0.14 --dns-search default.svc.cluster.local --dns-search svc.cluster.local --dns-opt ndots:2 --dns-opt timeout:2 --dns-opt attempts:2
+   
+   $ ps axu | grep dockerd
+     root      9381  0.5  1.5 333692 59836 pts/0    Sl+  14:14   0:00 dockerd --data-root=/var/lib/docker --log-opt max-size=100m --log-opt max-file=5 --iptables=false --metrics-addr=192.168.0.14:10270 --experimental=true --storage-driver overlay2 --dns 100.125.1.250 --dns 100.125.129.250 --dns 127.0.0.1 --dns 192.168.0.14 --dns-search default.svc.cluster.local --dns-search svc.cluster.local --dns-opt ndots:2 --dns-opt timeout:2 --dns-opt attempts:2
+   
+   $ docker info
+   Containers: 0
+    Running: 0
+    Paused: 0
+    Stopped: 0
+   Images: 0
+   Server Version: 18.03.1-ce
+   Storage Driver: overlay2
+   ...
+   ```
 
 ## ③ 配置worker
 1. 安装Docker
