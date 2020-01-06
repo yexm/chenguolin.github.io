@@ -495,4 +495,10 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
    sysctl net.bridge.bridge-nf-call-iptables=1
    ```
 
+5. kubeadm join 加入某个节点时候报错
+   ```
+   Failed to connect to API Server "192.168.0.14:6443": Get https://192.168.0.14:6443/api/v1/namespaces/kube-public/configmaps/cluster-info?timeout=10s: dial tcp 192.168.0.14:6443: connect: no route to host
+   
+   解决
+   ```
 
