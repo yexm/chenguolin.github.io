@@ -141,7 +141,7 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
    
 3. 编辑 /usr/lib/systemd/system/docker.service 文件
    ```
-   把 ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock 替换成  ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
+   把 ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock 替换成  ExecStart=/usr/bin/dockerd --config-file /etc/docker/daemon.json
    ```
 
 4. 使用 systemd 启动 docker  (Linux发行版大都支持systemd启动后台常驻进程)
@@ -300,7 +300,7 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
    
    解决方案: 命令默认 /usr/lib/systemd/system/docker.service 这个配置文件，我们需要做以下修改
    
-   把 ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock 替换成  ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
+   把 ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock 替换成  ExecStart=/usr/bin/dockerd --config-file /etc/docker/daemon.json
    ```
    
 2. `kubeadm init --kubernetes-version=v1.17.0 --pod-network-cidr=10.244.0.0/16 --service-cidr=10.96.0.0/12 --v=5` 初始化Kubernetes集群报以下错
