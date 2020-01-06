@@ -52,7 +52,7 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
    ```
    {
         "authorization-plugins": [],
-	"data-root": "",
+        "data-root": "",
 	"dns": [],
 	"dns-opts": [],
 	"dns-search": [],
@@ -301,7 +301,7 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
    ```
    {
         "authorization-plugins": [],
-	"data-root": "",
+        "data-root": "",
 	"dns": [],
 	"dns-opts": [],
 	"dns-search": [],
