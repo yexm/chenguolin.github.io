@@ -35,10 +35,10 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
    $ yum install -y yum-utils    //安装依赖
    $ yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo   //add docker-ce.repo
    $ yum list docker-ce --showduplicates  //查看所有的docker-ce rpm包版本
-   $ yum install -y docker-ce-18.03.1.ce-1.el7.centos  //安装18.03.1.ce-1.el7.centos这个版本
+   $ yum install -y docker-ce-19.03.5-3.el7  //安装docker-ce-19.03.5-3.el7这个稳定版本
    $ docker version   //确认docker安装成功
    Client:
-    Version:      18.03.1-ce
+    Version:      19.03.5
     API version:  1.37
     Go version:   go1.9.5
     Git commit:   9ee9f40
@@ -141,7 +141,8 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
    
 3. 编辑 /usr/lib/systemd/system/docker.service 文件
    ```
-   把 ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock 替换成  ExecStart=/usr/bin/dockerd --config-file /etc/docker/daemon.json
+   ExecStart替换成以下命令
+   ExecStart=/usr/bin/dockerd --config-file /etc/docker/daemon.json
    ```
 
 4. 使用 systemd 启动 docker  (Linux发行版大都支持systemd启动后台常驻进程)
@@ -164,7 +165,7 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
 
 5. 配置Kubernetes yum repo
    ```
-   $ cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+   $ vi /etc/yum.repos.d/kubernetes.repo   //加入以下内容
    [kubernetes]
    name=Kubernetes
    baseurl=http://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64
@@ -173,14 +174,13 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
    repo_gpgcheck=0
    gpgkey=http://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg
           http://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg
-   EOF
    
    注意: Kubernetes官网给的yum源是packages.cloud.google.com，但国内访问不了，我们使用阿里云的yum仓库镜像来代替
    ```
 
-6. 安装 kubeadm
+6. 安装 kubeadm、kubelet、kubectl
    ```
-   $ yum install -y kubeadm
+   $ yum install -y kubeadm kubelet kubectl
    $ kubeadm
 
     ┌──────────────────────────────────────────────────────────┐
@@ -282,44 +282,177 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
 1. 安装Docker
    ```
    $ yum install -y yum-utils    //安装依赖
-  
    $ yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo   //add docker-ce.repo
-   
    $ yum list docker-ce --showduplicates  //查看所有的docker-ce rpm包版本
-   
-   $ yum install docker-ce-18.03.1.ce-1.el7.centos  //安装18.03.1.ce-1.el7.centos这个版本
-   
+   $ yum install -y docker-ce-19.03.5-3.el7  //安装docker-ce-19.03.5-3.el7这个稳定版本
    $ docker version   //确认docker安装成功
    Client:
-    Version:      18.03.1-ce
-    API version:  1.37
-    Go version:   go1.9.5
+    Version:      19.03.5
+    API version:  1.40
+    Go version:   go1.12.12
     Git commit:   9ee9f40
     Built:        Thu Apr 26 07:20:16 2018
     OS/Arch:      linux/amd64
     Experimental: false
     Orchestrator: swarm
    ```
+   
+2. 配置 /etc/docker/daemon.json (Linux默认存储位置，如果没有创建一个新文件)
+   ```
+   {
+        "authorization-plugins": [],
+	"data-root": "",
+	"dns": [],
+	"dns-opts": [],
+	"dns-search": [],
+	"exec-opts": [],
+	"exec-root": "",
+	"experimental": true,
+	"features": {},
+	"storage-driver": "overlay2",
+	"storage-opts": [],
+	"labels": [],
+	"live-restore": true,
+	"log-driver": "json-file",
+	"log-opts": {
+	    "max-size": "100m",
+	    "max-file":"5",
+	    "labels": "somelabel",
+	    "env": "os,customer"
+	},
+	"mtu": 0,
+	"pidfile": "",
+	"cluster-store": "",
+	"cluster-store-opts": {},
+	"cluster-advertise": "",
+	"max-concurrent-downloads": 3,
+	"max-concurrent-uploads": 5,
+	"default-shm-size": "64M",
+	"shutdown-timeout": 15,
+	"debug": true,
+	"hosts": ["unix:///var/run/docker.sock"],
+	"log-level": "",
+	"swarm-default-advertise-addr": "",
+	"api-cors-header": "",
+	"selinux-enabled": false,
+	"userns-remap": "",
+	"group": "",
+	"cgroup-parent": "",
+	"default-ulimits": {
+	    "nofile": {
+		"Name": "nofile",
+		"Hard": 64000,
+		"Soft": 64000
+	    }
+	},
+	"init": false,
+	"init-path": "/usr/libexec/docker-init",
+	"ipv6": false,
+	"iptables": true,
+	"ip-forward": false,
+	"ip-masq": false,
+	"userland-proxy": false,
+	"userland-proxy-path": "/usr/libexec/docker-proxy",
+	"ip": "0.0.0.0",
+	"bridge": "",
+	"bip": "",
+	"fixed-cidr": "",
+	"fixed-cidr-v6": "",
+	"default-gateway": "",
+	"default-gateway-v6": "",
+	"icc": false,
+	"raw-logs": false,
+	"allow-nondistributable-artifacts": [],
+	"registry-mirrors": [],
+	"seccomp-profile": "",
+	"insecure-registries": [],
+	"no-new-privileges": false,
+	"default-runtime": "runc",
+	"oom-score-adjust": -500,
+	"node-generic-resources": ["NVIDIA-GPU=UUID1", "NVIDIA-GPU=UUID2"],
+	"runtimes": {
+	    "cc-runtime": {
+		"path": "/usr/bin/cc-runtime"
+	    },
+	    "custom": {
+		"path": "/usr/local/bin/my-runc-replacement",
+		"runtimeArgs": [
+		    "--debug"
+		]
+	    }
+	},
+	"default-address-pools":[
+	    {"base":"172.80.0.0/16","size":24},
+	    {"base":"172.90.0.0/16","size":24}
+	]
+   }
+   ```
+   
+3. 编辑 /usr/lib/systemd/system/docker.service 文件
+   ```
+   ExecStart替换成如下命令
+   ExecStart=/usr/bin/dockerd --config-file /etc/docker/daemon.json
+   ```
 
-2. 启动Docker daemon
+4. 使用 systemd 启动 docker  (Linux发行版大都支持systemd启动后台常驻进程)
    ```
-   $ dockerd --data-root=/var/lib/docker --log-opt max-size=100m --log-opt max-file=5 --iptables=false --experimental=true --storage-driver overlay2
-   
+   $ systemctl start docker.service
    $ ps axu | grep dockerd
-     root      9381  0.5  1.5 333692 59836 pts/0    Sl+  14:14   0:00 dockerd --data-root=/var/lib/docker --log-opt max-size=100m --log-opt max-file=5 --iptables=false --experimental=true --storage-driver overlay2
-   
+     root      7217  0.3  1.8 858796 71964 ?        Ssl  08:51   0:00 /usr/bin/dockerd --config-file /etc/docker/daemon.json
    $ docker info
-   Containers: 0
-    Running: 0
-    Paused: 0
-    Stopped: 0
-   Images: 0
-   Server Version: 18.03.1-ce
-   Storage Driver: overlay2
-   ...
+     Client:
+      Debug Mode: false
+
+     Server:
+      Containers: 0
+      Running: 0
+      Paused: 0
+      Stopped: 0
+     Images: 0
+     ...
    ```
    
+5. 配置Kubernetes yum repo
+   ```
+   $ vi /etc/yum.repos.d/kubernetes.repo //加入以下内容
+   [kubernetes]
+   name=Kubernetes
+   baseurl=http://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64
+   enabled=1
+   gpgcheck=0
+   repo_gpgcheck=0
+   gpgkey=http://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg
+          http://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg
    
+   注意: Kubernetes官网给的yum源是packages.cloud.google.com，但国内访问不了，我们使用阿里云的yum仓库镜像来代替
+   ```
+
+6. 安装 kubeadm、kubeket
+   ```
+   $ yum install kubeadm kubelet -y
+   
+   $ kubeadm
+
+    ┌──────────────────────────────────────────────────────────┐
+    │ KUBEADM                                                  │
+    │ Easily bootstrap a secure Kubernetes cluster             │
+    │                                                          │
+    │ Please give us feedback at:                              │
+    │ https://github.com/kubernetes/kubeadm/issues             │
+    └──────────────────────────────────────────────────────────┘
+
+    Example usage:
+
+    Create a two-machine cluster with one control-plane node
+    (which controls the cluster), and one worker node
+    (where your workloads, like Pods and Deployments run).
+    ......
+   ```
+
+7. worker节点加入集群
+   ```
+   $ kubeadm join 192.168.0.14:6443 --token n22g0e.hdeox0j9jq018fjx --discovery-token-ca-cert-hash sha256:ed1047a83a3a05d0d6e8c86d6fd30f5d3d87d0d295c80a362afa903deb7dd4fc
+   ```
    
 ## ④ 测试
 
@@ -350,4 +483,16 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
    $ kubectl logs kube-flannel-ds-amd64-qckxp -n kube-system   //查看日志
      发现有 Error registering network: failed to acquire lease: node "ecs-s6-large-2-linux-20200105130533" pod cidr not assigned
    ```
+
+4. docker info 发现有 以下 Warnning 信息
+   ```
+   WARNING: bridge-nf-call-iptables is disabled
+   WARNING: bridge-nf-call-ip6tables is disabled
+   
+   解决方案
+   
+   sysctl net.bridge.bridge-nf-call-ip6tables=1
+   sysctl net.bridge.bridge-nf-call-iptables=1
+   ```
+
 
