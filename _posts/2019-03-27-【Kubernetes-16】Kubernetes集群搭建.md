@@ -452,6 +452,23 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
 7. worker节点加入集群
    ```
    $ kubeadm join 192.168.0.14:6443 --token n22g0e.hdeox0j9jq018fjx --discovery-token-ca-cert-hash sha256:ed1047a83a3a05d0d6e8c86d6fd30f5d3d87d0d295c80a362afa903deb7dd4fc
+   ...
+   This node has joined the cluster:
+   * Certificate signing request was sent to apiserver and a response was received.
+   * The Kubelet was informed of the new secure connection details.
+
+   Run 'kubectl get nodes' on the control-plane to see this node join the cluster.
+   ```
+   
+8. master节点上验证
+   ```
+   $ kubectl get nodes -o wide
+   NAME     STATUS   ROLES    AGE   VERSION   INTERNAL-IP     EXTERNAL-IP   OS-IMAGE     KERNEL-VERSION      CONTAINER-RUNTIME
+   ecs-s6-large-2-linux-20200105130533   Ready    master   65m   v1.17.0   192.168.0.14    <none>        CentOS Linux 7 (Core)   3.10.0-1062.9.1.el7.x86_64   docker://19.3.5
+   k8s-worker-node-0001                  Ready    node     10m   v1.17.0   192.168.0.202   <none>        CentOS Linux 7 (Core)   3.10.0-1062.9.1.el7.x86_64   docker://19.3.5
+   
+   $ kubectl label node k8s-worker-node-0001 node-role.kubernetes.io/node=   //手动打label
+     因为kubeadm join 命令不会自动给worker节点打上 node 的label
    ```
    
 ## ④ 测试
@@ -499,6 +516,9 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
    ```
    Failed to connect to API Server "192.168.0.14:6443": Get https://192.168.0.14:6443/api/v1/namespaces/kube-public/configmaps/cluster-info?timeout=10s: dial tcp 192.168.0.14:6443: connect: no route to host
    
-   解决
+   解决方案
+   
+   1). systemctl stop firewalld 关闭master节点防火墙  //不推荐
+   2). 如果使用云厂商提供的ECS机器，仔细确认下 安全组的入口规则配置，确认是否把6443端口放开
    ```
 
