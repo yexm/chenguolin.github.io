@@ -467,10 +467,6 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
    ```
    $ kubeadm join 192.168.0.14:6443 --token n22g0e.hdeox0j9jq018fjx --discovery-token-ca-cert-hash sha256:ed1047a83a3a05d0d6e8c86d6fd30f5d3d87d0d295c80a362afa903deb7dd4fc
    ...
-   This node has joined the cluster:
-   * Certificate signing request was sent to apiserver and a response was received.
-   * The Kubelet was informed of the new secure connection details.
-
    Run 'kubectl get nodes' on the control-plane to see this node join the cluster.
    ```
       
