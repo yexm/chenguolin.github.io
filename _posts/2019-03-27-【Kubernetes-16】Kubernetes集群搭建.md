@@ -29,7 +29,7 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
 2. node节点1，内网IP地址为 192.168.0.202
 3. node节点2，内网IP地址为 192.168.0.239
 
-## ② 配置master
+## ② 配置master  (ssh上master节点)
 1. 安装Docker
    ```
    $ yum install -y yum-utils    //安装依赖
@@ -235,7 +235,22 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
    如果不这么做的话，我们每次都需要通过 export KUBECONFIG 环境变量告诉 kubectl 这个安全配置文件的位置，或者通过 --kubeconfig 选项告诉 kubectl 配置文件的位置。
    ```
 
-9. 验证集群
+9. 部署flannel网络
+   ```
+   $ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+     podsecuritypolicy.policy/psp.flannel.unprivileged created
+     clusterrole.rbac.authorization.k8s.io/flannel created
+     clusterrolebinding.rbac.authorization.k8s.io/flannel created
+     serviceaccount/flannel created
+     configmap/kube-flannel-cfg created
+     daemonset.apps/kube-flannel-ds-amd64 created
+     daemonset.apps/kube-flannel-ds-arm64 created
+     daemonset.apps/kube-flannel-ds-arm created
+     daemonset.apps/kube-flannel-ds-ppc64le created
+     daemonset.apps/kube-flannel-ds-s390x created
+   ```
+
+10. 验证集群
    ```
    $ kubectl version
    Client Version: version.Info{Major:"1", Minor:"17", GitVersion:"v1.17.0", GitCommit:"70132b0f130acc0bed193d9ba59dd186f0e634cf", GitTreeState:"clean", BuildDate:"2019-12-07T21:20:10Z", GoVersion:"go1.13.4", Compiler:"gc", Platform:"linux/amd64"}
@@ -243,12 +258,27 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
    
    $ kubectl get nodes -o wide
      NAME    STATUS     ROLES    AGE     VERSION   INTERNAL-IP    EXTERNAL-IP   OS-IMAGE      KERNEL-VERSION               CONTAINER-RUNTIME
-     ecs-s6-large-2-linux-20200105130533   NotReady   master   3m54s   v1.17.0   192.168.0.14   <none>        CentOS Linux 7 (Core)   3.10.0-1062.9.1.el7.x86_64   docker://19.3.5
+     ecs-s6-large-2-linux-20200105130533   NotReady   master   3m54s   v1.17.0   192.168.0.14   <none>        CentOS Linux 7 (Core)   3.10.0-1062.9.1.el7.x86_64   docker://18.03.1
+     
+   $ kubectl get componentstatus
+     NAME                 STATUS    MESSAGE             ERROR
+     scheduler            Healthy   ok
+     controller-manager   Healthy   ok
+     etcd-0               Healthy   {"health":"true"}
+     
+   $ kubectl get pods -n kube-system
+     NAME                                                          READY   STATUS              RESTARTS   AGE
+     coredns-9d85f5447-pgpzk                                       1/1     Running             0          9m57s
+     coredns-9d85f5447-zj24f                                       1/1     Running             0          9m57s
+     etcd-ecs-s6-large-2-linux-20200105130533                      1/1     Running             0          9m58s
+     kube-apiserver-ecs-s6-large-2-linux-20200105130533            1/1     Running             0          9m58s
+     kube-controller-manager-ecs-s6-large-2-linux-20200105130533   1/1     Running             0          9m58s
+     kube-flannel-ds-amd64-qckxp                                   1/1     Running             0          2m12s
+     kube-proxy-c45xq                                              1/1     Running             0          9m57s
+     kube-scheduler-ecs-s6-large-2-linux-20200105130533            1/1     Running             0          9m58s
    ```
 
-10. 
-
-## ③ 配置worker
+## ③ 配置worker  (ssh上worker节点)
 1. 安装Docker
    ```
    $ yum install -y yum-utils    //安装依赖
