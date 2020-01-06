@@ -466,7 +466,8 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
    NAME     STATUS   ROLES    AGE   VERSION   INTERNAL-IP     EXTERNAL-IP   OS-IMAGE     KERNEL-VERSION      CONTAINER-RUNTIME
    ecs-s6-large-2-linux-20200105130533   Ready    master   65m   v1.17.0   192.168.0.14    <none>        CentOS Linux 7 (Core)   3.10.0-1062.9.1.el7.x86_64   docker://19.3.5
    k8s-worker-node-0001                  Ready    node     10m   v1.17.0   192.168.0.202   <none>        CentOS Linux 7 (Core)   3.10.0-1062.9.1.el7.x86_64   docker://19.3.5
-   
+   k8s-worker-node-0002                  Ready    node     10m   v1.17.0   192.168.0.202   <none>        CentOS Linux 7 (Core)   3.10.0-1062.9.1.el7.x86_64   docker://19.3.5
+
    $ kubectl label node k8s-worker-node-0001 node-role.kubernetes.io/node=   //手动打label
      因为kubeadm join 命令不会自动给worker节点打上 node 的label
    ```
