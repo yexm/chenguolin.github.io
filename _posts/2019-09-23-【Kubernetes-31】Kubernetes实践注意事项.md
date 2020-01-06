@@ -77,5 +77,10 @@ tags:          #标签
     2). 如果实在无法解决，尽量避免直接依赖 k8s.io/kubernetes 把用到的相关代码 copy 到项目的pkg下，不过这有个问题就是后续如果有代码的变更就没有办法更新了，必须自己手动更新
     ```
 
-
+11. kubernetes集群搭建的时候涉及到很多国外的镜像，但是由于机器在国内导致很多镜像都拉取不到，因此需要做些调整，先从国内的镜像源拉取，然后使用 docker tag 重新打下tag
+    ```
+    1. docker.io 相关的镜像，可以使用 dockerhub.azk8s.cn 代替，下载完成之后retag即可
+    2. gcr.io 相关的镜像，可以使用 gcr.azk8s.cn 代替，下载完成之后retag即可
+    3. quay.io 相关的镜像，可以使用 quay.azk8s.cn 代替，下载完成之后retag即可
+    ```
 
