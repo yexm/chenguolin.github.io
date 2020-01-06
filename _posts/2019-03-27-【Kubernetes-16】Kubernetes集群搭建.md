@@ -21,9 +21,13 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
 4. `2CPU、4GB内存`: 为了能够保证有足够的资源调度Pod，机器规格至少是 2CPU、4GB内存
 5. `40GB磁盘空间`: worker节点需要存储Docker镜像和容器日志，因此至少需要有40GB的磁盘空间
 
-我这边使用某个云厂商申请了3台机器，机器规格如下
+我这边使用某个云厂商申请了3台机器，所有节点IP网段均为 192.168.0.0/24  (表示IP地址从192.168.0.1开始，到192.168.0.254结束)
 
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/kubernetes-deploy-node.png?raw=true)
+
+1. master节点，内网IP地址为 192.168.0.14
+2. node节点1，内网IP地址为 192.168.0.202
+3. node节点2，内网IP地址为 192.168.0.239
 
 ## ② 配置master
 1. 安装Docker
@@ -47,7 +51,7 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
 2. 配置 /etc/docker/daemon.json (Linux默认存储位置，如果没有创建一个新文件)
    ```
    {
-	"authorization-plugins": [],
+        "authorization-plugins": [],
 	"data-root": "",
 	"dns": [],
 	"dns-opts": [],
@@ -62,10 +66,10 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
 	"live-restore": true,
 	"log-driver": "json-file",
 	"log-opts": {
-		"max-size": "100m",
-		"max-file":"5",
-		"labels": "somelabel",
-		"env": "os,customer"
+	    "max-size": "100m",
+	    "max-file":"5",
+	    "labels": "somelabel",
+	    "env": "os,customer"
 	},
 	"mtu": 0,
 	"pidfile": "",
@@ -86,11 +90,11 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
 	"group": "",
 	"cgroup-parent": "",
 	"default-ulimits": {
-		"nofile": {
-			"Name": "nofile",
-			"Hard": 64000,
-			"Soft": 64000
-		}
+	    "nofile": {
+		"Name": "nofile",
+		"Hard": 64000,
+		"Soft": 64000
+	    }
 	},
 	"init": false,
 	"init-path": "/usr/libexec/docker-init",
@@ -118,58 +122,47 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
 	"oom-score-adjust": -500,
 	"node-generic-resources": ["NVIDIA-GPU=UUID1", "NVIDIA-GPU=UUID2"],
 	"runtimes": {
-		"cc-runtime": {
-			"path": "/usr/bin/cc-runtime"
-		},
-		"custom": {
-			"path": "/usr/local/bin/my-runc-replacement",
-			"runtimeArgs": [
-				"--debug"
-			]
-		}
+	    "cc-runtime": {
+		"path": "/usr/bin/cc-runtime"
+	    },
+	    "custom": {
+		"path": "/usr/local/bin/my-runc-replacement",
+		"runtimeArgs": [
+		    "--debug"
+		]
+	    }
 	},
 	"default-address-pools":[
-		{"base":"172.80.0.0/16","size":24},
-		{"base":"172.90.0.0/16","size":24}
+	    {"base":"172.80.0.0/16","size":24},
+	    {"base":"172.90.0.0/16","size":24}
 	]
    }
    ```
-
-3. 使用 systemd 启动 docker  (Linux发行版大都支持systemd启动后台常驻进程)
+   
+3. 编辑 /usr/lib/systemd/system/docker.service 文件
    ```
-   $ touch /etc/systemd/system/docker.service.d/docker.conf   //如果没有创建一个新文件
-   $ vi /etc/systemd/system/docker.service.d/docker.conf
-     [Service]
-     ExecStart=
-     ExecStart=/usr/bin/dockerd
-   $ systemctl daemon-reload
+   把 ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock 替换成  ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
+   ```
+
+4. 使用 systemd 启动 docker  (Linux发行版大都支持systemd启动后台常驻进程)
+   ```
    $ systemctl start docker.service
    $ ps axu | grep dockerd
-     root      7217  0.3  1.8 858796 71964 ?        Ssl  08:51   0:00 /usr/bin/dockerd
+     root      7217  0.3  1.8 858796 71964 ?        Ssl  08:51   0:00 /usr/bin/dockerd --config-file /etc/docker/daemon.json
    $ docker info
-     
+     Client:
+      Debug Mode: false
+
+     Server:
+      Containers: 0
+      Running: 0
+      Paused: 0
+      Stopped: 0
+     Images: 0
+     ...
    ```
 
-
-2. 启动Docker daemon
-   ```
-   $ 
-   
-   $ ps axu | grep dockerd
-     root      9381  0.5  1.5 333692 59836 pts/0    Sl+  14:14   0:00 dockerd --data-root=/var/lib/docker --log-opt max-size=100m --log-opt max-file=5 --iptables=false --experimental=true --storage-driver overlay2
-   
-   $ docker info
-   Containers: 0
-    Running: 0
-    Paused: 0
-    Stopped: 0
-   Images: 0
-   Server Version: 18.03.1-ce
-   Storage Driver: overlay2
-   ...
-   ```
-
-3. 配置Kubernetes yum repo
+5. 配置Kubernetes yum repo
    ```
    $ cat <<EOF > /etc/yum.repos.d/kubernetes.repo
    [kubernetes]
@@ -185,7 +178,7 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
    注意: Kubernetes官网给的yum源是packages.cloud.google.com，但国内访问不了，我们使用阿里云的yum仓库镜像来代替
    ```
 
-4. 安装kubeadm
+6. 安装 kubeadm
    ```
    $ yum install -y kubeadm
    $ kubeadm
@@ -203,11 +196,57 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
     Create a two-machine cluster with one control-plane node
     (which controls the cluster), and one worker node
     (where your workloads, like Pods and Deployments run).
-    
     ......
    ```
    
-5. 
+7. 初始化 master 节点
+   ```
+   $ kubeadm init --kubernetes-version=v1.17.0 --image-repository registry.aliyuncs.com/google_containers --v=5
+     I0106 09:19:54.045557   23460 initconfiguration.go:103] detected and using CRI socket: /var/run/dockershim.sock
+     I0106 09:19:54.045681   23460 interface.go:400] Looking for default routes with IPv4 addresses
+     I0106 09:19:54.045686   23460 interface.go:405] Default route transits interface "eth0"
+     I0106 09:19:54.045771   23460 interface.go:208] Interface eth0 is up
+     ...
+     Your Kubernetes control-plane has initialized successfully!
+
+     To start using your cluster, you need to run the following as a regular user:
+
+        mkdir -p $HOME/.kube
+        sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+        sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+     You should now deploy a pod network to the cluster.
+     Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+         https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+     Then you can join any number of worker nodes by running the following on each as root:
+
+     kubeadm join 192.168.0.14:6443 --token 5uc3ns.rk2mxgxw4441ivi3 \
+          --discovery-token-ca-cert-hash sha256:ad1108bec6f2ffbb2b39ac5ae240e117c2e1128caa61f8629fca41142b05fa90
+   ```
+
+8. 集群配置
+   ```
+   $ mkdir -p $HOME/.kube
+   $ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+   $ sudo chown $(id -u):$(id -g) $HOME/.kube/config
+   
+   Kubernetes 集群默认需要加密方式访问。所以上面命令，就是将刚刚部署生成的 Kubernetes 集群的安全配置文件，保存到当前用户的 .kube 目录下，kubectl 默认会使用这个目录下的授权信息访问 Kubernetes 集群。
+   如果不这么做的话，我们每次都需要通过 export KUBECONFIG 环境变量告诉 kubectl 这个安全配置文件的位置，或者通过 --kubeconfig 选项告诉 kubectl 配置文件的位置。
+   ```
+
+9. 验证集群
+   ```
+   $ kubectl version
+   Client Version: version.Info{Major:"1", Minor:"17", GitVersion:"v1.17.0", GitCommit:"70132b0f130acc0bed193d9ba59dd186f0e634cf", GitTreeState:"clean", BuildDate:"2019-12-07T21:20:10Z", GoVersion:"go1.13.4", Compiler:"gc", Platform:"linux/amd64"}
+   Server Version: version.Info{Major:"1", Minor:"17", GitVersion:"v1.17.0", GitCommit:"70132b0f130acc0bed193d9ba59dd186f0e634cf", GitTreeState:"clean", BuildDate:"2019-12-07T21:12:17Z", GoVersion:"go1.13.4", Compiler:"gc", Platform:"linux/amd64"}
+   
+   $ kubectl get nodes -o wide
+     NAME    STATUS     ROLES    AGE     VERSION   INTERNAL-IP    EXTERNAL-IP   OS-IMAGE      KERNEL-VERSION               CONTAINER-RUNTIME
+     ecs-s6-large-2-linux-20200105130533   NotReady   master   3m54s   v1.17.0   192.168.0.14   <none>        CentOS Linux 7 (Core)   3.10.0-1062.9.1.el7.x86_64   docker://19.3.5
+   ```
+
+10. 
 
 ## ③ 配置worker
 1. 安装Docker
@@ -264,6 +303,16 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
    把 ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock 替换成  ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
    ```
    
-2. 
+2. `kubeadm init --kubernetes-version=v1.17.0 --pod-network-cidr=10.244.0.0/16 --service-cidr=10.96.0.0/12 --v=5` 初始化Kubernetes集群报以下错
+   ```
+   [preflight] Some fatal errors occurred:
+	[ERROR FileAvailable--etc-kubernetes-manifests-kube-apiserver.yaml]: /etc/kubernetes/manifests/kube-apiserver.yaml already exists
+	[ERROR FileAvailable--etc-kubernetes-manifests-kube-controller-manager.yaml]: /etc/kubernetes/manifests/kube-controller-manager.yaml already exists
+	[ERROR FileAvailable--etc-kubernetes-manifests-kube-scheduler.yaml]: /etc/kubernetes/manifests/kube-scheduler.yaml already exists
+	[ERROR FileAvailable--etc-kubernetes-manifests-etcd.yaml]: /etc/kubernetes/manifests/etcd.yaml already exists
+	[ERROR Port-10250]: Port 10250 is in use
+
+   解决方案: kubeadm reset 使用这个命令重置 init 和 join的创建的配置
+   ```
 
 
