@@ -29,13 +29,9 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
 1. 安装Docker
    ```
    $ yum install -y yum-utils    //安装依赖
-  
    $ yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo   //add docker-ce.repo
-   
    $ yum list docker-ce --showduplicates  //查看所有的docker-ce rpm包版本
-   
-   $ yum install docker-ce-18.03.1.ce-1.el7.centos  //安装18.03.1.ce-1.el7.centos这个版本
-   
+   $ yum install -y docker-ce-18.03.1.ce-1.el7.centos  //安装18.03.1.ce-1.el7.centos这个版本
    $ docker version   //确认docker安装成功
    Client:
     Version:      18.03.1-ce
@@ -47,10 +43,117 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
     Experimental: false
     Orchestrator: swarm
    ```
+   
+2. 配置 /etc/docker/daemon.json (Linux默认存储位置，如果没有创建一个新文件)
+   ```
+   {
+	"authorization-plugins": [],
+	"data-root": "",
+	"dns": [],
+	"dns-opts": [],
+	"dns-search": [],
+	"exec-opts": [],
+	"exec-root": "",
+	"experimental": true,
+	"features": {},
+	"storage-driver": "overlay2",
+	"storage-opts": [],
+	"labels": [],
+	"live-restore": true,
+	"log-driver": "json-file",
+	"log-opts": {
+		"max-size": "100m",
+		"max-file":"5",
+		"labels": "somelabel",
+		"env": "os,customer"
+	},
+	"mtu": 0,
+	"pidfile": "",
+	"cluster-store": "",
+	"cluster-store-opts": {},
+	"cluster-advertise": "",
+	"max-concurrent-downloads": 3,
+	"max-concurrent-uploads": 5,
+	"default-shm-size": "64M",
+	"shutdown-timeout": 15,
+	"debug": true,
+	"hosts": ["unix:///var/run/docker.sock"],
+	"log-level": "",
+	"swarm-default-advertise-addr": "",
+	"api-cors-header": "",
+	"selinux-enabled": false,
+	"userns-remap": "",
+	"group": "",
+	"cgroup-parent": "",
+	"default-ulimits": {
+		"nofile": {
+			"Name": "nofile",
+			"Hard": 64000,
+			"Soft": 64000
+		}
+	},
+	"init": false,
+	"init-path": "/usr/libexec/docker-init",
+	"ipv6": false,
+	"iptables": true,
+	"ip-forward": false,
+	"ip-masq": false,
+	"userland-proxy": false,
+	"userland-proxy-path": "/usr/libexec/docker-proxy",
+	"ip": "0.0.0.0",
+	"bridge": "",
+	"bip": "",
+	"fixed-cidr": "",
+	"fixed-cidr-v6": "",
+	"default-gateway": "",
+	"default-gateway-v6": "",
+	"icc": false,
+	"raw-logs": false,
+	"allow-nondistributable-artifacts": [],
+	"registry-mirrors": [],
+	"seccomp-profile": "",
+	"insecure-registries": [],
+	"no-new-privileges": false,
+	"default-runtime": "runc",
+	"oom-score-adjust": -500,
+	"node-generic-resources": ["NVIDIA-GPU=UUID1", "NVIDIA-GPU=UUID2"],
+	"runtimes": {
+		"cc-runtime": {
+			"path": "/usr/bin/cc-runtime"
+		},
+		"custom": {
+			"path": "/usr/local/bin/my-runc-replacement",
+			"runtimeArgs": [
+				"--debug"
+			]
+		}
+	},
+	"default-address-pools":[
+		{"base":"172.80.0.0/16","size":24},
+		{"base":"172.90.0.0/16","size":24}
+	]
+   }
+   ```
+
+3. 使用 systemd 启动 docker  (Linux发行版大都支持systemd启动后台常驻进程)
+   ```
+   $ touch /etc/systemd/system/docker.service.d/docker.conf   //如果没有创建一个新文件
+   $ vi /etc/systemd/system/docker.service.d/docker.conf
+     [Service]
+     ExecStart=
+     ExecStart=/usr/bin/dockerd
+   $ systemctl daemon-reload
+   $ systemctl start docker.service
+   $ ps axu | grep dockerd
+     root      7217  0.3  1.8 858796 71964 ?        Ssl  08:51   0:00 /usr/bin/dockerd
+   $ docker info
+     
+   ```
+
 
 2. 启动Docker daemon
    ```
-   $ dockerd --data-root=/var/lib/docker --log-opt max-size=100m --log-opt max-file=5 --iptables=false --experimental=true --storage-driver overlay2
+   $ 
    
    $ ps axu | grep dockerd
      root      9381  0.5  1.5 333692 59836 pts/0    Sl+  14:14   0:00 dockerd --data-root=/var/lib/docker --log-opt max-size=100m --log-opt max-file=5 --iptables=false --experimental=true --storage-driver overlay2
@@ -85,7 +188,26 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
 4. 安装kubeadm
    ```
    $ yum install -y kubeadm
+   $ kubeadm
+
+    ┌──────────────────────────────────────────────────────────┐
+    │ KUBEADM                                                  │
+    │ Easily bootstrap a secure Kubernetes cluster             │
+    │                                                          │
+    │ Please give us feedback at:                              │
+    │ https://github.com/kubernetes/kubeadm/issues             │
+    └──────────────────────────────────────────────────────────┘
+
+    Example usage:
+
+    Create a two-machine cluster with one control-plane node
+    (which controls the cluster), and one worker node
+    (where your workloads, like Pods and Deployments run).
+    
+    ......
    ```
+   
+5. 
 
 ## ③ 配置worker
 1. 安装Docker
@@ -131,3 +253,17 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
    
    
 ## ④ 测试
+
+# 三. Q&A
+1. `systemctl start docker` 启动docker报以下错
+   ```
+   报错: Job for docker.service failed because the control process exited with error code. See "systemctl status docker.service" and "journalctl -xe" for details.
+   
+   解决方案: 命令默认 /usr/lib/systemd/system/docker.service 这个配置文件，我们需要做以下修改
+   
+   把 ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock 替换成  ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
+   ```
+   
+2. 
+
+
