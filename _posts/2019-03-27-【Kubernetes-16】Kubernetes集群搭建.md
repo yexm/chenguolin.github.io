@@ -199,9 +199,9 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
     ......
    ```
    
-7. 初始化 master 节点
+7. 初始化 master 节点 ()
    ```
-   $ kubeadm init --kubernetes-version=v1.17.0 --image-repository registry.aliyuncs.com/google_containers --v=5
+   $ kubeadm init --kubernetes-version=v1.17.0 --pod-network-cidr=10.244.0.0/16 --image-repository registry.aliyuncs.com/google_containers --v=5
      I0106 09:19:54.045557   23460 initconfiguration.go:103] detected and using CRI socket: /var/run/dockershim.sock
      I0106 09:19:54.045681   23460 interface.go:400] Looking for default routes with IPv4 addresses
      I0106 09:19:54.045686   23460 interface.go:405] Default route transits interface "eth0"
@@ -345,4 +345,9 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
    解决方案: kubeadm reset 使用这个命令重置 init 和 join的创建的配置
    ```
 
+3. 部署 flannel 的时候，发现 kube-flannel-ds-amd64-xxxx 一直处于 CrashLoopBackOff 状态
+   ```
+   $ kubectl logs kube-flannel-ds-amd64-qckxp -n kube-system   //查看日志
+     发现有 Error registering network: failed to acquire lease: node "ecs-s6-large-2-linux-20200105130533" pod cidr not assigned
+   ```
 
