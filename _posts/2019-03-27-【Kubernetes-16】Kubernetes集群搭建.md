@@ -147,6 +147,7 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
 
 4. 使用 systemd 启动 docker  (Linux发行版大都支持systemd启动后台常驻进程)
    ```
+   $ systemctl enable docker
    $ systemctl start docker.service
    $ ps axu | grep dockerd
      root      7217  0.3  1.8 858796 71964 ?        Ssl  08:51   0:00 /usr/bin/dockerd --config-file /etc/docker/daemon.json
@@ -197,6 +198,8 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
     (which controls the cluster), and one worker node
     (where your workloads, like Pods and Deployments run).
     ......
+    
+   $ systemctl enable kubelet   //设置开机自启动
    ```
    
 7. 初始化 master 节点 ()
@@ -276,6 +279,14 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
      kube-flannel-ds-amd64-qckxp                                   1/1     Running             0          2m12s
      kube-proxy-c45xq                                              1/1     Running             0          9m57s
      kube-scheduler-ecs-s6-large-2-linux-20200105130533            1/1     Running             0          9m58s
+   ```
+
+11. 确认docker、kubelet开机自启动
+   ```
+   $ ls /lib/systemd/system/*.service /etc/systemd/system/*.service | grep kube
+   /lib/systemd/system/kubelet.service
+   $ ls /lib/systemd/system/*.service /etc/systemd/system/*.service | grep docker
+   /lib/systemd/system/docker.service
    ```
 
 ## ③ 配置worker  (ssh上worker节点)
@@ -396,6 +407,7 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
 
 4. 使用 systemd 启动 docker  (Linux发行版大都支持systemd启动后台常驻进程)
    ```
+   $ systemctl enable docker      //开机启动
    $ systemctl start docker.service
    $ ps axu | grep dockerd
      root      7217  0.3  1.8 858796 71964 ?        Ssl  08:51   0:00 /usr/bin/dockerd --config-file /etc/docker/daemon.json
@@ -447,6 +459,8 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
     (which controls the cluster), and one worker node
     (where your workloads, like Pods and Deployments run).
     ......
+    
+    $ systemctl enable kubelet   //设置开机自启动
    ```
 
 7. worker节点加入集群
@@ -459,7 +473,7 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
 
    Run 'kubectl get nodes' on the control-plane to see this node join the cluster.
    ```
-   
+      
 8. master节点上验证
    ```
    $ kubectl get nodes -o wide
@@ -472,7 +486,16 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
      因为kubeadm join 命令不会自动给worker节点打上 node 的label
    ```
    
+9. 确认docker、kubelet开机自启动
+   ```
+   $ ls /lib/systemd/system/*.service /etc/systemd/system/*.service | grep kube
+   /lib/systemd/system/kubelet.service
+   $ ls /lib/systemd/system/*.service /etc/systemd/system/*.service | grep docker
+   /lib/systemd/system/docker.service
+   ```
+   
 ## ④ 测试
+1. 
 
 # 三. Q&A
 1. `systemctl start docker` 启动docker报以下错
