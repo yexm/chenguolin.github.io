@@ -202,7 +202,7 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
    $ systemctl enable kubelet   //设置开机自启动
    ```
    
-7. 初始化 master 节点 ()
+7. 初始化 master 节点
    ```
    $ kubeadm init --kubernetes-version=v1.17.0 --pod-network-cidr=10.244.0.0/16 --image-repository registry.aliyuncs.com/google_containers --v=5
      I0106 09:19:54.045557   23460 initconfiguration.go:103] detected and using CRI socket: /var/run/dockershim.sock
@@ -495,7 +495,22 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
    ```
    
 ## ④ 测试
-1. 
+1. 确认当前集群的状态
+   ```
+   $ kubectl get nodes -o wide
+   NAME    STATUS   ROLES    AGE    VERSION   INTERNAL-IP     EXTERNAL-IP   OS-IMAGE     KERNEL-VERSION     CONTAINER-RUNTIME
+   ecs-s6-large-2-linux-20200105130533   Ready    master   107m   v1.17.0   192.168.0.14    <none>        CentOS Linux 7 (Core)   3.10.0-1062.9.1.el7.x86_64   docker://19.3.5
+   k8s-worker-node-0001                  Ready    node     51m    v1.17.0   192.168.0.202   <none>        CentOS Linux 7 (Core)   3.10.0-1062.9.1.el7.x86_64   docker://19.3.5
+   k8s-worker-node-0002                  Ready    node     26m    v1.17.0   192.168.0.239   <none>        CentOS Linux 7 (Core)   3.10.0-1062.1.1.el7.x86_64   docker://19.3.5
+   
+   $ kubectl cluster-info
+   Kubernetes master is running at https://192.168.0.14:6443
+   KubeDNS is running at https://192.168.0.14:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+   To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+   ```
+
+2. 
 
 # 三. Q&A
 1. `systemctl start docker` 启动docker报以下错
