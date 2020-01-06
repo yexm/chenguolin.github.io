@@ -228,7 +228,7 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
           --discovery-token-ca-cert-hash sha256:ad1108bec6f2ffbb2b39ac5ae240e117c2e1128caa61f8629fca41142b05fa90
    ```
 
-8. 集群配置
+8. 集群配置 （默认通过master节点使用kubectl访问）
    ```
    $ mkdir -p $HOME/.kube
    $ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
@@ -510,7 +510,46 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
    To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
    ```
 
-2. 
+2. kubectl命令查看
+   ```
+   $ kubectl get all -n kube-system
+   NAME                                                              READY   STATUS    RESTARTS   AGE
+   pod/coredns-9d85f5447-rhl67                                       1/1     Running   2          9h
+   pod/coredns-9d85f5447-vgfhn                                       1/1     Running   2          9h
+   pod/etcd-ecs-s6-large-2-linux-20200105130533                      1/1     Running   2          9h
+   pod/kube-apiserver-ecs-s6-large-2-linux-20200105130533            1/1     Running   2          9h
+   pod/kube-controller-manager-ecs-s6-large-2-linux-20200105130533   1/1     Running   2          9h
+   pod/kube-flannel-ds-amd64-bxrv9                                   1/1     Running   2          7h49m
+   pod/kube-flannel-ds-amd64-ngv95                                   1/1     Running   1          8h
+   pod/kube-flannel-ds-amd64-wll66                                   1/1     Running   3          9h
+   pod/kube-proxy-4lt4v                                              1/1     Running   2          7h49m
+   pod/kube-proxy-9frt9                                              1/1     Running   2          9h
+   pod/kube-proxy-kkfsx                                              1/1     Running   0          8h
+   pod/kube-scheduler-ecs-s6-large-2-linux-20200105130533            1/1     Running   2          9h
+   pod/kubernetes-dashboard-7c54d59f66-l5f6d                         1/1     Running   0          4h40m
+
+   NAME                           TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                  AGE
+   service/kube-dns               ClusterIP   10.96.0.10      <none>        53/UDP,53/TCP,9153/TCP   9h
+   service/kubernetes-dashboard   ClusterIP   10.96.221.197   <none>        8001/TCP                 4h40m
+
+   NAME                                     DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR                    AGE
+   daemonset.apps/kube-flannel-ds-amd64     3         3         1       3            1           <none>                        9h
+   daemonset.apps/kube-flannel-ds-arm       0         0         0       0            0           <none>                        9h
+   daemonset.apps/kube-flannel-ds-arm64     0         0         0       0            0           <none>                        9h
+   daemonset.apps/kube-flannel-ds-ppc64le   0         0         0       0            0           <none>                        9h
+   daemonset.apps/kube-flannel-ds-s390x     0         0         0       0            0           <none>                        9h
+   daemonset.apps/kube-proxy                3         3         1       3            1           beta.kubernetes.io/os=linux   9h
+
+   NAME                                   READY   UP-TO-DATE   AVAILABLE   AGE
+   deployment.apps/coredns                2/2     2            2           9h
+   deployment.apps/kubernetes-dashboard   1/1     1            1           4h40m
+
+   NAME                                              DESIRED   CURRENT   READY   AGE
+   replicaset.apps/coredns-9d85f5447                 2         2         2       9h
+   replicaset.apps/kubernetes-dashboard-7c54d59f66   1         1         1       4h40m
+   ```
+
+3. 用户就可以上 master 节点机器通过 kubectl 访问 kubernets集群了，kubeconfig配置文件在 `~/.kube/config`
 
 # 三. Q&A
 1. `systemctl start docker` 启动docker报以下错
