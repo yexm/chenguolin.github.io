@@ -254,40 +254,40 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
    ```
 
 10. 验证集群
-   ```
-   $ kubectl version
-   Client Version: version.Info{Major:"1", Minor:"17", GitVersion:"v1.17.0", GitCommit:"70132b0f130acc0bed193d9ba59dd186f0e634cf", GitTreeState:"clean", BuildDate:"2019-12-07T21:20:10Z", GoVersion:"go1.13.4", Compiler:"gc", Platform:"linux/amd64"}
-   Server Version: version.Info{Major:"1", Minor:"17", GitVersion:"v1.17.0", GitCommit:"70132b0f130acc0bed193d9ba59dd186f0e634cf", GitTreeState:"clean", BuildDate:"2019-12-07T21:12:17Z", GoVersion:"go1.13.4", Compiler:"gc", Platform:"linux/amd64"}
+    ```
+    $ kubectl version
+    Client Version: version.Info{Major:"1", Minor:"17", GitVersion:"v1.17.0", GitCommit:"70132b0f130acc0bed193d9ba59dd186f0e634cf", GitTreeState:"clean", BuildDate:"2019-12-07T21:20:10Z", GoVersion:"go1.13.4", Compiler:"gc", Platform:"linux/amd64"}
+    Server Version: version.Info{Major:"1", Minor:"17", GitVersion:"v1.17.0", GitCommit:"70132b0f130acc0bed193d9ba59dd186f0e634cf", GitTreeState:"clean", BuildDate:"2019-12-07T21:12:17Z", GoVersion:"go1.13.4", Compiler:"gc", Platform:"linux/amd64"}
    
-   $ kubectl get nodes -o wide
-     NAME    STATUS     ROLES    AGE     VERSION   INTERNAL-IP    EXTERNAL-IP   OS-IMAGE      KERNEL-VERSION               CONTAINER-RUNTIME
-     ecs-s6-large-2-linux-20200105130533   NotReady   master   3m54s   v1.17.0   192.168.0.14   <none>        CentOS Linux 7 (Core)   3.10.0-1062.9.1.el7.x86_64   docker://18.03.1
+    $ kubectl get nodes -o wide
+      NAME    STATUS     ROLES    AGE     VERSION   INTERNAL-IP    EXTERNAL-IP   OS-IMAGE      KERNEL-VERSION               CONTAINER-RUNTIME
+      ecs-s6-large-2-linux-20200105130533   NotReady   master   3m54s   v1.17.0   192.168.0.14   <none>        CentOS Linux 7 (Core)   3.10.0-1062.9.1.el7.x86_64   docker://18.03.1
      
-   $ kubectl get componentstatus
-     NAME                 STATUS    MESSAGE             ERROR
-     scheduler            Healthy   ok
-     controller-manager   Healthy   ok
-     etcd-0               Healthy   {"health":"true"}
+    $ kubectl get componentstatus
+      NAME                 STATUS    MESSAGE             ERROR
+      scheduler            Healthy   ok
+      controller-manager   Healthy   ok
+      etcd-0               Healthy   {"health":"true"}
      
-   $ kubectl get pods -n kube-system
-     NAME                                                          READY   STATUS              RESTARTS   AGE
-     coredns-9d85f5447-pgpzk                                       1/1     Running             0          9m57s
-     coredns-9d85f5447-zj24f                                       1/1     Running             0          9m57s
-     etcd-ecs-s6-large-2-linux-20200105130533                      1/1     Running             0          9m58s
-     kube-apiserver-ecs-s6-large-2-linux-20200105130533            1/1     Running             0          9m58s
-     kube-controller-manager-ecs-s6-large-2-linux-20200105130533   1/1     Running             0          9m58s
-     kube-flannel-ds-amd64-qckxp                                   1/1     Running             0          2m12s
-     kube-proxy-c45xq                                              1/1     Running             0          9m57s
-     kube-scheduler-ecs-s6-large-2-linux-20200105130533            1/1     Running             0          9m58s
-   ```
+    $ kubectl get pods -n kube-system
+      NAME                                                          READY   STATUS              RESTARTS   AGE
+      coredns-9d85f5447-pgpzk                                       1/1     Running             0          9m57s
+      coredns-9d85f5447-zj24f                                       1/1     Running             0          9m57s
+      etcd-ecs-s6-large-2-linux-20200105130533                      1/1     Running             0          9m58s
+      kube-apiserver-ecs-s6-large-2-linux-20200105130533            1/1     Running             0          9m58s
+      kube-controller-manager-ecs-s6-large-2-linux-20200105130533   1/1     Running             0          9m58s
+      kube-flannel-ds-amd64-qckxp                                   1/1     Running             0          2m12s
+      kube-proxy-c45xq                                              1/1     Running             0          9m57s
+      kube-scheduler-ecs-s6-large-2-linux-20200105130533            1/1     Running             0          9m58s
+    ```
 
 11. 确认docker、kubelet开机自启动
-   ```
-   $ ls /lib/systemd/system/*.service /etc/systemd/system/*.service | grep kube
-   /lib/systemd/system/kubelet.service
-   $ ls /lib/systemd/system/*.service /etc/systemd/system/*.service | grep docker
-   /lib/systemd/system/docker.service
-   ```
+    ```
+    $ ls /lib/systemd/system/*.service /etc/systemd/system/*.service | grep kube
+    /lib/systemd/system/kubelet.service
+    $ ls /lib/systemd/system/*.service /etc/systemd/system/*.service | grep docker
+    /lib/systemd/system/docker.service
+    ```
 
 ## ③ 配置worker  (ssh上worker节点)
 1. 安装Docker
