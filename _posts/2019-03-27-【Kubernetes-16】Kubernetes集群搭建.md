@@ -503,11 +503,13 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
 
 4. docker info 发现有 以下 Warnning 信息
    ```
+   WARNING: IPv4 forwarding is disabled
    WARNING: bridge-nf-call-iptables is disabled
    WARNING: bridge-nf-call-ip6tables is disabled
    
    解决方案
    
+   sysctl net.ipv4.ip_forward=1
    sysctl net.bridge.bridge-nf-call-ip6tables=1
    sysctl net.bridge.bridge-nf-call-iptables=1
    ```
@@ -521,4 +523,6 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
    1). systemctl stop firewalld 关闭master节点防火墙  //不推荐
    2). 如果使用云厂商提供的ECS机器，仔细确认下 安全组的入口规则配置，确认是否把6443端口放开
    ```
+   
+
 
