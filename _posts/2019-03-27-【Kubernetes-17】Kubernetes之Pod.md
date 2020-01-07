@@ -99,12 +99,14 @@ spec:
 # 三. 使用
 ## ① 常用命令
 1. 运行Pod `kubectl apply -f pod.yaml`
-2. 查看Pod列表 `kubectl get pod -n kube-system`
+2. 查看Pod列表 `kubectl get pod -n {namespace}`
 3. 删除Pod `kubectl delete po -n {namespace} {pod-name}`
-4. 查看Pod yaml `kubectl get pod -n kube-system {pod-name} -o yaml`
-5. 描述Pod `kubectl describe po -n kube-system {pod-name}`
-6. 
+4. 查看Pod yaml `kubectl get pod -n {namespace} {pod-name} -o yaml`
+5. 描述Pod `kubectl describe po -n {namespace} {pod-name}`
+6. 查看Pod 日志 `kubectl logs -f --tail 1000 -n {namespace} {pod-name}`  如果有多个容器可以用这个命令查看某个容器日志 `kubectl logs -f -n kube-system {pod-name} -c {container-name}`
+7. 进入Pod `kubectl exec -it -n {namespace} {pod-name} /bin/sh`
 
-## ② 
+## ② Pod属性
+我们知道任何kubernetes对象都可以通过 yaml 文件进行描述，Pod也不例外。为了更好的了解Pod，我们需要熟悉Pod yaml 配置文件相关属性字段的含义。我们通过
 
 # 四. 源码
