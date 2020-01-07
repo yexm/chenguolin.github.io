@@ -97,5 +97,14 @@ spec:
 ```
 
 # 三. 使用
+## ① 常用命令
+1. 运行Pod `kubectl apply -f pod.yaml`
+2. 查看Pod列表 `kubectl get pod -n kube-system`
+3. 删除Pod `kubectl delete po -n {namespace} {pod-name}`
+4. 查看Pod yaml `kubectl get pod -n kube-system {pod-name} -o yaml`
+5. 描述Pod `kubectl describe po -n kube-system {pod-name}`
+6. 
+
+## ② 
 
 # 四. 源码
