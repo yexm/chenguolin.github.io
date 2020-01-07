@@ -255,18 +255,34 @@ type相关的字段的定义可以参考 [kubernetes apimachinery meta/v1/types 
 spec相关的字段定义可以参考 [kubernetes api core/v1/types PodSpec](https://github.com/kubernetes/api/blob/master/core/v1/types.go#L2833) 主要是以下字段
 
 1. initContainers: init容器相关的字段，kubernetes提供了init container机制，只有所有的init container都成功执行后才会开始执行业务容器
-2. containers: 业务容器相关的字段
-    + 
+2. containers: 业务容器相关的字段 
+    + name: 容器名称
+    + image: 镜像地址
+    + imagePullPolicy: 镜像拉取策略，目前支持 `Always`、`Never`、`IfNotPresent` 这三种策略
+    + command: 容器运行命令
+    + args: 容器运行命令的参数列表
+    + ports: 容器暴露的端口
+    + env: 容器内设置的环境变量
+    + resources: 容器资源申请，详情可以参考 [manage-compute-resources-container](https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/)
+    + volumeMounts: 容器Volume挂载
+    + livenessProbe: 容器存活探针
+    + readinessProbe: 容器就绪探针
+    + lifecycle: 配置容器生命周期，主要有 postStart 和 preStop 两个hook
 3. nodeName: 当前Pod调度到的节点，当成功调度到某个节点之后会被kubernetes自动设置的
 4. restartPolicy: Pod重启策略，目前支持 `Always`、`OnFailure`、`Never` 这3种策略
-5. securityContext: 安全
-
-
+5. securityContext: Pod安全相关设置，默认情况下未空
+6. serviceAccountName: 当前Pod访问apiserver用的service account
+7. terminationGracePeriodSeconds: Pod优雅退出超时时间，默认为30s，关于容器的优雅退出可以参考 [Kubernetes容器应用优雅退出机制](https://chenguolin.github.io/2019/06/22/Kubernetes-30-Kubernetes%E5%AE%B9%E5%99%A8%E5%BA%94%E7%94%A8%E4%BC%98%E9%9B%85%E9%80%80%E5%87%BA%E6%9C%BA%E5%88%B6/#%E4%BA%8C-%E5%AE%B9%E5%99%A8%E4%BC%98%E9%9B%85%E9%80%80%E5%87%BA)
+8. tolerations: Pod容忍了哪些污点
+9. volumes: kubernetes volume配置
 
 ### status字段
 
 
-# 四. 源码
+# 四. 流程
+## ① 创建Pod
+
+## ② 删除Pod
 
 
 
