@@ -277,7 +277,22 @@ spec相关的字段定义可以参考 [kubernetes api core/v1/types PodSpec](htt
 9. volumes: kubernetes volume配置
 
 ### status字段
+status相关的字段定义可以参考 [kubernetes api core/v1/types PodStatus](https://github.com/kubernetes/api/blob/master/core/v1/types.go#L3401) 主要是以下字段
 
+1. phase: Pod的阶段，主要有以下5个
+   ```
+   1). Pending	The Pod has been accepted by the Kubernetes system, but one or more of the Container images has not been created. This includes time before being scheduled as well as time spent downloading images over the network, which could take a while.
+   2). Running	The Pod has been bound to a node, and all of the Containers have been created. At least one Container is still running, or is in the process of starting or restarting.
+   3). Succeeded	All Containers in the Pod have terminated in success, and will not be restarted.
+   4). Failed	All Containers in the Pod have terminated, and at least one Container has terminated in failure. That is, the Container either exited with non-zero status or was terminated by the system.
+   5). Unknown	For some reason the state of the Pod could not be obtained, typically due to an error in communicating with the host of the Pod.
+   ```
+2. podIP: 当前Pod的IP，每个Pod都有一个IP，一般Pod的IP段是 10.244.0.0/16
+3. hostIP: 宿主机IP
+4. startTime: Pod启动时间
+5. conditions: Pod的状态，最重要的是 containerStatuses 这个字段
+    + containerStatuses.containerID: 容器ID
+    + containerStatuses.image: 容器镜像
 
 # 四. 流程
 ## ① 创建Pod
