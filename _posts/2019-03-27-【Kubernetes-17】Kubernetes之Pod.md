@@ -233,7 +233,7 @@ status:
   startTime: "2020-01-06T06:21:35Z"
 ```
 
-## type字段
+### type字段
 type相关的字段的定义可以参考 [kubernetes apimachinery meta/v1/types TypeMeta](https://github.com/kubernetes/apimachinery/blob/master/pkg/apis/meta/v1/types.go#L41) 主要是以下字段
 
 1. apiVersion: 使用的API对象的版本，可以参考kubernetes github源码 [v1](https://github.com/kubernetes/api/tree/master/core/v1) 就是表示版本
