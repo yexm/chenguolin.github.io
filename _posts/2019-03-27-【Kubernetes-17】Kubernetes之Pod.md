@@ -107,6 +107,166 @@ spec:
 7. 进入Pod `kubectl exec -it -n {namespace} {pod-name} /bin/sh`
 
 ## ② Pod属性
-我们知道任何kubernetes对象都可以通过 yaml 文件进行描述，Pod也不例外。为了更好的了解Pod，我们需要熟悉Pod yaml 配置文件相关属性字段的含义。我们通过
+我们知道任何kubernetes对象都可以通过 yaml 文件进行描述，Pod也不例外。为了更好的了解Pod，我们需要熟悉Pod yaml 配置文件相关属性字段的含义，我们通过
+下面这个例子来了解一下Pod。有关 Pod 属性字段的相关含义，可以参考 [kubernetes api core/v1/types](https://github.com/kubernetes/api/blob/master/core/v1/types.go#L3513)
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2020-01-06T06:21:35Z"
+  generateName: kubernetes-dashboard-7c54d59f66-
+  labels:
+    k8s-app: kubernetes-dashboard
+    pod-template-hash: 7c54d59f66
+  name: kubernetes-dashboard-7c54d59f66-l5f6d
+  namespace: kube-system
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: kubernetes-dashboard-7c54d59f66
+    uid: e4675c10-f794-4900-afed-61700a34676c
+  resourceVersion: "37589"
+  selfLink: /api/v1/namespaces/kube-system/pods/kubernetes-dashboard-7c54d59f66-l5f6d
+  uid: f4eefe2c-c0c2-49fb-9015-c1a79b006b03
+spec:
+  containers:
+  - args:
+    - --auto-generate-certificates
+    image: k8s.gcr.io/kubernetes-dashboard-amd64:v1.10.1
+    imagePullPolicy: IfNotPresent
+    livenessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /
+        port: 8443
+        scheme: HTTPS
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 30
+    name: kubernetes-dashboard
+    ports:
+    - containerPort: 8443
+      protocol: TCP
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /certs
+      name: kubernetes-dashboard-certs
+    - mountPath: /tmp
+      name: tmp-volume
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kubernetes-dashboard-token-6scf4
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: ecs-s6-large-2-linux-20200105130533
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: kubernetes-dashboard
+  serviceAccountName: kubernetes-dashboard
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/master
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - name: kubernetes-dashboard-certs
+    secret:
+      defaultMode: 420
+      secretName: kubernetes-dashboard-certs
+  - emptyDir: {}
+    name: tmp-volume
+  - name: kubernetes-dashboard-token-6scf4
+    secret:
+      defaultMode: 420
+      secretName: kubernetes-dashboard-token-6scf4
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2020-01-06T06:21:35Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2020-01-06T06:27:23Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2020-01-06T06:27:23Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2020-01-06T06:21:35Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: docker://0c3688c4115547af792019d21a4e7f1ff9ff1ddf5555a81d41d4d29cdcc437f4
+    image: k8s.gcr.io/kubernetes-dashboard-amd64:v1.10.1
+    imageID: docker-pullable://registry.cn-hangzhou.aliyuncs.com/google_containers/kubernetes-dashboard-amd64@sha256:0ae6b69432e78069c5ce2bcde0fe409c5c4d6f0f4d9cd50a17974fea38898747
+    lastState: {}
+    name: kubernetes-dashboard
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2020-01-06T06:27:22Z"
+  hostIP: 192.168.0.14
+  phase: Running
+  podIP: 10.244.0.12
+  podIPs:
+  - ip: 10.244.0.12
+  qosClass: BestEffort
+  startTime: "2020-01-06T06:21:35Z"
+```
+
+## type字段
+type相关的字段的定义可以参考 [kubernetes apimachinery meta/v1/types TypeMeta](https://github.com/kubernetes/apimachinery/blob/master/pkg/apis/meta/v1/types.go#L41) 主要是以下字段
+
+1. apiVersion: 使用的API对象的版本，可以参考kubernetes github源码 [v1](https://github.com/kubernetes/api/tree/master/core/v1) 就是表示版本
+2. kind: API对象类型，对于Pod来说一直是 Pod
+
+### meta字段
+type相关的字段的定义可以参考 [kubernetes apimachinery meta/v1/types ObjectMeta](https://github.com/kubernetes/apimachinery/blob/master/pkg/apis/meta/v1/types.go#L110) 主要是以下字段
+
+1. name: Pod名称，kubernetes能够保证每个pod名称独一无二
+2. namespace: Pod所属的namespace （kubernetes namespace类似组的概念，和linux namespace不同）
+3. creationTimestamp: Pod创建时间
+4. labels: Pod相关的label，有些是用户设置的，有些则是kubernetes自动设置的
+5. ownerReferences: 有些Pod是由更顶层的API对象例如ReplicaSet等控制创建的，这个字段标识它的上一层API对象是谁
+6. uid: kubernetes自动生成的唯一的pod id
+7. selfLink: 当前pod的url，可以通过访问该url获取到pod的相关信息
+8. annotations: 用户自己设置的一些key-value键值对注释，类似labels
+
+### spec字段
+spec相关的字段定义可以参考 [kubernetes api core/v1/types PodSpec](https://github.com/kubernetes/api/blob/master/core/v1/types.go#L2833) 主要是以下字段
+
+1. initContainers: init容器相关的字段，kubernetes提供了init container机制，只有所有的init container都成功执行后才会开始执行业务容器
+2. containers: 业务容器相关的字段
+    + 
+3. nodeName: 当前Pod调度到的节点，当成功调度到某个节点之后会被kubernetes自动设置的
+4. restartPolicy: Pod重启策略，目前支持 `Always`、`OnFailure`、`Never` 这3种策略
+5. securityContext: 安全
+
+
+
+### status字段
+
 
 # 四. 源码
+
+
+
