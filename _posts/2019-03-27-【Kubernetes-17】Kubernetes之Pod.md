@@ -68,7 +68,33 @@ Kubernetes 中 Pod 的实现需要使用一个中间容器，这个容器叫作 
 
 `这也就意味着，如果 Pod 里的有多个容器，那么这些容器可以直接使用 localhost 进行通信，同时它们看到的网络设备跟 Infra 容器看到的完全一样。`
 
-了解
+除了网络之外，同一个Pod内的容器如果要共享存储，可以通过Volume来实现，容器挂载相关的Volume即可实现共享存储，如下面这个例子。nginx-container 和 debian-container 容器都挂载了 shared-data volume，而 shared-data 对应的是 hostPath volume，实际上是宿主机的 /data 目录。所以，通过这种方式两个容器就可以共享宿主机 /data 达到共享存储的目的。
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: two-containers
+spec:
+  restartPolicy: Never
+  volumes:
+  - name: shared-data
+    hostPath:
+      path: /data
+  containers:
+  - name: nginx-container
+    image: nginx
+    volumeMounts:
+    - name: shared-data
+      mountPath: /usr/share/nginx/html
+  - name: debian-container
+    image: debian
+    volumeMounts:
+    - name: shared-data
+      mountPath: /pod-data
+    command: ["/bin/sh"]
+    args: ["-c", "echo Hello from the debian container > /pod-data/index.html"]
+```
 
 # 三. 使用
 
