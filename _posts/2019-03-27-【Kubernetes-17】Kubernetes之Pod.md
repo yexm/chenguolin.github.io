@@ -290,9 +290,13 @@ status相关的字段定义可以参考 [kubernetes api core/v1/types PodStatus]
 2. podIP: 当前Pod的IP，每个Pod都有一个IP，一般Pod的IP段是 10.244.0.0/16
 3. hostIP: 宿主机IP
 4. startTime: Pod启动时间
-5. conditions: Pod的状态，最重要的是 containerStatuses 这个字段
+5. conditions: Pod的状态，最重要的是 [containerStatuses](https://github.com/kubernetes/api/blob/master/core/v1/types.go#L2378) 这个字段
     + containerStatuses.containerID: 容器ID
     + containerStatuses.image: 容器镜像
+    + containerStatuses.name: 容器名称
+    + containerStatuses.ready: 容器是否ready
+    + containerStatuses.restartCount: 容器重启次数 （注意容器重启 Pod并不会重启，两者生命周期不同）
+    + containerStatuses.state: 容器状态
 
 # 四. 流程
 ## ① 创建Pod
