@@ -90,10 +90,10 @@ tags:          #标签
 19. 删除namespace，将会删除该ns下所有pod  
    `$ kubectl delete ns my-namespace`
 20. 拷贝文件到K8s Pod  
-   1). 拷贝单文件到Pod: `$ kubectl cp [file-path] [pod-name]:/[path]` 例如 `$ kubectl cp sample.dat myapp-759598b9f7-7gbsc:/tmp/` 
+   1). 拷贝单文件到Pod: `$ kubectl cp [file-path] [pod-name]:/[path]` 例如 `$ kubectl cp sample.dat myapp-759598b9f7-7gbsc:/tmp/`   
    2). 拷贝目录到Pod: `$ kubectl cp [dir-path] [pod-name]:/[path]` 例如 `$ kubectl cp dir myapp-759598b9f7-7gbsc:/tmp/`  
-   3). 拷贝文件到多个Pod: `$ for podname in $(kubectl get pods -n test -o json | jq -r '.items[].metadata.name' | grep cgl-test); do kubectl cp log ${podname}:/tmp/ -n test ; done`  
-   4). 确认文件是否拷贝成功: `$ for podname in $(kubectl get pods -n test -o json | jq -r '.items[].metadata.name' | grep cgl-test); do kubectl exec -i ${podname} -n test ls /tmp ; done`  
+   3). 拷贝文件到多个Pod: `$ for podname in $(kubectl get pods -n test -o json | jq -r '.items[].metadata.name' | grep cgl-test); do kubectl cp log ${podname}:/tmp/ -n test ; done`   
+   4). 确认文件是否拷贝成功: `$ for podname in $(kubectl get pods -n test -o json | jq -r '.items[].metadata.name' | grep cgl-test); do kubectl exec -i ${podname} -n test ls /tmp ; done`   
 21. 删除污点
    `$ kubectl taint nodes {node-name} k8s.toBeDeleted:NoSchedule-`  //注意末尾有个 `-`
 
