@@ -270,12 +270,12 @@ spec相关的字段定义可以参考 [kubernetes api core/v1/types PodSpec](htt
     + env: 容器内设置的环境变量
     + resources: 容器资源申请，详情可以参考 [manage-compute-resources-container](https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/)
     + volumeMounts: 容器Volume挂载
-    + livenessProbe: 容器存活探针
-    + readinessProbe: 容器就绪探针
+    + livenessProbe: 容器存活探针，表明容器是否正在运行，如果存活探针失败，那kubelet会kill掉容器进程
+    + readinessProbe: 容器就绪探针，表明容器是否已经准备好接收访问请求
     + lifecycle: 配置容器生命周期，主要有 postStart 和 preStop 两个hook
 3. nodeName: 当前Pod调度到的节点，当成功调度到某个节点之后会被kubernetes自动设置的
 4. restartPolicy: Pod重启策略，目前支持 `Always`、`OnFailure`、`Never` 这3种策略
-5. securityContext: Pod安全相关设置，默认情况下未空
+5. securityContext: Pod安全相关设置，默认情况下为空 （可以设置 privileged 让容器拥有真正的root权限，正常启动的容器内部虽然是root用户，实际只是外部的一个普通用户权限）
 6. serviceAccountName: 当前Pod访问apiserver用的service account
 7. terminationGracePeriodSeconds: Pod优雅退出超时时间，默认为30s，关于容器的优雅退出可以参考 [Kubernetes容器应用优雅退出机制](https://chenguolin.github.io/2019/06/22/Kubernetes-30-Kubernetes%E5%AE%B9%E5%99%A8%E5%BA%94%E7%94%A8%E4%BC%98%E9%9B%85%E9%80%80%E5%87%BA%E6%9C%BA%E5%88%B6/#%E4%BA%8C-%E5%AE%B9%E5%99%A8%E4%BC%98%E9%9B%85%E9%80%80%E5%87%BA)
 8. tolerations: Pod容忍了哪些污点
@@ -301,15 +301,20 @@ status相关的字段定义可以参考 [kubernetes api core/v1/types PodStatus]
     + containerStatuses.name: 容器名称
     + containerStatuses.ready: 容器是否ready
     + containerStatuses.restartCount: 容器重启次数 （注意容器重启 Pod并不会重启，两者生命周期不同）
-    + containerStatuses.state: 容器状态
+    + containerStatuses.state: 容器状态，主要有 `Waiting`、`Running`、`Terminated` 三种状态
 
 # 四. 流程
 ## ① 创建Pod
+创建Pod的流程大致如下所示
+
+1. 用户发送创建 pod的请求（可以通过kubectl apply 命令实现 或者使用 client-go）
+2. 当 apiserver 收到创建pod的请求后，会更新 etcd 的meta信息
+3. kubelet
 
 ## ② 删除Pod
 由于Pod封装了容器，而容器本质是在宿主机上运行的进程，因此删除Pod的时候需要考虑如何保证容器进程优雅退出，kubernetes删除Pod的流程大致如下所示
 
-1. 用户发送 delete pod的请求（可以通过kubectl delete 命令实现）
+1. 用户发送 delete pod的请求（可以通过kubectl delete 命令实现 或者使用 client-go）
 2. 默认情况下 pod 的 terminationGracePeriodSeconds 时间为30s，用户可以通过修改 pod yaml 调整这个优雅退出的超时时间
 3. 当 apiserver 收到删除pod的请求后，会更新 etcd 的meta信息
 4. kubelet 发现 pod 被标记为 terminating 后，如果容器配置了 preStop hook，那么会先执行 preStop，直到这个 Hook 定义操作完成之后，才允许容器被杀死，这跟 postStart 不一样。[kubelet kuberuntime killContainer](https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/kuberuntime/kuberuntime_container.go#L552)
