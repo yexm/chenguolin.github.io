@@ -281,10 +281,11 @@ status相关的字段定义可以参考 [kubernetes api core/v1/types PodStatus]
 
 1. phase: Pod的阶段，主要有以下5个
    ```
-   1). Pending	
+   1). Pending	Pod已经被kubernetes成功调度，但是有一个或多个容器还未创建，常见的原因有 镜像下载、资源不足
+   2). Running  Pod已经成
    
    The Pod has been accepted by the Kubernetes system, but one or more of the Container images has not been created. This includes time before being scheduled as well as time spent downloading images over the network, which could take a while.
-   2). Running	The Pod has been bound to a node, and all of the Containers have been created. At least one Container is still running, or is in the process of starting or restarting.
+   2). 	The Pod has been bound to a node, and all of the Containers have been created. At least one Container is still running, or is in the process of starting or restarting.
    3). Succeeded	All Containers in the Pod have terminated in success, and will not be restarted.
    4). Failed	All Containers in the Pod have terminated, and at least one Container has terminated in failure. That is, the Container either exited with non-zero status or was terminated by the system.
    5). Unknown	For some reason the state of the Pod could not be obtained, typically due to an error in communicating with the host of the Pod.
