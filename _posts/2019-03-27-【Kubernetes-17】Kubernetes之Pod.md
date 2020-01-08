@@ -309,12 +309,13 @@ status相关的字段定义可以参考 [kubernetes api core/v1/types PodStatus]
 ## ② 删除Pod
 由于Pod封装了容器，而容器本质是在宿主机上运行的进程，因此删除Pod的时候需要考虑如何保证容器进程优雅退出，kubernetes删除Pod的流程大致如下所示
 
-1. 用户发送delete pod的请求（可以通过kubectl delete 命令实现）
+1. 用户发送 delete pod的请求（可以通过kubectl delete 命令实现）
 2. 默认情况下 pod 的 terminationGracePeriodSeconds 时间为30s，用户可以通过修改 pod yaml 调整这个优雅退出的超时时间
 3. 当 apiserver 收到删除pod的请求后，会更新 etcd 的meta信息
-4. kubelet 发现 pod 被标记为 terminating 后，如果容器配置了 preStop hook，那么会先执行 preStop，直到这个 Hook 定义操作完成之后，才允许容器被杀死，这跟 postStart 不一样
-5. terminationGracePeriodSeconds 
-6. 
+4. kubelet 发现 pod 被标记为 terminating 后，如果容器配置了 preStop hook，那么会先执行 preStop，直到这个 Hook 定义操作完成之后，才允许容器被杀死，这跟 postStart 不一样。[kubelet kuberuntime killContainer](https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/kuberuntime/kuberuntime_container.go#L552)
+5. terminationGracePeriodSeconds 减去 preStop 执行时间为容器进程优雅退出时间，如果 preStop 执行超过terminationGracePeriodSeconds 则容器进行优雅退出时间会被强制设置为 2秒 [kubelet kuberuntime set gracePeriod](https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/kuberuntime/kuberuntime_container.go#L592)
+6. kubelet 通过CRI 接口发送 [StopContainer](https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/kuberuntime/kuberuntime_container.go#L602) rpc请求，并带上超时时间配置 
+7. 容器运行时先发送 SIGTERM 信号，如果过了超时时间容器进程还未介绍，则发送 SIGKILL 强制 kill 掉容器进程 [containerd cri container stop](https://github.com/containerd/cri/blob/95bd02d28f28c95154755e9de095615717afc14f/pkg/server/container_stop.go#L103)
 
 
 
