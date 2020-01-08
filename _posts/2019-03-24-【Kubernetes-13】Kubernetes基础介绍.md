@@ -55,7 +55,7 @@ worker节点组件运行在每个k8s Node上，提供K8s运行时环境，以及
 ## ③ K8s与Docker
 K8s在初期版本里，就对多个容器引擎做了兼容，因此可以使用docker、rkt对容器进行管理。以docker为例，kubelet中会启动一个docker manager，通过直接调用docker的api进行容器的创建等操作。
 
-在k8s 1.5版本之后，kubernetes推出了自己的运行时接口 [cri-api(container runtime interface](https://github.com/kubernetes/cri-api/)。cri接口的推出，隔离了各个容器引擎之间的差异，而通过统一的接口与各个容器引擎之间进行互动。cri不仅定义了容器的生命周期的管理，还引入了k8s中pod的概念，并定义了管理pod的生命周期。在kubernetes中，pod是由一组进行了资源限制的，在隔离环境中的容器组成。而这个隔离环境，称之为PodSandbox。kubernetes孵化了[containerd/cri](https://github.com/containerd/cri)项目，是cri-api的具体实现。
+在k8s 1.5版本之后，kubernetes推出了自己的运行时接口 [cri-api(container runtime interface](https://github.com/kubernetes/cri-api/)。cri接口的推出，隔离了各个容器引擎之间的差异，而通过统一的接口与各个容器引擎之间进行互动。cri不仅定义了容器的生命周期的管理，还引入了k8s中pod的概念，并定义了管理pod的生命周期。在kubernetes中，pod是由一组进行了资源限制的，在隔离环境中的容器组成。而这个隔离环境，称之为PodSandbox。kubernetes孵化了[containerd/cri](https://github.com/containerd/cri)项目，是cri-api的具体实现。初此之外，docker 自己把运行时相关的从 daemon 剥离出来，实现了 [containerd](https://github.com/containerd/containerd) 项目。
 
 ![](https://github.com/containerd/cri/blob/master/docs/cri.png?raw=true)
 
