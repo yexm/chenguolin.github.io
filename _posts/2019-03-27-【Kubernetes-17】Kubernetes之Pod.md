@@ -317,5 +317,5 @@ status相关的字段定义可以参考 [kubernetes api core/v1/types PodStatus]
 6. kubelet 通过CRI 接口发送 [StopContainer](https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/kuberuntime/kuberuntime_container.go#L602) rpc请求，并带上超时时间配置 
 7. 容器运行时先发送 SIGTERM 信号，如果过了超时时间容器进程还未介绍，则发送 SIGKILL 强制 kill 掉容器进程 [containerd cri container stop](https://github.com/containerd/cri/blob/95bd02d28f28c95154755e9de095615717afc14f/pkg/server/container_stop.go#L103)
 
-
+`建议: 如果容器设置了 preStop hook，建议把terminationGracePeriodSeconds配置大一点，如果 preStop 运行太久可能会导致容器进程被操作系统强杀，导致没有办法优雅退出，影响业务。`
 
