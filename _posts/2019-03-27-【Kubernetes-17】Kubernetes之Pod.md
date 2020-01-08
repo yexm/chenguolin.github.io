@@ -309,7 +309,9 @@ status相关的字段定义可以参考 [kubernetes api core/v1/types PodStatus]
 
 1. 用户发送创建 pod的请求（可以通过kubectl apply 命令实现 或者使用 client-go）
 2. 当 apiserver 收到创建pod的请求后，会更新 etcd 的meta信息
-3. kubelet
+3. kubelet 收到 创建Pod的请求后，开始创建Pod流程 (kubelet入口在这里[SyncPod](https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/kuberuntime/kuberuntime_manager.go#L647)）
+4. 先创建 initContainer，主要包括 拉取镜像、调用容器运行时 [CreateContainer](https://github.com/containerd/cri/blob/master/pkg/server/container_create.go#L48)、[StartContainer](https://github.com/containerd/cri/blob/master/pkg/server/container_start.go#L40)、执行 PostStart 几个步骤
+5. 再创建 业务容器，主要包括 拉取镜像、调用容器运行时 [CreateContainer](https://github.com/containerd/cri/blob/master/pkg/server/container_create.go#L48)、[StartContainer](https://github.com/containerd/cri/blob/master/pkg/server/container_start.go#L40)、执行 PostStart 几个步骤
 
 ## ② 删除Pod
 由于Pod封装了容器，而容器本质是在宿主机上运行的进程，因此删除Pod的时候需要考虑如何保证容器进程优雅退出，kubernetes删除Pod的流程大致如下所示
