@@ -19,6 +19,11 @@ Docker的实现方案虽然可行，但是很麻烦，因为我们不仅要考�
 
 所以，在 Kubernetes 里面实现方案为 把2个容器绑定在同一个Pod上，同一个Pod 里的所有容器，共享同一个 Network Namespace，并且可以声明共享同一个 Volume。
 
+Docker是kubernetes项目使用最多的容器运行时，但是kubernetes还支持其他的容器运行时 [container-runtimes](https://kubernetes.io/docs/setup/production-environment/container-runtimes/)，在kubernetes中使用Pod主要是以下2种方式。
+
+1. `Pod内运行单容器`: 最常见的使用方式，相当于Pod封装了一下容器，kubernetes直接管理Pod而非容器
+2. `Pod内运行多个容器`: 可以把多个关联的容器放在同一个Pod内，同一个Pod 里的所有容器，共享同一个 Network Namespace，可以使用localhost进行通信
+
 # 二. Pod
 Kubernetes 中 Pod 的实现需要使用一个中间容器，这个容器叫作 Infra 容器。在这个 Pod 中，Infra 容器永远都是第一个被创建的容器，而其他用户定义的容器，则通过 Join Network Namespace 的方式，与 Infra 容器关联在一起。
 
