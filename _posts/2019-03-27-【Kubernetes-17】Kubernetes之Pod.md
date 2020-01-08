@@ -307,6 +307,14 @@ status相关的字段定义可以参考 [kubernetes api core/v1/types PodStatus]
 ## ① 创建Pod
 
 ## ② 删除Pod
+由于Pod封装了容器，而容器本质是在宿主机上运行的进程，因此删除Pod的时候需要考虑如何保证容器进程优雅退出，kubernetes删除Pod的流程大致如下所示
+
+1. 用户发送delete pod的请求（可以通过kubectl delete 命令实现）
+2. 默认情况下 pod 的 terminationGracePeriodSeconds 时间为30s，用户可以通过修改 pod yaml 调整这个优雅退出的超时时间
+3. 当 apiserver 收到删除pod的请求后，会更新 etcd 的meta信息
+4. kubelet 发现 pod 被标记为 terminating 后，如果容器配置了 preStop hook，那么会先执行 preStop，直到这个 Hook 定义操作完成之后，才允许容器被杀死，这跟 postStart 不一样
+5. terminationGracePeriodSeconds 
+6. 
 
 
 
