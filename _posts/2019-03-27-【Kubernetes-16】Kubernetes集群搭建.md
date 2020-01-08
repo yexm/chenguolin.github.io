@@ -287,6 +287,8 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
     /lib/systemd/system/kubelet.service
     $ ls /lib/systemd/system/*.service /etc/systemd/system/*.service | grep docker
     /lib/systemd/system/docker.service
+    $ ls /lib/systemd/system/*.service /etc/systemd/system/*.service | grep containerd
+    /lib/systemd/system/containerd.service
     ```
 
 ## ③ 配置worker  (ssh上worker节点)
@@ -488,6 +490,8 @@ Kubernetes使用Go语言开发，已经免去了类似Python需要按照语言�
    /lib/systemd/system/kubelet.service
    $ ls /lib/systemd/system/*.service /etc/systemd/system/*.service | grep docker
    /lib/systemd/system/docker.service
+   $ ls /lib/systemd/system/*.service /etc/systemd/system/*.service | grep containerd
+   /lib/systemd/system/containerd.service
    ```
    
 ## ④ 测试
