@@ -107,8 +107,132 @@ spec:
 4. 描述Deployment: `kubectl describe deployment -n {kube-system} {deployment-name}`
 5. 编辑Deployment: `kubectl edit deployment -n {kube-system} {deployment-name}`
 6. 删除Deployment: `kubectl delete deployment -n {kube-system} {deployment-name}`
+7. 查看滚动升级状态: `kubectl rollout status deployment -n {kube-system} {deployment-name}`
 
 ## ② 属性字段
+为了更好的了解Deployment，我们需要熟悉Deployment yaml 配置文件相关属性字段的含义，我们通过 下面这个例子来了解一下Deployment。有关 Deployment 属性字段的相关含义，可以参考 [kubernetes api extensions/v1beta1/types Deployment](https://github.com/kubernetes/api/blob/master/extensions/v1beta1/types.go#L78)
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"labels":{"k8s-app":"kubernetes-dashboard"},"name":"kubernetes-dashboard","namespace":"kube-system"},"spec":{"replicas":1,"revisionHistoryLimit":10,"selector":{"matchLabels":{"k8s-app":"kubernetes-dashboard"}},"template":{"metadata":{"labels":{"k8s-app":"kubernetes-dashboard"}},"spec":{"containers":[{"args":["--auto-generate-certificates"],"image":"k8s.gcr.io/kubernetes-dashboard-amd64:v1.10.1","livenessProbe":{"httpGet":{"path":"/","port":8443,"scheme":"HTTPS"},"initialDelaySeconds":30,"timeoutSeconds":30},"name":"kubernetes-dashboard","ports":[{"containerPort":8443,"protocol":"TCP"}],"volumeMounts":[{"mountPath":"/certs","name":"kubernetes-dashboard-certs"},{"mountPath":"/tmp","name":"tmp-volume"}]}],"serviceAccountName":"kubernetes-dashboard","tolerations":[{"effect":"NoSchedule","key":"node-role.kubernetes.io/master"}],"volumes":[{"name":"kubernetes-dashboard-certs","secret":{"secretName":"kubernetes-dashboard-certs"}},{"emptyDir":{},"name":"tmp-volume"}]}}}}
+  creationTimestamp: "2020-01-06T06:21:35Z"
+  generation: 1
+  labels:
+    k8s-app: kubernetes-dashboard
+  name: kubernetes-dashboard
+  namespace: kube-system
+  resourceVersion: "37592"
+  selfLink: /apis/apps/v1/namespaces/kube-system/deployments/kubernetes-dashboard
+  uid: e48eb030-1814-4ae9-add4-df89f26ff201
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      k8s-app: kubernetes-dashboard
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        k8s-app: kubernetes-dashboard
+    spec:
+      containers:
+      - args:
+        - --auto-generate-certificates
+        image: k8s.gcr.io/kubernetes-dashboard-amd64:v1.10.1
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: 8443
+            scheme: HTTPS
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 30
+        name: kubernetes-dashboard
+        ports:
+        - containerPort: 8443
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /certs
+          name: kubernetes-dashboard-certs
+        - mountPath: /tmp
+          name: tmp-volume
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: kubernetes-dashboard
+      serviceAccountName: kubernetes-dashboard
+      terminationGracePeriodSeconds: 30
+      tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
+      volumes:
+      - name: kubernetes-dashboard-certs
+        secret:
+          defaultMode: 420
+          secretName: kubernetes-dashboard-certs
+      - emptyDir: {}
+        name: tmp-volume
+status:
+  availableReplicas: 1
+  conditions:
+  - lastTransitionTime: "2020-01-06T06:27:23Z"
+    lastUpdateTime: "2020-01-06T06:27:23Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2020-01-06T06:21:35Z"
+    lastUpdateTime: "2020-01-06T06:27:23Z"
+    message: ReplicaSet "kubernetes-dashboard-7c54d59f66" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  observedGeneration: 1
+  readyReplicas: 1
+  replicas: 1
+  updatedReplicas: 1
+```
+
+### type字段
+type相关的字段的定义可以参考 [kubernetes apimachinery meta/v1/types TypeMeta](https://github.com/kubernetes/apimachinery/blob/master/pkg/apis/meta/v1/types.go#L41) 主要是以下字段
+
+1. apiVersion: 使用的API对象的版本，可以参考kubernetes github源码 [v1beta1](https://github.com/kubernetes/api/tree/kubernetes-1.17.0/extensions/v1beta1) 就是表示版本
+2. kind: API对象类型，对于Deployment来说一直是 Deployment
+
+### meta字段
+meta相关的字段的定义可以参考 kubernetes apimachinery meta/v1/types ObjectMeta 主要是以下字段
+
+1. name: Deployment名称，一般由业务在yaml文件里面设置
+2. namespace: Pod所属的namespace （kubernetes namespace类似组的概念，和linux namespace不同）
+creationTimestamp: Pod创建时间
+labels: Pod相关的label，有些是用户设置的，有些则是kubernetes自动设置的
+ownerReferences: 有些Pod是由更顶层的API对象例如ReplicaSet等控制创建的，这个字段标识它的上一层API对象是谁
+uid: kubernetes自动生成的唯一的pod id
+selfLink: 当前pod的url，可以通过访问该url获取到pod的相关信息
+annotations: 用户自己设置的一些key-value键值对注释，类似labels
+
+### spec字段
+
+### status字段
 
 ## ③ 滚动升级
 
