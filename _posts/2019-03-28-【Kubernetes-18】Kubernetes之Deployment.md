@@ -268,7 +268,11 @@ status相关的字段的定义可以参考 [kubernetes api extensions/v1beta1/ty
 ## ⑤ 弹性伸缩
 除了上诉提到的功能之外，Deployment还有一个非常重要的功能就是 弹性伸缩。很多人选择使用kubernetes容器集群目的就是希望能够利用容器平台的弹性伸缩功能，除了节点粒度的弹性伸缩，还可以在Pod维度做弹性伸缩，Deployment的弹性伸缩正是Pod维度的。
 
-弹性
+我们知道流量是有高峰低峰之分的，传统物理机时代为了应对流量高峰我们通常是买了一堆机器，当流量下去之后这些机器就空闲着，非常的浪费。而有了kubernetes容器平台之后，通过Node、Pod维度的弹性伸缩，能够做到资源的最大化利用，同时保证成本最低。
+
+Deployment 弹性伸缩相关的命令 为 `kubectl scale deployment -n kube-system {deployment-name} --replicas=2`
+
+初此之外，生产环境我们会开启 [HPA](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/)，关于HPA功能如下。
 
 
 
