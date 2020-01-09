@@ -22,10 +22,92 @@ Deployment API 对象，它的控制器流程源码可以参考 [kubernetes cont
 实际上，所有控制器最后的执行结果，要么是创建、更新一些 Pod（或者其他的 API 对象、资源），要么就是删除一些已经存在的 Pod（或者其他的 API 对象、资源）。
 
 # 二. Deployment
-Deployment 看似简单，但实际上它实现了 kubernetes 项目中一个非常重要的功能 `Pod 的水平扩展/收缩（horizontal scaling out/in）`。这个功能，是从 PaaS 时代开始，一个平台级项目就必须具备的编排能力。
+Deployment 看似简单，但实际上它实现了 kubernetes 项目中一个非常重要的功能 `Pod 的水平扩展/收缩（horizontal scaling out/in）`。这个功能，是从 PaaS 时代开始，一个平台级项目就必须具备的编排能力。Deployment 实现上是通过控制 ReplicaSet 对象，然后通过 ReplicaSet 对象达到控制 Pod 的目的。
 
-Deployment 
+我们先来创建一个Deployment，yaml配置文件如下。当我们提交了一个 Deployment 对象后，Deployment Controller 就会立即创建一个 Pod 副本个数为 3 的 ReplicaSet。这个 ReplicaSet 的名字，则是由 Deployment 的名字和一个随机字符串共同组成。
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.7.9
+        ports:
+        - containerPort: 80
+```
+
+1. 创建Deployment `kubectl apply -f deployment.yaml`  （使用默认namespace）
+2. 查看集群状态，发现创建1个Deployment名为 nginx-deployment，1个ReplicaSet名为nginx-deployment-54f57cf6bf 以及 3个Pod名为nginx-deployment-54f57cf6bf-xxxx
+   ```
+   $ kubectl get all | grep nginx
+   pod/nginx-deployment-54f57cf6bf-6775m   1/1     Running   0          76s
+   pod/nginx-deployment-54f57cf6bf-6wngr   1/1     Running   0          76s
+   pod/nginx-deployment-54f57cf6bf-bhjzw   1/1     Running   0          76s
+   deployment.apps/nginx-deployment   3/3     3            3           76s
+   replicaset.apps/nginx-deployment-54f57cf6bf   3         3         3       76s
+   ```
+3. 我们可以确认，Deployment实现逻辑为，先创建ReplicaSet，通过ReplicaSet创建Pod
+4. 查看Deployment
+   ```
+   $ kubectl get deploy nginx-deployment
+   NAME               READY   UP-TO-DATE   AVAILABLE   AGE
+   nginx-deployment   3/3     3            3           5m7s
+   
+   NAME        Deployment的名称，通常是业务在yaml文件里面配置的（metadata.name字段）
+   READY       指当前已经处于Ready的 Pod 个数 （Ready 指的是健康检查正确）
+   UP-TO-DATE  指当前处于最新版本的 Pod 个数（所谓最新版本指的是 Pod 的 Spec 部分与 Deployment 里 Pod 模板里定义的完全一致）
+   AVAILABLE   指当前可用的Pod个数 （既是 Running 状态，又是最新版本，并且已经处于 Ready 状态的 Pod 的个数）
+   ```
+5. 查看ReplicaSet
+   ```
+   $ kubectl get replicaset
+   NAME                          DESIRED   CURRENT   READY   AGE
+   nginx-deployment-54f57cf6bf   3         3         3       11m
+   
+   NAME        ReplicaSet的名称，格式为 nginx-deployment-{randstring}（randstring由kubernetes根据pod-template-hash生成）
+   DESIRED     指用户期望的 Pod 个数，通常是业务在yaml文件里面配置的（spec.replicas字段）
+   CURRENT     指当前处于 Running 状态的 Pod 的个数
+   READY       指当前已经处于Ready的 Pod 个数 （Ready 指的是健康检查正确）
+   ```
+6. 查看Pod
+   ```
+   $ kubectl get pod
+   NAME                                READY   STATUS    RESTARTS   AGE
+   nginx-deployment-54f57cf6bf-6775m   1/1     Running   0          14m
+   nginx-deployment-54f57cf6bf-6wngr   1/1     Running   0          14m
+   nginx-deployment-54f57cf6bf-bhjzw   1/1     Running   0          14m
+   
+   NAME        Pod的名称，格式为 nginx-deployment-54f57cf6bf-{another random string}
+   READY       指当前已经处于Ready的 Pod 个数 （Ready 指的是健康检查正确）
+   STATUS      指Pod的状态
+   RESTARTS    指Pod重启的次数
+   ```
+   
+`Deployment 实际上是一个两层控制器。首先，它通过 ReplicaSet 的个数来描述应用的版本。然后，它再通过 ReplicaSet 的属性（比如 replicas 的值），来保证 Pod 的副本数量。Deployment 控制 ReplicaSet（版本），ReplicaSet 控制 Pod（副本数）。`
 
 # 三. 使用
+## ① 常用命令
+1. 创建Deployment: `kubectl apply -f deployment.yaml`
+2. 列出Deployment: `kubectl get deployment -n {kube-system}`
+3. 查看Deployment: `kubectl get deployment -n {kube-system} {deployment-name} -o yaml`
+4. 
 
-# 四. 流程
+## ② 属性字段
+
+
+
+
