@@ -19,10 +19,12 @@ tags:          #标签
 
 Deployment API 对象，它的控制器流程源码可以参考 [kubernetes controller deployment](https://github.com/kubernetes/kubernetes/tree/master/pkg/controller/deployment)。像 Deployment 这种控制器的设计原理，是 `用一种对象管理另一种对象`的艺术，控制器对象本身负责定义被管理对象的期望状态。
 
-实际上，最后的执行结果，要么就是创建、更新一些 Pod（或者其他的 API 对象、资源），要么就是删除一些已经存在的 Pod（或者其他的 API 对象、资源）。
-
+实际上，所有控制器最后的执行结果，要么是创建、更新一些 Pod（或者其他的 API 对象、资源），要么就是删除一些已经存在的 Pod（或者其他的 API 对象、资源）。
 
 # 二. Deployment
+Deployment 看似简单，但实际上它实现了 kubernetes 项目中一个非常重要的功能 `Pod 的水平扩展/收缩（horizontal scaling out/in）`。这个功能，是从 PaaS 时代开始，一个平台级项目就必须具备的编排能力。
+
+Deployment 
 
 # 三. 使用
 
