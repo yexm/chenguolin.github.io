@@ -266,5 +266,9 @@ status相关的字段的定义可以参考 [kubernetes api extensions/v1beta1/ty
 3. 回滚到指定版本  `kubectl rollout undo deployment.v1.apps/nginx-deployment --to-revision=2
 
 ## ⑤ 弹性伸缩
+除了上诉提到的功能之外，Deployment还有一个非常重要的功能就是 弹性伸缩。很多人选择使用kubernetes容器集群目的就是希望能够利用容器平台的弹性伸缩功能，除了节点粒度的弹性伸缩，还可以在Pod维度做弹性伸缩，Deployment的弹性伸缩正是Pod维度的。
+
+弹性
+
 
 
