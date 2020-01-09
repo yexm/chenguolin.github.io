@@ -249,7 +249,22 @@ status相关的字段的定义可以参考 [kubernetes api extensions/v1beta1/ty
 5. conditions: Deployment的状态列表，可以参考 [kubernetes api extensions/v1beta1/types DeploymentCondition](https://github.com/kubernetes/api/blob/kubernetes-1.17.0/extensions/v1beta1/types.go#L295)
 
 ## ③ 滚动升级
+从上面的 spec 字段里面我们知道 spec.strategy 字段可以用来控制Deployment的升级策略，在实际生产过程中我们用的最多的是 `RollingUpdate` 也就是 滚动升级，对于Deployment来说只要 Pod template 有变更就会触发 Deployment 升级。（必须要求Deployment spec.strategy 是RollingUpdate类型）
 
-## ④ 弹性伸缩
+变更 Deployment 的 Pod template 有以下几种方式
+
+1. 通过 `kubectl set` 命令进行变更，例如 `kubectl set image deployment/nginx-deployment nginx=nginx:1.9.1 --record` 变更镜像版本
+2. 通过 `kubectl edit` 命令直接编辑，例如 `kubectl edit deployment.v1.apps/nginx-deployment` 变更 Pod template
+
+变更完成之后，我们可以通过 `kubectl rollout status deployment.v1.apps/nginx-deployment` 查看当前升级的进度
+
+## ④ 回滚
+很多时候我们经常会遇到升级后发现新版本有问题，需要进行快速回滚到上一个稳定版本，kubernetes提供了非常遍历的命令方便用户进行 Deployment 回滚。每次Deployment升级成功之后会生成一个新的版本。（只有 Pod template 变更升级才会生成新的版本）
+
+1. 查看Deployment的版本历史  `kubectl rollout history -n kube-system deployment {deployment-name}`
+2. 查看历史版本信息 `kubectl rollout history -n kube-system deployment {deployment-name} --revision=2`
+3. 回滚到指定版本  `kubectl rollout undo deployment.v1.apps/nginx-deployment --to-revision=2
+
+## ⑤ 弹性伸缩
 
 
