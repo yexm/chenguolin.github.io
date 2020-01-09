@@ -245,7 +245,7 @@ type相关的字段的定义可以参考 [kubernetes apimachinery meta/v1/types 
 2. kind: API对象类型，对于Pod来说一直是 Pod
 
 ### meta字段
-type相关的字段的定义可以参考 [kubernetes apimachinery meta/v1/types ObjectMeta](https://github.com/kubernetes/apimachinery/blob/master/pkg/apis/meta/v1/types.go#L110) 主要是以下字段
+meta相关的字段的定义可以参考 [kubernetes apimachinery meta/v1/types ObjectMeta](https://github.com/kubernetes/apimachinery/blob/master/pkg/apis/meta/v1/types.go#L110) 主要是以下字段
 
 1. name: Pod名称，kubernetes能够保证每个pod名称独一无二
 2. namespace: Pod所属的namespace （kubernetes namespace类似组的概念，和linux namespace不同）
