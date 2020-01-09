@@ -113,7 +113,7 @@ spec:
 为了更好的了解Deployment，我们需要熟悉Deployment yaml 配置文件相关属性字段的含义，我们通过 下面这个例子来了解一下Deployment。有关 Deployment 属性字段的相关含义，可以参考 [kubernetes api extensions/v1beta1/types Deployment](https://github.com/kubernetes/api/blob/master/extensions/v1beta1/types.go#L78)
 
 ```
-apiVersion: apps/v1
+apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   annotations:
@@ -219,20 +219,34 @@ type相关的字段的定义可以参考 [kubernetes apimachinery meta/v1/types 
 2. kind: API对象类型，对于Deployment来说一直是 Deployment
 
 ### meta字段
-meta相关的字段的定义可以参考 kubernetes apimachinery meta/v1/types ObjectMeta 主要是以下字段
+meta相关的字段的定义可以参考 [kubernetes apimachinery meta/v1/types ObjectMeta](https://github.com/kubernetes/apimachinery/blob/master/pkg/apis/meta/v1/types.go#L110) 主要是以下字段
 
 1. name: Deployment名称，一般由业务在yaml文件里面设置
-2. namespace: Pod所属的namespace （kubernetes namespace类似组的概念，和linux namespace不同）
-creationTimestamp: Pod创建时间
-labels: Pod相关的label，有些是用户设置的，有些则是kubernetes自动设置的
-ownerReferences: 有些Pod是由更顶层的API对象例如ReplicaSet等控制创建的，这个字段标识它的上一层API对象是谁
-uid: kubernetes自动生成的唯一的pod id
-selfLink: 当前pod的url，可以通过访问该url获取到pod的相关信息
-annotations: 用户自己设置的一些key-value键值对注释，类似labels
+2. namespace: Deployment所属的namespace （kubernetes namespace类似组的概念，和linux namespace不同）
+3. creationTimestamp: Pod创建时间
+4. labels: Pod相关的label，有些是用户设置的，有些则是kubernetes自动设置的
+5. uid: kubernetes自动生成的唯一的pod id
+6. selfLink: 当前pod的url，可以通过访问该url获取到pod的相关信息
+7. annotations: 用户自己设置的一些key-value键值对注释，类似labels
 
 ### spec字段
+spec相关的字段的定义可以参考 [kubernetes api extensions/v1beta1/types DeploymentSpec](https://github.com/kubernetes/api/blob/kubernetes-1.17.0/extensions/v1beta1/types.go#L101) 主要是以下字段
+
+1. replicas: Deployment锁期望的Pod数
+2. selector: Deployment控制器用于筛选Pod的label，一般和template内metadata.labels保持一致
+3. revisionHistoryLimit: 要保留多少个ReplicaSet的版本，默认为10
+4. strategy: Deployment的升级策略，主要有以下2种 `Recreate` 和 `RollingUpdate`
+5. template: Pod template，用于描述Pod，具体可以参考 [kubernetes pod属性](https://chenguolin.github.io/2019/03/27/Kubernetes-17-Kubernetes%E4%B9%8BPod/#-pod%E5%B1%9E%E6%80%A7)
+6. paused: 标识Deployment是否被暂停
 
 ### status字段
+status相关的字段的定义可以参考 [kubernetes api extensions/v1beta1/types DeploymentStatus](https://github.com/kubernetes/api/blob/kubernetes-1.17.0/extensions/v1beta1/types.go#L238) 主要是以下字段
+
+1. replicas: 当前Deployment控制器selector match的Pod个数，通常和spec.replicas数值一样
+2. availableReplicas: 当前可用的Pod个数，通常和replicas数值一样
+3. updatedReplicas: 更新到最新状态的Pod个数
+4. readyReplicas: ready状态的Pod个数
+5. conditions: Deployment的状态列表，可以参考 [kubernetes api extensions/v1beta1/types DeploymentCondition](https://github.com/kubernetes/api/blob/kubernetes-1.17.0/extensions/v1beta1/types.go#L295)
 
 ## ③ 滚动升级
 
