@@ -104,10 +104,14 @@ spec:
 1. 创建Deployment: `kubectl apply -f deployment.yaml`
 2. 列出Deployment: `kubectl get deployment -n {kube-system}`
 3. 查看Deployment: `kubectl get deployment -n {kube-system} {deployment-name} -o yaml`
-4. 
+4. 描述Deployment: `kubectl describe deployment -n {kube-system} {deployment-name}`
+5. 编辑Deployment: `kubectl edit deployment -n {kube-system} {deployment-name}`
+6. 删除Deployment: `kubectl delete deployment -n {kube-system} {deployment-name}`
 
 ## ② 属性字段
 
+## ③ 升级
 
+## ④ 伸缩
 
 
