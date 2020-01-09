@@ -17,9 +17,10 @@ tags:          #标签
 
 我们在 [kubernetes架构](https://chenguolin.github.io/2019/03/24/Kubernetes-13-Kubernetes%E5%9F%BA%E7%A1%80%E4%BB%8B%E7%BB%8D/#%E4%B8%89-k8s%E6%9E%B6%E6%9E%84) 文章里提到 master 里面有一个 [kube-controller-manager](https://github.com/kubernetes/kubernetes/tree/master/cmd/kube-controller-manager)，简单的说 kube-controller-manager 用来编排某种 API 对象的。ReplicationController、ReplicaSet、Deployment、DaemonSet、Job 等对象都是通过 kube-controller-manager 内部的控制器负责的。
 
-对于 Deployment API 对象，它的控制器流程如下，源码参考 [kubernetes controller deployment](https://github.com/kubernetes/kubernetes/tree/master/pkg/controller/deployment)。
+Deployment API 对象，它的控制器流程源码可以参考 [kubernetes controller deployment](https://github.com/kubernetes/kubernetes/tree/master/pkg/controller/deployment)。像 Deployment 这种控制器的设计原理，是 `用一种对象管理另一种对象`的艺术，控制器对象本身负责定义被管理对象的期望状态。
 
-1. 
+实际上，最后的执行结果，要么就是创建、更新一些 Pod（或者其他的 API 对象、资源），要么就是删除一些已经存在的 Pod（或者其他的 API 对象、资源）。
+
 
 # 二. Deployment
 
