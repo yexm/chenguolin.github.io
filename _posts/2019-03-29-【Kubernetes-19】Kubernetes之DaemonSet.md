@@ -20,7 +20,7 @@ Kubernetes DaemonSet 正是用来解决以上问题的，通过 DaemonSet 在 Ku
 DaemonSet API 对象，它的控制器流程源码可以参考 [kubernetes controller Daemonset](https://github.com/kubernetes/kubernetes/tree/master/pkg/controller/daemon)。
 
 # 二. Daemonset
-我们先来创建一个 Daemonset，yaml配置文件如下
+我们先来创建一个 Daemonset，yaml配置文件如下，Daemonset 名为 fluentd-elasticsearch
 
 ```
 apiVersion: apps/v1
@@ -76,8 +76,8 @@ spec:
    
    $ kubectl get pod -n kube-system  | grep elasticsearch
    fluentd-elasticsearch-n29vc      1/1     Running       0     15m     10.244.0.40    ecs-s6-large-2-linux-20200105130533
-   fluentd-elasticsearch-n29vc      1/1     Running       0     15m     10.244.1.2     k8s-worker-node-0001
-   fluentd-elasticsearch-n29vc      1/1     Running       0     15m     10.244.1.3     k8s-worker-node-0002
+   fluentd-elasticsearch-twfsj      1/1     Running       0     15m     10.244.1.2     k8s-worker-node-0001
+   fluentd-elasticsearch-hsker      1/1     Running       0     15m     10.244.1.3     k8s-worker-node-0002
    ```
 3. 查看当前节点，确认集群有3个node
    ```
@@ -93,9 +93,61 @@ DaemonSet 控制器的逻辑如下，DaemonSet 控制器首先从 Etcd 里获取
 
 我们知道 Daemonset 会在每个节点上创建一个 Pod，那是如何在节点上创建 Pod 呢？Pod API对象有一个 nodeSelector 字段可以用于指定当前 Pod 要调度在哪个节点上，但是 Kubernetes 已经要把 [nodeSelector](https://github.com/kubernetes/api/blob/63b8484e576699c2f714dd6319c827a568a95090/node/v1beta1/types.go#L84) 废弃了，采用 [nodeAffinity](https://github.com/kubernetes/api/blob/85edcf8a9b9b3246412d38f50eb8bed4a3bad78f/core/v1/types.go#L340) 字段来替代。DaemonSet 控制器 会在创建 Pod 的时候，自动在这个 Pod 的 API 对象里，加上 nodeAffinity 定义，保证 Pod 调度到指定的节点上。
 
+除此之外，从 kubernetes 1.8 版本之后 DaemonSet 控制器会自动添加以下污点容忍，保证 Daemonset Pod 不会被驱逐，可以参考 [taint-nodes-by-condition](https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/#taint-nodes-by-condition)
 
+1. node.kubernetes.io/not-ready
+2. node.kubernetes.io/unreachable
+3. node.kubernetes.io/disk-pressure
+4. node.kubernetes.io/memory-pressure
+5. node.kubernetes.io/pid-pressure
+6. node.kubernetes.io/unschedulable
 
+我们可以查看 fluentd-elasticsearch-n29vc yaml 验证上面提到的内容
 
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fluentd-elasticsearch-n29vc
+  creationTimestamp: "2020-01-10T09:06:32Z"
+  generateName: fluentd-elasticsearch-
+  labels:
+    controller-revision-hash: 5bb6ff67b
+    name: fluentd-elasticsearch
+    pod-template-generation: "1"
+  ...
+spec:
+  affinity:         // 亲和性调度
+    nodeAffinity:   // nodeAffinity 配置，由kubernetes自动添加
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchFields:
+          - key: metadata.name
+            operator: In
+            values:
+            - ecs-s6-large-2-linux-20200105130533
+  ...
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/disk-pressure
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/pid-pressure
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/unschedulable
+    operator: Exists
+  ...
+```
 
 # 三. 使用
 ## ① 常用命令
