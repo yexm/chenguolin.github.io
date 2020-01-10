@@ -282,8 +282,25 @@ status 相关的字段的定义可以参考 [kubernetes api extensions/v1beta1/t
 根据 spec.updateStrategy 我们知道 Daemonset 有2种升级策略 `RollingUpdate`和`OnDelete`，下面我们分别介绍一下这两种升级方式。
 
 ## ① RollingUpdate
+RollingUpdate 策略指的是滚动升级，和 Deployment类似，我们只需要在 spec.template.updateStrategy 设置更新类型为 RollingUpdate，当 Pod template 有变更就会触发 Daemonset 升级。
+
+变更 Daemonset 的 Pod template 有以下几种方式
+
+1. 通过 kubectl set 命令进行变更，例如 `kubectl set image -n kube-system daemonset fluentd-elasticsearch quay.io/fluentd_elasticsearch/fluentd:v2.5.3 --record` 变更镜像版本
+2. 通过 kubectl edit 命令直接编辑，例如 `kubectl edit -n kube-system daemonset fluentd-elasticsearch` 变更 Pod template
+
+变更完成之后，我们可以通过 `kubectl rollout status -n kube-system daemonset fluentd-elasticsearch` 查看当前升级的进度。
+
+针对 Daemonset 的滚动升级，允许我们设置 [maxUnavailable](https://github.com/kubernetes/api/blob/7dc09db16fb8ff2eee16c65dc066c85ab3abb7ce/extensions/v1beta1/types.go#L342) 来控制升级的进度 （Deployment 除了 maxUnavailable 还允许设置 maxSurge），一般情况下如果希望滚动升级的速度快则可以设置比较大的 maxUnavailable，但是如果升级有问题，可能会导致比较多的 Pod 不可用，直接影响业务。
 
 ## ② OnDelete
+OnDelete 策略指的是只有Pod被Kill的时候才会创建新的Pod，常用于灰度发布，一般使用流程如下
 
+1. 使用 kubectl edit 命令变更 Daemonset yaml updateStrategy 策略为 OnDelete
+2. 变更 Daemonset 镜像版本
+3. 使用 kubectl delete 删除 Daemonset 所管理的一个 Pod
+4. 等待 kubernetes 创建新的 Pod，确认业务没有问题
+
+上诉流程为灰度发布的流程，通过手动 delete 一个 Pod 来创建一个新版本的Pod，从而达到灰度的效果。当灰度结束之后我们可以通过 kubectl edit 命令变更 Daemonset yaml updateStrategy 策略为 RollingUpdate，通过滚动升级来完成剩下的升级流程。 
 
 
