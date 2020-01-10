@@ -264,7 +264,7 @@ status相关的字段的定义可以参考 [kubernetes api extensions/v1beta1/ty
 2. maxSurge: 更新过程最大可新增的Pod数，值可以为整数或者百分比，默认为desired Pods数的25%。例如Deployment期望是100个Pod，maxSurge配置为10，那么在升级的过程中，新的Replicaset最大只能允许有10个Pod同时被创建  （一般控制的是新的Replicaset创建Pod）
 
 ## ④ 回滚
-很多时候我们经常会遇到升级后发现新版本有问题，需要进行快速回滚到上一个稳定版本，kubernetes提供了非常遍历的命令方便用户进行 Deployment 回滚。每次Deployment升级成功之后会生成一个新的版本。（只有 Pod template 变更升级才会生成新的版本）
+很多时候我们经常会遇到升级后发现新版本有问题，需要进行快速回滚到上一个稳定版本，kubernetes提供了非常遍历的命令方便用户进行 Deployment 回滚。每次Deployment升级成功之后会生成一个新的版本。（只有 Pod template 变更升级才会生成新的版本，每个版本对应一个 ReplicaSet）
 
 1. 查看Deployment的版本历史  `kubectl rollout history -n kube-system deployment {deployment-name}`
 2. 查看历史版本信息 `kubectl rollout history -n kube-system deployment {deployment-name} --revision=2`
