@@ -258,6 +258,11 @@ status相关的字段的定义可以参考 [kubernetes api extensions/v1beta1/ty
 
 变更完成之后，我们可以通过 `kubectl rollout status deployment.v1.apps/nginx-deployment` 查看当前升级的进度
 
+针对Deployment的滚动升级，允许我们设置 `maxUnavailable` 和 `maxSurge` 这两个配置来控制升级的进度
+
+1. maxUnavailable: 更新过程最大不可用的Pod数，值可以为整数或者百分比，默认为desired Pods数的25%。例如Deployment期望是100个Pod，maxUnavailable配置为10，那么在升级的过程中，旧的Replicaset最大只能允许有10个Pod同时处于Terminating状态（一般控制的是旧的Replicaset缩Pod）
+2. maxSurge: 更新过程最大可新增的Pod数，值可以为整数或者百分比，默认为desired Pods数的25%。例如Deployment期望是100个Pod，maxSurge配置为10，那么在升级的过程中，新的Replicaset最大只能允许有10个Pod同时被创建  （一般控制的是新的Replicaset创建Pod）
+
 ## ④ 回滚
 很多时候我们经常会遇到升级后发现新版本有问题，需要进行快速回滚到上一个稳定版本，kubernetes提供了非常遍历的命令方便用户进行 Deployment 回滚。每次Deployment升级成功之后会生成一个新的版本。（只有 Pod template 变更升级才会生成新的版本）
 
