@@ -272,7 +272,5 @@ status相关的字段的定义可以参考 [kubernetes api extensions/v1beta1/ty
 
 Deployment 弹性伸缩相关的命令 为 `kubectl scale deployment -n kube-system {deployment-name} --replicas=2`
 
-初此之外，生产环境我们会开启 [HPA](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/)，关于HPA功能如下。
-
-
+初此之外，生产环境我们会开启 [HPA](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/)，根据所有的Pod的CPU利用率，然后计算是要缩容还是扩容，例如这个命令可以开启HPA `kubectl autoscale deployment -n kube-system {deployment-name} --cpu-percent=50 --min=1 --max=10`。
 
