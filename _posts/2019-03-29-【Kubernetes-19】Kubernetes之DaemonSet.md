@@ -149,6 +149,8 @@ spec:
   ...
 ```
 
+`DaemonSet 是一个非常简单的控制器，在它的控制循环中，只需要遍历所有节点，然后根据节点上是否有被管理 Pod 的情况，来决定是否要创建或者删除一个 Pod。只不过，在创建每个 Pod 的时候，DaemonSet 会自动给这个 Pod 加上一个 nodeAffinity，从而保证这个 Pod 只会在指定节点上启动。同时，它还会自动给这个 Pod 加上一些 Tolerations，从而忽略节点的污点。`
+
 # 三. 使用
 ## ① 常用命令
 1. 创建DaemonSet: `kubectl apply -f deployment.yaml`
@@ -277,7 +279,6 @@ status 相关的字段的定义可以参考 [kubernetes api extensions/v1beta1/t
 7. updatedNumberScheduled: 多少个节点已经更新到最新 Pod
 
 # 四. 升级
-
 
 
 
