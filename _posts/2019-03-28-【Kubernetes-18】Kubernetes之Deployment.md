@@ -223,10 +223,10 @@ meta相关的字段的定义可以参考 [kubernetes apimachinery meta/v1/types 
 
 1. name: Deployment名称，一般由业务在yaml文件里面设置
 2. namespace: Deployment所属的namespace （kubernetes namespace类似组的概念，和linux namespace不同）
-3. creationTimestamp: Pod创建时间
-4. labels: Pod相关的label，有些是用户设置的，有些则是kubernetes自动设置的
-5. uid: kubernetes自动生成的唯一的pod id
-6. selfLink: 当前pod的url，可以通过访问该url获取到pod的相关信息
+3. creationTimestamp: Deployment创建时间
+4. labels: Deployment相关的label，有些是用户设置的，有些则是kubernetes自动设置的
+5. uid: kubernetes自动生成的唯一的Deployment id
+6. selfLink: 当前Deployment的url，可以通过访问该url获取到Deployment的相关信息
 7. annotations: 用户自己设置的一些key-value键值对注释，类似labels
 
 ### spec字段
