@@ -279,6 +279,11 @@ status 相关的字段的定义可以参考 [kubernetes api extensions/v1beta1/t
 7. updatedNumberScheduled: 多少个节点已经更新到最新 Pod
 
 # 四. 升级
+根据 spec.updateStrategy 我们知道 Daemonset 有2种升级策略 `RollingUpdate`和`OnDelete`，下面我们分别介绍一下这两种升级方式。
+
+## ① RollingUpdate
+
+## ② OnDelete
 
 
 
