@@ -108,6 +108,7 @@ spec:
 5. 编辑Deployment: `kubectl edit deployment -n {kube-system} {deployment-name}`
 6. 删除Deployment: `kubectl delete deployment -n {kube-system} {deployment-name}`
 7. 查看滚动升级状态: `kubectl rollout status deployment -n {kube-system} {deployment-name}`
+8. 查看Deployment历史版本: `kubectl rollout history -n {namespace} deployment {daemonset-name}`
 
 ## ② 属性字段
 为了更好的了解Deployment，我们需要熟悉Deployment yaml 配置文件相关属性字段的含义，我们通过 下面这个例子来了解一下Deployment。有关 Deployment 属性字段的相关含义，可以参考 [kubernetes api extensions/v1beta1/types Deployment](https://github.com/kubernetes/api/blob/master/extensions/v1beta1/types.go#L78)
