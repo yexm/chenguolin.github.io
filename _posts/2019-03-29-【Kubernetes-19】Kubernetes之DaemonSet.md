@@ -91,6 +91,10 @@ spec:
 
 DaemonSet 控制器的逻辑如下，DaemonSet 控制器首先从 Etcd 里获取所有的 Node 列表，然后遍历所有的 Node，然后检查当前这个 Node 是不是有对应的 Pod 在运行了。如果没有 Pod 则在当前节点上创建一个 Pod，如果已经有 Pod 并且数量为1说明是正常的，如果已经有 Pod 但是数量有多个那要把多余的 Pod 从这个 Node 上删除掉。
 
+我们知道 Daemonset 会在每个节点上创建一个 Pod，那是如何在节点上创建 Pod 呢？Pod API对象有一个 nodeSelector 字段可以用于指定当前 Pod 要调度在哪个节点上，但是 Kubernetes 已经要把 [nodeSelector](https://github.com/kubernetes/api/blob/63b8484e576699c2f714dd6319c827a568a95090/node/v1beta1/types.go#L84) 废弃了，才用 [nodeAffinity](https://github.com/kubernetes/api/blob/85edcf8a9b9b3246412d38f50eb8bed4a3bad78f/core/v1/types.go#L340) 字段来替代 
+
+
+
 # 三. 使用
 ## ① 常用命令
 1. 创建DaemonSet: `kubectl apply -f deployment.yaml`
