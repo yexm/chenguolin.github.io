@@ -11,7 +11,7 @@ tags:          #标签
 
 我们先来回答一个问题 `有了Pod，为什么我们还需要Deployment？`
 
-我们知道生产环境上大部分的业务都是需要高可用的，通常实现高可用的方案是通过多副本机制。也就是说，如果我们现在有一个业务通过Pod部署，要实现高可用的话，我们就必须通过保证集群有多个相同的Pod，但是通过上一篇文章 [kubernetes之Pod](https://chenguolin.github.io/2019/03/27/Kubernetes-17-Kubernetes%E4%B9%8BPod/) 我们发现并没有一个属性字段允许同时运行多个Pod。因此，我们需要通过额外的手段来保证集群有多个Pod，这不仅给业务引入了复杂性，也这不符合kubernetes的设计原则。
+我们知道生产环境上大部分的业务都是需要高可用的，通常实现高可用的方案是通过多副本机制。也就是说，如果我们现在有一个业务通过Pod部署，要实现高可用的话，我们就必须通过保证集群有多个相同的Pod，但是通过上一篇文章 [kubernetes之Pod](https://chenguolin.github.io/2019/03/27/Kubernetes-17-Kubernetes%E4%B9%8BPod/) 我们发现并没有一个属性字段允许同时运行多个Pod。因此，我们需要通过额外的手段来保证集群有多个Pod，这不仅给业务引入了复杂性，也不符合kubernetes的设计原则。
 
 因此，kubernetes 提供了多副本控制机制，常见的有 ReplicationController、ReplicaSet、Deployment、DaemonSet、Job 等。如果使用 Deployment 的话，那么业务便可以快速实现高可用，同时部署多个相同的Pod，还允许弹性伸缩。
 
