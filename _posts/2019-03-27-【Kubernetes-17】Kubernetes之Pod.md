@@ -274,7 +274,7 @@ spec相关的字段定义可以参考 [kubernetes api core/v1/types PodSpec](htt
     + readinessProbe: 容器就绪探针，表明容器是否已经准备好接收访问请求
     + lifecycle: 配置容器生命周期，主要有 postStart 和 preStop 两个hook
 3. nodeName: 当前Pod调度到的节点，当成功调度到某个节点之后会被kubernetes自动设置的
-4. restartPolicy: Pod重启策略，目前支持 `Always`、`OnFailure`、`Never` 这3种策略
+4. restartPolicy: 容器重启策略，目前支持 `Always`、`OnFailure`、`Never` 这3种策略 （注意Pod没有重启的概念，restartPolicy控制的是容器的重启策略，Pod只有是否被重建）
 5. securityContext: Pod安全相关设置，默认情况下为空 （可以设置 privileged 让容器拥有真正的root权限，正常启动的容器内部虽然是root用户，实际只是外部的一个普通用户权限）
 6. serviceAccountName: 当前Pod访问apiserver用的service account
 7. terminationGracePeriodSeconds: Pod优雅退出超时时间，默认为30s，关于容器的优雅退出可以参考 [Kubernetes容器应用优雅退出机制](https://chenguolin.github.io/2019/06/22/Kubernetes-30-Kubernetes%E5%AE%B9%E5%99%A8%E5%BA%94%E7%94%A8%E4%BC%98%E9%9B%85%E9%80%80%E5%87%BA%E6%9C%BA%E5%88%B6/#%E4%BA%8C-%E5%AE%B9%E5%99%A8%E4%BC%98%E9%9B%85%E9%80%80%E5%87%BA)
