@@ -303,6 +303,7 @@ spec 相关的字段的定义可以参考 [kubernetes apimachinery meta/batch/v1
 4. jobTemplate: job template，主要是描述Job的，可以参考 [kubernetes job spec字段](https://chenguolin.github.io/2019/03/30/Kubernetes-20-Kubernetes%E4%B9%8BCronJob%E4%B8%8EJob/#spec%E5%AD%97%E6%AE%B5)
 5. successfulJobsHistoryLimit: 保留多少个成功运行的Job对象，默认是3个
 6. failedJobsHistoryLimit: 保留多少个失败运行的Job对象，默认是1个
+7. startingDeadlineSeconds: 时间窗口配置，表示如果在这个时间窗口内超过100次Job 创建失败，那么Cronjob就会停止再创建这个 Job （这个100是hardcode在代码里面，可以参考源码 [kubernetes cronjob controller getRecentUnmetScheduleTimes](https://github.com/kubernetes/kubernetes/blob/master/pkg/controller/cronjob/utils.go#L142)）
 
 ### status字段
 status 相关的字段的定义可以参考 [kubernetes apimachinery meta/batch/v1beta1 CronJobStatus](https://github.com/kubernetes/api/blob/master/batch/v1beta1/types.go#L150) 主要是以下字段
