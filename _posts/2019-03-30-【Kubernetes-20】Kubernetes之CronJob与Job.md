@@ -300,14 +300,13 @@ spec 相关的字段的定义可以参考 [kubernetes apimachinery meta/batch/v1
     + Forbid: 禁止同时运行多个Job，当上一个Job还未运行结束的时候，又到了新的调度周期，那么会跳过
     + Replace: 替换老的Job，当上一个Job还未运行结束的时候，又到了新的调度周期，那么会创建一个新的代替已有的Job
 3. suspend: 当前Cronjob是否处于挂起状态，如果是的话则不会再创建新的Job
-4. jobTemplate: job template，主要是描述Job的，可以参考 
-5. successfulJobsHistoryLimit
-6. failedJobsHistoryLimit
+4. jobTemplate: job template，主要是描述Job的，可以参考 [kubernetes job spec字段](https://chenguolin.github.io/2019/03/30/Kubernetes-20-Kubernetes%E4%B9%8BCronJob%E4%B8%8EJob/#spec%E5%AD%97%E6%AE%B5)
+5. successfulJobsHistoryLimit: 保留多少个成功运行的Job对象，默认是3个
+6. failedJobsHistoryLimit: 保留多少个失败运行的Job对象，默认是1个
 
 ### status字段
+status 相关的字段的定义可以参考 [kubernetes apimachinery meta/batch/v1beta1 CronJobStatus](https://github.com/kubernetes/api/blob/master/batch/v1beta1/types.go#L150) 主要是以下字段
 
-
-
-
-
+1. active: 当前正在运行的Job列表
+2. lastScheduleTime: 最后一次调度的时间
 
