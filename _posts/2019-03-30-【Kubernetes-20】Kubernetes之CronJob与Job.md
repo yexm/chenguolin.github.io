@@ -62,8 +62,96 @@ spec:
 4. 描述Job: `kubectl describe job -n {namespace}`
 
 ## ③ 属性
-为了更好的了解 Job，我们需要熟悉 Jobyaml 配置文件相关属性字段的含义，我们通过下面这个例子来了解一下DaemonSet。有关 DaemonSet 属性字段的相关含义，可以参考 kubernetes api extensions/v1beta1/types DaemonSet
+为了更好的了解 Job，我们需要熟悉 Job yaml 配置文件相关属性字段的含义，我们通过下面这个例子来了解一下 Job。有关 Job 属性字段的相关含义，可以参考 [kubernetes api Job](https://github.com/kubernetes/api/blob/master/batch/v1/types.go#L28)
 
+```
+apiVersion: batch/v1
+kind: Job
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"batch/v1","kind":"Job","metadata":{"annotations":{},"name":"pi","namespace":"kube-system"},"spec":{"backoffLimit":4,"template":{"spec":{"containers":[{"command":["perl","-Mbignum=bpi","-wle","print bpi(2000)"],"image":"perl","name":"pi"}],"restartPolicy":"Never"}}}}
+  creationTimestamp: "2020-01-12T05:35:14Z"
+  labels:
+    controller-uid: 8cb73b38-f811-424b-a7da-35d972cc6ec1
+    job-name: pi
+  name: pi
+  namespace: kube-system
+  resourceVersion: "1239574"
+  selfLink: /apis/batch/v1/namespaces/kube-system/jobs/pi
+  uid: 8cb73b38-f811-424b-a7da-35d972cc6ec1
+spec:
+  backoffLimit: 4
+  completions: 1
+  parallelism: 1
+  selector:
+    matchLabels:
+      controller-uid: 8cb73b38-f811-424b-a7da-35d972cc6ec1
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        controller-uid: 8cb73b38-f811-424b-a7da-35d972cc6ec1
+        job-name: pi
+    spec:
+      containers:
+      - command:
+        - perl
+        - -Mbignum=bpi
+        - -wle
+        - print bpi(2000)
+        image: perl
+        imagePullPolicy: Always
+        name: pi
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Never
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status:
+  active: 1
+  startTime: "2020-01-12T05:35:14Z"
+```
 
+### type字段
+type 相关的字段的定义可以参考 [kubernetes apimachinery meta/v1/types TypeMeta](https://github.com/kubernetes/apimachinery/blob/master/pkg/apis/meta/v1/types.go#L41) 主要是以下字段
+
+1. apiVersion: 使用的API对象的版本，可以参考kubernetes github源码 v1beta1 就是表示版本
+2. kind: API对象类型，对于 Job 来说值一直是 Job
+
+### meta字段
+meta 相关的字段的定义可以参考 [kubernetes apimachinery meta/v1/types ObjectMeta](https://github.com/kubernetes/apimachinery/blob/master/pkg/apis/meta/v1/types.go#L110) 主要是以下字段
+
+1. name: Daemonset名称，一般由业务在yaml文件里面设置
+2. namespace: Daemonset所属的namespace （kubernetes namespace类似组的概念，和linux namespace不同）
+3. creationTimestamp: Daemonset创建时间
+4. labels: Daemonset相关的label，有些是用户设置的，有些则是kubernetes自动设置的
+5. uid: kubernetes自动生成的唯一的pod id
+6. selfLink: 当前Daemonset的url，可以通过访问该url获取到Daemonset的相关信息
+7. annotations: 用户自己设置的一些key-value键值对注释，类似labels
+
+### spec字段
+spec 相关的字段的定义可以参考 [kubernetes apimachinery meta/v1/types JobSpec](https://github.com/kubernetes/api/blob/master/batch/v1/types.go#L61) 主要是以下字段
+
+1. backoffLimit: Job 重试次数，默认为6，当重试次数耗尽的时候Job被标记为failed （采用指数退避的方式进行重试）
+2. completions: Job 至少要完成的 Pod 数目（Job 的最小完成数）
+3. parallelism: Job J最多可以同时启动多少个 Pod 运行 （Job 的并发运行数）
+4. selector: 筛选Job要管理的Pod，kubernetes会自动在Pod template加上 controller-uid 这个label，主要是为了避免不同 Job 对象所管理的 Pod 发生重合（Job 对象并不要求你定义一个 spec.selector 来描述要管理哪些 Pod）
+5. template: Pod template，用于描述Pod，具体可以参考 [kubernetes pod属性](https://chenguolin.github.io/2019/03/27/Kubernetes-17-Kubernetes%E4%B9%8BPod/#-pod%E5%B1%9E%E6%80%A7)
+6. activeDeadlineSeconds: Job最长运行时间，当Job运行超过这个时间后会被强制终止，它所管理的Pod也会被强制终止
+7. ttlSecondsAfterFinished: Kubernetes v1.12 提供的特性，用于描述Job的TTL。默认情况下当Job成功后，如果没有收到delete是不会被kubernetes删除的，太多的Job对象对 apiserver 性能会有影响，因此我们要保证能够自动清理掉历史的Job对象。
+
+### status字段
+status 相关的字段的定义可以参考 [kubernetes api extensions/v1beta1/types JobStatus](https://github.com/kubernetes/api/blob/master/batch/v1/types.go#L132) 主要是以下字段
+
+1. conditions: Job的一些状态，Job就两种状态 Complete 和 Failed，可以参考[JobCondition](https://github.com/kubernetes/api/blob/master/batch/v1/types.go#L176)
+2. startTime: Job运行开始时间
+3. completionTime: Job运行结束时间
+4. active: Job所管理的Pod中，有多少个是正在运行的
+5. succeeded: Job所管理的Pod中，有多少个是运行成功的
+6. failed: Job所管理的Pod中，有多少个是运行失败的
 
 # 三. CronJob
