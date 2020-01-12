@@ -55,6 +55,8 @@ spec:
 
 `Job 控制器控制的对象，直接就是 Pod。Job 控制器会根据实际在 Running 状态 Pod 的数目、已经成功退出的 Pod 的数目，以及 parallelism、completions 参数的值共同计算出在这个周期里，应该创建或者删除的 Pod 数目，然后调用 Kubernetes API 来执行这个操作。`
 
+Job的使用场景大部分都是 `外部控制器 + Job` 结合使用，因为kubernetes本身对任务调度做的并不是很好（DAG这种任务调度kubernetes就无能为力），所以大部分情况下是通过外部的控制器实现任务调度Pipeline，然后每个任务通过Kubernetes Job来实现。
+
 ## ② 命令
 1. 创建Job: `kubectl apply -f job.yaml`
 2. 列出Job: `kubectl get job -n {namespace}`
@@ -155,3 +157,4 @@ status 相关的字段的定义可以参考 [kubernetes api extensions/v1beta1/t
 6. failed: Job所管理的Pod中，有多少个是运行失败的
 
 # 三. CronJob
+
