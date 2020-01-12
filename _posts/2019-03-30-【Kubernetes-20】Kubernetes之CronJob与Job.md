@@ -16,7 +16,7 @@ tags:          #标签
 ## ① 介绍
 `Job`用于创建一个或多个Pod，并确保这些Pod成功结束。当这些Pod都运行成功之后，Job就被标记为成功。当删除一个Job的时候，它所管理的Pod也会被一并删除。常用于离线计算场景，比如在数据分析、计算等。
 
-我们先来创建一个 Job，yaml配置文件如下，Job 对象的yaml属性字段的设置可以参考 [kubernetes api Job](https://github.com/kubernetes/api/blob/master/batch/v1/types.go#L28)
+我们先来创建一个 Job，yaml配置文件如下
 
 ```
 apiVersion: batch/v1
@@ -44,7 +44,8 @@ spec:
    
    NAME         指Job的名称
    COMPLETIONS  值已经完成的Pod数
-   DURATION     指已经运行的时间
+   DURATION     指运行的时间
+   AGE          指Job创建了多久
    ```
 3. 查看Job管理Pod
    ```
@@ -157,4 +158,70 @@ status 相关的字段的定义可以参考 [kubernetes api extensions/v1beta1/t
 6. failed: Job所管理的Pod中，有多少个是运行失败的
 
 # 三. CronJob
+## ① 介绍
+除了 Job 之外，Kubernetes还提供了另外一个 API 对象 CronJob，顾名思义 CronJob 描述的，正是定时任务（类似Linux 系统的 Crontab）。Kubernetes Cronjob 支持定期创建 Job，通过管理 Job 达到定时创建任务的目的。
+
+我们先来创建一个 Job，yaml配置文件如下
+
+```
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: hello
+  namespace: kube-system
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: hello
+            image: busybox
+            args:
+            - /bin/sh
+            - -c
+            - date; echo Hello from the Kubernetes cluster
+          restartPolicy: OnFailure
+```
+
+1. 创建Cronjob: `kubectl apply -f cronjob.yaml`
+2. 查看Cronjob列表
+   ```
+   $ kubectl get cronjob -n kube-system
+   NAME    SCHEDULE      SUSPEND   ACTIVE   LAST SCHEDULE   AGE
+   hello   */1 * * * *   False     0        30s             39s
+   
+   NAME      表示定时任务名称
+   SCHEDULE  表示定时调度的规则 （同Unix Cron格式一样）
+   SUSPEND   表示定时任务是否处于挂起状态
+   ACTIVE    表示当前有多少个Job正在运行
+   LAST SCHEDULE  表示上一次调度的时间（30s表示30秒之前）
+   AGE       表示CronJob创建了多久
+   ```
+3. 查看Cronjob管理的Job
+   ```
+   $ kubectl get job -n kube-system
+   NAME               COMPLETIONS   DURATION   AGE
+   hello-1578815880   1/1           6s         3m3s
+   hello-1578815940   1/1           10s        2m3s
+   hello-1578816000   1/1           6s         63s
+   ```
+4. 查看Job管理的Pod
+   ```
+   $ kubectl get pod -n kube-system
+   NAME                              READY   STATUS      RESTARTS   AGE
+   hello-1578815940-lcbtc            0/1     Completed   0          2m42s
+   hello-1578816000-29kd5            0/1     Completed   0          102s
+   hello-1578816060-9c2zc            0/1     Completed   0          42s
+   ```
+   
+由上可知，Cronjob 控制器控制的对象是 Job，Cronjob 根据业务配置的规则，定期创建 Job，Job 再去管理创建Pod。
+
+## ② 命令
+
+## ③ 属性
+
+
+
 
