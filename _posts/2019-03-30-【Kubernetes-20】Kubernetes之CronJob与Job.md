@@ -128,12 +128,12 @@ type 相关的字段的定义可以参考 [kubernetes apimachinery meta/v1/types
 ### meta字段
 meta 相关的字段的定义可以参考 [kubernetes apimachinery meta/v1/types ObjectMeta](https://github.com/kubernetes/apimachinery/blob/master/pkg/apis/meta/v1/types.go#L110) 主要是以下字段
 
-1. name: Daemonset名称，一般由业务在yaml文件里面设置
-2. namespace: Daemonset所属的namespace （kubernetes namespace类似组的概念，和linux namespace不同）
-3. creationTimestamp: Daemonset创建时间
-4. labels: Daemonset相关的label，有些是用户设置的，有些则是kubernetes自动设置的
+1. name: Job名称，一般由业务在yaml文件里面设置
+2. namespace: Job所属的namespace （kubernetes namespace类似组的概念，和linux namespace不同）
+3. creationTimestamp: Job创建时间
+4. labels: Job相关的label，有些是用户设置的，有些则是kubernetes自动设置的
 5. uid: kubernetes自动生成的唯一的pod id
-6. selfLink: 当前Daemonset的url，可以通过访问该url获取到Daemonset的相关信息
+6. selfLink: 当前Job的url，可以通过访问该url获取到Job的相关信息
 7. annotations: 用户自己设置的一些key-value键值对注释，类似labels
 
 ### spec字段
@@ -219,8 +219,94 @@ spec:
 由上可知，Cronjob 控制器控制的对象是 Job，Cronjob 根据业务配置的规则，定期创建 Job，Job 再去管理创建Pod。
 
 ## ② 命令
+1. 创建Cronjob: `kubectl apply -f cronjob.yaml`
+2. 列出Cronjob: `kubectl get cronjob -n {namespace}`
+3. 删除Cronjob: `kubectl delete cronjob -n {namespace} {cronjob-name}`
+4. 查看Cronjob: `kubectl describe cronjob -n {namespace} {cronjob-name}`
 
 ## ③ 属性
+为了更好的了解 Cronjob，我们需要熟悉 Cronjob yaml 配置文件相关属性字段的含义，我们通过下面这个例子来了解一下 Cronjob。有关 Cronjob 属性字段的相关含义，可以参考 [kubernetes api Cronjob](https://github.com/kubernetes/api/blob/master/batch/v1beta1/types.go#L58)
+
+```
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"batch/v1beta1","kind":"CronJob","metadata":{"annotations":{},"name":"hello","namespace":"kube-system"},"spec":{"jobTemplate":{"spec":{"template":{"spec":{"containers":[{"args":["/bin/sh","-c","date; echo Hello from the Kubernetes cluster"],"image":"busybox","name":"hello"}],"restartPolicy":"OnFailure"}}}},"schedule":"*/1 * * * *"}}
+  creationTimestamp: "2020-01-12T07:34:51Z"
+  name: hello
+  namespace: kube-system
+  resourceVersion: "1262638"
+  selfLink: /apis/batch/v1beta1/namespaces/kube-system/cronjobs/hello
+  uid: 5eee4896-5dc9-4a76-a3e6-23b594c4067f
+spec:
+  concurrencyPolicy: Allow
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    metadata:
+      creationTimestamp: null
+    spec:
+      template:
+        metadata:
+          creationTimestamp: null
+        spec:
+          containers:
+          - args:
+            - /bin/sh
+            - -c
+            - date; echo Hello from the Kubernetes cluster
+            image: busybox
+            imagePullPolicy: Always
+            name: hello
+            resources: {}
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+          dnsPolicy: ClusterFirst
+          restartPolicy: OnFailure
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+  schedule: '*/1 * * * *'
+  successfulJobsHistoryLimit: 3
+  suspend: false
+status:
+  lastScheduleTime: "2020-01-12T08:14:00Z"
+```
+
+### type字段
+type 相关的字段的定义可以参考 [kubernetes apimachinery meta/v1/types TypeMeta](https://github.com/kubernetes/apimachinery/blob/master/pkg/apis/meta/v1/types.go#L41) 主要是以下字段
+
+1. apiVersion: 使用的API对象的版本，可以参考kubernetes github源码 v1beta1 就是表示版本
+2. kind: API对象类型，对于 Cronjob 来说值一直是 Cronjob
+
+### meta字段
+meta 相关的字段的定义可以参考 [kubernetes apimachinery meta/v1/types ObjectMeta](https://github.com/kubernetes/apimachinery/blob/master/pkg/apis/meta/v1/types.go#L110) 主要是以下字段
+
+1. name: Cronjob 名称，一般由业务在yaml文件里面设置，`不能超过52字符，因为CronJob会自动添加11个字符生成Job名称，Job名称最多不超过63个`
+2. namespace: Cronjob 所属的namespace （kubernetes namespace类似组的概念，和linux namespace不同）
+3. creationTimestamp: Cronjob 创建时间
+4. labels: Cronjob 相关的label，有些是用户设置的，有些则是kubernetes自动设置的
+5. uid: kubernetes自动生成的唯一的pod id
+6. selfLink: 当前Cronjob的url，可以通过访问该url获取到Cronjob的相关信息
+7. annotations: 用户自己设置的一些key-value键值对注释，类似labels
+
+### spec字段
+spec 相关的字段的定义可以参考 [kubernetes apimachinery meta/batch/v1beta1 CronJobSpec](https://github.com/kubernetes/api/blob/master/batch/v1beta1/types.go#L92) 主要是以下字段
+
+1. schedule: Cron的格式，可以参考 [Cron wiki](https://en.wikipedia.org/wiki/Cron)
+2. concurrencyPolicy: 执行Job的策略，目前支持以下3种
+    + Allow: 运行同时运行多个Job，当上一个Job还未运行结束的时候，又到了新的调度周期，那么会创建一个新的Job （这是默认的策略）
+    + Forbid: 禁止同时运行多个Job，当上一个Job还未运行结束的时候，又到了新的调度周期，那么会跳过
+    + Replace: 替换老的Job，当上一个Job还未运行结束的时候，又到了新的调度周期，那么会创建一个新的代替已有的Job
+3. suspend: 当前Cronjob是否处于挂起状态，如果是的话则不会再创建新的Job
+4. jobTemplate: job template，主要是描述Job的，可以参考 
+5. successfulJobsHistoryLimit
+6. failedJobsHistoryLimit
+
+### status字段
+
+
 
 
 
