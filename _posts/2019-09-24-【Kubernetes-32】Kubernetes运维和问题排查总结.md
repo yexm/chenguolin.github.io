@@ -94,8 +94,10 @@ tags:          #标签
    2). 拷贝目录到Pod: `$ kubectl cp [dir-path] [pod-name]:/[path]` 例如 `$ kubectl cp dir myapp-759598b9f7-7gbsc:/tmp/`  
    3). 拷贝文件到多个Pod: `$ for podname in $(kubectl get pods -n test -o json | jq -r '.items[].metadata.name' | grep cgl-test); do kubectl cp log ${podname}:/tmp/ -n test ; done`   
    4). 确认文件是否拷贝成功: `$ for podname in $(kubectl get pods -n test -o json | jq -r '.items[].metadata.name' | grep cgl-test); do kubectl exec -i ${podname} -n test ls /tmp ; done`   
-21. 删除污点
+21. 删除污点  
    `$ kubectl taint nodes {node-name} k8s.toBeDeleted:NoSchedule-`  //注意末尾有个 `-`
+22. 列出Pod名称长度超过40  
+   `$ kubectl get all --all-namespaces -o name | awk -F '/' '{print $2}' | awk '{if (length($1) > 40) print}'`
 
 ## ② 常用问题排查步骤
 1. 查看Pod状态以及运行的节点  
