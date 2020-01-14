@@ -104,7 +104,7 @@ RUN echo "10.10.0.14 cgl.test.com" >> /etc/hosts
 
 6. 从上面的验证过程可以验证 /etc/hosts, /etc/resolv.conf 和 /etc/hostname 等文件确实是在容器启动的时候生成的，同时存储到 /var/lib/docker/containers/{container-id}/ 目录下。除此之外，容器启动的时候会把 /var/lib/docker/containers/{container-id}/ 目录下 hosts、resolv.conf、hostname 等文件挂载到容器内，这些文件不是存储在容器读写层。
 
-因此，如果我们有需要改变容器 /etc/hosts 的需求，具体的解决方案详见下文。
+因此，如果我们有需要改变容器 /etc/hosts 的需求，具体的解决方案详见下文。[Why Does Kubelet Manage the Hosts File](https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/#why-does-kubelet-manage-the-hosts-file)
 
 # 二. 解决方案
 ## ① docker run 添加 --add-host 参数
