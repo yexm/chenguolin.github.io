@@ -17,7 +17,7 @@ tags:          #标签
 
 Docker的实现方案虽然可行，但是很麻烦，因为我们不仅要考虑多个容器共享网络、共享存储，还要考虑容器的启动顺序。但是到了 Kubernetes ，这样的问题就迎刃而解了，`Pod 是 Kubernetes 里的原子调度单位。这就意味着，Kubernetes 项目的调度器，是统一按照 Pod 而非容器的资源需求进行计算的`。
 
-所以，在 Kubernetes 里面实现方案为 把2个容器绑定在同一个Pod上，同一个Pod 里的所有容器，共享同一个 Network Namespace，并且可以声明共享同一个 Volume。
+所以，在 Kubernetes 里面实现方案为 把2个容器绑定在同一个Pod上，同一个Pod 里的所有容器，共享同一个 Network Namespace，并且可以声明共享同一个 Volume，并且每个Pod都有自己的IP地址。
 
 Docker是kubernetes项目使用最多的容器运行时，但是kubernetes还支持其他的容器运行时 [container-runtimes](https://kubernetes.io/docs/setup/production-environment/container-runtimes/)，在kubernetes中使用Pod主要是以下2种方式。
 
