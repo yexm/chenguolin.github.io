@@ -79,8 +79,8 @@ tags:          #标签
 
 11. kubernetes集群搭建的时候涉及到很多国外的镜像，但是由于机器在国内导致很多镜像都拉取不到，因此需要做些调整，先从国内的镜像源拉取，然后使用 docker tag 重新打下tag
     ```
-    1. docker.io 相关的镜像，可以使用 dockerhub.azk8s.cn 代替，下载完成之后retag即可
-    2. gcr.io 相关的镜像，可以使用 gcr.azk8s.cn 代替，下载完成之后retag即可
-    3. quay.io 相关的镜像，可以使用 quay.azk8s.cn 代替，下载完成之后retag即可
+    1). docker.io 相关的镜像，可以使用 dockerhub.azk8s.cn 代替，下载完成之后retag即可
+    2). gcr.io 相关的镜像，可以使用 gcr.azk8s.cn 代替，下载完成之后retag即可
+    3). quay.io 相关的镜像，可以使用 quay.azk8s.cn 代替，下载完成之后retag即可
     ```
 
