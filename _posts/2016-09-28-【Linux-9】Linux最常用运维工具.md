@@ -290,7 +290,8 @@ systemd（System Management Daemon）是Linux 系统工具，用来启动守护�
 9. systemd重新加载配置文件: `$ systemctl daemon-reload`
 10. 查看服务是否处于运行状态: `$ systemctl is-active [name.service]`
 11. 查看服务是否处于启动失败状态: `$ systemctl is-failed [name.service]`
-12.  systemctl is-enabled application.service
+12. 查看服务是否开机启动: `$ systemctl is-enabled [name.service]`
+13. 查看服务启动参数: `$ systemctl show [name.service]`
 
 # 十一. journalctl
 journalctl 命令用来查看 systemd 所管理守护进程的日志，以及系统相关日志。
