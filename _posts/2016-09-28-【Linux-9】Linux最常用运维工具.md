@@ -275,3 +275,17 @@ r  b   swpd   free   buff  cache    si   so    bi    bo   in   cs us sy id wa st
 3. scp指定私钥文件
     + 本地拷贝到远程: `$ scp -i ssh-key.pem file.dat root@12.13.14.15:/root/chenguolin`
     + 远程拷贝到本地: `$ scp -i ssh-key.pem root@12.13.14.15:/root/chenguolin/file.dat .`
+
+# 十. systemd
+systemd 是Linux 系统工具，用来启动守护进程，已成为大多数发行版的标准配置，systemctl 则是命令行工具。很多时候我们期望部署的服务可以用操作系统来托管，并且开机自启动，这个时候用 systemd 就非常合适。
+
+1. 启动服务: `$ systemctl start [name.service]`
+2. 停止服务: `$ systemctl stop [name.service]`
+3. 重启服务: `$ systemctl restart [name.service]`
+4. 重新加载服务: `$ systemctl reload [name.service]`
+5. 查看服务状态: `$ systemctl status [name.service]`
+6. 设置开机启动: `$ systemctl enable [name.service]` (确认 /lib/systemd/system/*.service /etc/systemd/system/*.service 是否有软链接)
+7. 撤销开机启动: `$ systemctl disable [name.service]`
+8. 查看开启启动服务列表: `$ systemctl list-unit-files | grep enabled`
+9. systemd重新加载配置文件: `$ systemctl daemon-reload`
+
