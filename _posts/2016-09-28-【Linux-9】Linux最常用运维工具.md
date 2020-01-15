@@ -277,7 +277,7 @@ r  b   swpd   free   buff  cache    si   so    bi    bo   in   cs us sy id wa st
     + 远程拷贝到本地: `$ scp -i ssh-key.pem root@12.13.14.15:/root/chenguolin/file.dat .`
 
 # 十. systemd
-systemd 是Linux 系统工具，用来启动守护进程，已成为大多数发行版的标准配置，systemctl 则是命令行工具。很多时候我们期望部署的服务可以用操作系统来托管，并且开机自启动，这个时候用 systemd 就非常合适。
+systemd（System Management Daemon）是Linux 系统工具，用来启动守护进程，已成为大多数发行版的标准配置，systemctl 则是命令行工具。很多时候我们期望部署的服务可以用操作系统来托管，并且开机自启动，这个时候用 systemd 就非常合适。
 
 1. 启动服务: `$ systemctl start [name.service]`
 2. 停止服务: `$ systemctl stop [name.service]`
