@@ -288,4 +288,29 @@ systemd（System Management Daemon）是Linux 系统工具，用来启动守护�
 7. 撤销开机启动: `$ systemctl disable [name.service]`
 8. 查看开启启动服务列表: `$ systemctl list-unit-files | grep enabled`
 9. systemd重新加载配置文件: `$ systemctl daemon-reload`
+10. 查看服务是否处于运行状态: `$ systemctl is-active [name.service]`
+11. 查看服务是否处于启动失败状态: `$ systemctl is-failed [name.service]`
+12.  systemctl is-enabled application.service
+
+# 十一. journalctl
+journalctl 命令用来查看 systemd 所管理守护进程的日志，以及系统相关日志。
+
+1. 查看所有日志: `$ journalctl -f` （实时滚动显示最新日志）
+2. 查看内核日志: `$ journalctl -k -f`
+3. 查看指定时间的日志
+   ```
+   $ journalctl --since="2012-10-30 18:17:16" -f
+   $ journalctl --since "20 min ago" -f
+   $ journalctl --since yesterday -f
+   $ journalctl --since "2015-01-10" --until "2015-01-11 03:00" -f
+   $ journalctl --since 09:00 --until "1 hour ago" -f
+   $ journalctl --since=today -f
+   $ journalctl --since "2015-06-01 01:00:00" -f
+   $ journalctl --since "2015-06-01" --until "2015-06-13 15:00" -f
+   $ journalctl --since 09:00 --until "1 hour ago" -f
+   ```
+4. 查看指定服务日志: `$ journalctl -u docker.service -f`
+5. 查看指定进程的日志: `$ journalctl _PID=1 -f`
+6. 查看日志占用磁盘空间: `$ journalctl --disk-usage`
+
 
