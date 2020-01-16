@@ -24,9 +24,9 @@ tags:         #标签
 
 `table` 指的是规则表，用于存储具有相同功能的规则链，不同的功能的规则放置在不同的 table 中。iptables 内置了5个 table，filter、nat、mangle、raw、security，最常用的是 filter 、nat 和 mangle 这3个 table，这3个 table 主要的作用如下。
 
-1. `filter`: 负责IP数据包过滤（防火墙），是 iptables 命令默认查看的 table，内置了 `INPUT`、`FORWARD`、`OUTPUT` 3条规则链
-2. `nat`: 负责网络地址转换即Network Address Translation，内置了 `PREROUTING`、`OUTPUT`、`POSTROUTING` 3条规则链
-3. `mangle`: 负责修改IP数据包，内置了`PREROUTING`、`POSTROUTING`、`OUTPUT`、`INPUT`、`FORWARD` 5条规则链
+1. `filter`: 负责IP数据包过滤（防火墙），是 iptables 命令默认查看的 table，内置了 `INPUT`、`FORWARD`、`OUTPUT` 3条规则链。
+2. `nat`: 负责网络地址转换即Network Address Translation，包括Source NAT 和 Destination NAT，内置了 `PREROUTING`、`OUTPUT`、`POSTROUTING` 3条规则链。
+3. `mangle`: 负责修改IP数据包，内置了`PREROUTING`、`POSTROUTING`、`OUTPUT`、`INPUT`、`FORWARD` 5条规则链。
 
 `chain` 指的是规则链，用于存储具有相同功能的规则，我们知道防火墙的作用就是对经过的IP数据包根据规则进行检测，然后执行相应的动作。可能有不止一条规则，因此我们把这些规则串到一条链上，每个经过的IP数据包都要经过该链所有规则进行检测一遍
 
@@ -109,60 +109,70 @@ Options:
 iptables 常用命令如下
 
 1. 查看当前机器iptables所有规则: `$ iptables-save`
-2. filter table iptables使用
+2. 查看指定table的所有规则: `$ iptables -t {table} -nL --line-numbers`
+
+## ① filter
+filter table规则主要的功能是`防火墙`，主要用于过滤
+
+1. 删除所有规则链
    ```
-   // 删除所有规则链
-   iptables -t filter -F   （内置规则链）
-   iptables -t filter -X   （自定义规则链）
+   $ iptables -t filter -F   （内置规则链）
+   $ iptables -t filter -X   （自定义规则链）
+   ```
 
-   // 删除所有规则
-   iptables -t filter -P INPUT DROP
-   iptables -t filter -P FORWARD DROP
-   iptables -t filter -P OUTPUT DROP
+2. 删除所有规则
+   ```
+   $ iptables -t filter -P INPUT DROP
+   $ iptables -t filter -P FORWARD DROP
+   $ iptables -t filter -P OUTPUT DROP
+   ```
 
-   // 允许 loopback 设备
-   iptables -t filter -A INPUT -i lo -j ACCEPT
-   iptables -t filter -A OUTPUT -o lo -j ACCEPT
+3. 规则配置
+   ```
+   // case 1: 允许 loopback 设备
+   $ iptables -t filter -A INPUT -i lo -j ACCEPT
+   $ iptables -t filter -A OUTPUT -o lo -j ACCEPT
+    
+   // case 2: allow ssh over eth0
+   $ iptables -t filter -A INPUT -i eth0 -p tcp --dport 22 -j ACCEPT
+   $ iptables -t filter -A OUTPUT -o eth0 -p tcp --sport 22 -j ACCEPT
 
-   // case 1: allow ssh over eth0
-   iptables -t filter -A INPUT -i eth0 -p tcp --dport 22 -j ACCEPT
-   iptables -t filter -A OUTPUT -o eth0 -p tcp --sport 22 -j ACCEPT
+   // case 3: Allow icmp(ping) anywhere
+   $ iptables -t filter -A INPUT -p icmp --icmp-type any -j ACCEPT
+   $ iptables -t filter -A FORWARD -p icmp --icmp-type any -j ACCEPT
+   $ iptables -t filter -A OUTPUT -p icmp --icmp-type any -j ACCEPT
 
-   // case 2: Allow icmp(ping) anywhere
-   iptables -t filter -A INPUT -p icmp --icmp-type any -j ACCEPT
-   iptables -t filter -A FORWARD -p icmp --icmp-type any -j ACCEPT
-   iptables -t filter -A OUTPUT -p icmp --icmp-type any -j ACCEPT
+   // case 4: allow http from internal(leftnet) to external(rightnet)
+   $ iptables -t filter -A FORWARD -i eth1 -o eth2 -p tcp --dport 80 -j ACCEPT
+   $ iptables -t filter -A FORWARD -i eth2 -o eth1 -p tcp --sport 80 -j ACCEPT
 
-   // case 3: allow http from internal(leftnet) to external(rightnet)
-   iptables -t filter -A FORWARD -i eth1 -o eth2 -p tcp --dport 80 -j ACCEPT
-   iptables -t filter -A FORWARD -i eth2 -o eth1 -p tcp --sport 80 -j ACCEPT
+   // case 5: allow ssh from internal(leftnet) to external(rightnet)
+   $ iptables -t filter -A FORWARD -i eth1 -o eth2 -p tcp --dport 22 -j ACCEPT
+   $ iptables -t filter -A FORWARD -i eth2 -o eth1 -p tcp --sport 22 -j ACCEPT
 
-   // case 4: allow ssh from internal(leftnet) to external(rightnet)
-   iptables -t filter -A FORWARD -i eth1 -o eth2 -p tcp --dport 22 -j ACCEPT
-   iptables -t filter -A FORWARD -i eth2 -o eth1 -p tcp --sport 22 -j ACCEPT
+   // case 6: allow http from external(rightnet) to internal(leftnet)
+   $ iptables -t filter -A FORWARD -i eth2 -o eth1 -p tcp --dport 80 -j ACCEPT
+   $ iptables -t filter -A FORWARD -i eth1 -o eth2 -p tcp --sport 80 -j ACCEPT
 
-   // allow http from external(rightnet) to internal(leftnet)
-   iptables -t filter -A FORWARD -i eth2 -o eth1 -p tcp --dport 80 -j ACCEPT
-   iptables -t filter -A FORWARD -i eth1 -o eth2 -p tcp --sport 80 -j ACCEPT
-
-   // allow rpcinfo over eth0 from outside to system
-   iptables -t filter -A INPUT -i eth2 -p tcp --dport 111 -j ACCEPT
-   iptables -t filter -A OUTPUT -o eth2 -p tcp --sport 111 -j ACCEPT
+   // case 7: allow rpcinfo over eth0 from outside to system
+   $ iptables -t filter -A INPUT -i eth2 -p tcp --dport 111 -j ACCEPT
+   $ iptables -t filter -A OUTPUT -o eth2 -p tcp --sport 111 -j ACCEPT
+   ```
    
-   // 列出filter table 所有的规则
-   iptables -t filter -nL --line-numbers
+## ② nat
+
+1. 删除所有规则链
+   ```
+   $ iptables -t nat -F   （内置规则链）
+   $ iptables -t nat -X   （自定义规则链）
    ```
 
-3. nat table iptables使用
+2. 删除所有规则
    ```
-   // 删除所有规则链
-   iptables -t nat -F   （内置规则链）
-   iptables -t nat -X   （自定义规则链）
+   $ iptables -t nat -P INPUT DROP
+   $ iptables -t nat -P FORWARD DROP
+   $ iptables -t nat -P OUTPUT DROP
+   ```
+   
 
-   // 删除所有规则
-   iptables -t nat -P INPUT DROP
-   iptables -t nat -P FORWARD DROP
-   iptables -t nat -P OUTPUT DROP
-   
-   
-   ```
+
