@@ -17,21 +17,21 @@ tags:         #标签
 1. `netfilter` 组件位于内核空间，由一些数据包过滤表组成，这些表包含内核用来控制数据包过滤处理的规则集。
 2. `iptables` 组件位于用户空间，实际上是一个命令行工具，它使插入、修改和删除数据包过滤表中的规则变得容易。
 
-所以，Linux内置的防火墙实际上是通过 iptables 控制 netfilter 数据包过滤表中的规则，从而达到对IP数据包过滤、更改、转发的目的。
+所以，Linux内置的防火墙实际上是通过 iptables 控制 netfilter 内核数据包过滤表中的规则，从而达到对IP数据包过滤、更改、转发的目的。
 
 # 二. iptables简介
 [iptables](https://en.wikipedia.org/wiki/Iptables) 是一个用户空间的命令行工具，通过 iptables 创建新规则，其实就是往 netfilter 中插入一个hook，从而实现修改数据包、控制数据包流向等。iptables 适用于用于 IPv4 数据包，如果是 IPv6 则需要使用 ip6tables。iptables 主要由 规则表（table）、规则链（chain）以及规则（rule）三部分组成。
 
 `table` 指的是规则表，用于存储具有相同功能的规则链，不同的功能的规则放置在不同的 table 中。iptables 内置了5个 table，filter、nat、mangle、raw、security，最常用的是 filter 、nat 和 mangle 这3个 table，这3个 table 主要的作用如下。
 
-1. `filter`: 负责IP数据包过滤（防火墙），是 iptables 命令默认查看的 table，内置了 `INPUT`、`FORWARD`、`OUTPUT` 3条规则链。
+1. `filter`: 负责IP数据包过滤，是 iptables 命令默认查看的 table，内置了 `INPUT`、`FORWARD`、`OUTPUT` 3条规则链。
 2. `nat`: 负责网络地址转换即Network Address Translation，包括Source NAT 和 Destination NAT，内置了 `PREROUTING`、`OUTPUT`、`POSTROUTING` 3条规则链。
-3. `mangle`: 负责修改IP数据包，内置了`PREROUTING`、`POSTROUTING`、`OUTPUT`、`INPUT`、`FORWARD` 5条规则链。
+3. `mangle`: 负责修改IP数据包，内置了`PREROUTING`、`INPUT`、`FORWARD`、`POSTROUTING`、`OUTPUT` 5条规则链。
 
-`chain` 指的是规则链，用于存储具有相同功能的规则，我们知道防火墙的作用就是对经过的IP数据包根据规则进行检测，然后执行相应的动作。可能有不止一条规则，因此我们把这些规则串到一条链上，每个经过的IP数据包都要经过该链所有规则进行检测一遍
+`chain` 指的是规则链，用于存储具有相同功能的规则，我们知道防火墙的作用就是对经过的IP数据包根据规则进行检测，然后执行相应的动作。可能有不止一条规则，因此我们把这些规则串到一条链上，`每个经过的IP数据包都要经过该链所有规则进行检测一遍`。
 
 1. `INPUT`: 发送到当前机器的IP数据包，都要经过INPUT规则链所有规则进行检测一遍
-2. `FORWARD`: 通过当前机器转发的IP数据包，都要经过FORWARD规则链所有规则进行检测一遍
+2. `FORWARD`: 通过当前机器转发的IP数据包（目的地不是当前机器 同时 也不是当前机器生成的），都要经过FORWARD规则链所有规则进行检测一遍
 3. `OUTPUT`: 当前机器生成的IP数据包，都要经过OUTPUT规则链所有规则进行检测一遍
 4. `PREROUTING`: 当前机器在接收IP数据包之前，都会经过PREROUTING规则链所有规则进行检测一遍
 5. `POSTROUTING`: 当前机器在发送IP数据包之后，都会经过POSTROUTING规则链所有规则进行检测一遍
@@ -41,6 +41,8 @@ tags:         #标签
 1. `ACCEPT`: 接收IP数据包
 2. `DROP`: 直接丢弃IP数据包
 3. `RETURN`: 停止当前规则检测，检测当前链下一个规则
+4. `SNAT`: 源地址转换（局域网内所有用户共用同一个公网IP地址）
+5. `DNAT`: 目标地址转换
 
 因此，table、chain、rule 这3者的关系可以用以下这幅图来描述
 
@@ -181,9 +183,9 @@ nat table 规则主要的功能是网络地址转换，用于变更IP数据包�
 3. 规则配置
    ```
    // case 1: 配置SNAT coming from 10.1.1.0/24 network and exiting via eth1 will get the source ip-address set to 11.12.13.14
-   $ iptables -t nat -A POSTROUTING -o eth1 -s 10.1.1.0/24 -j SNAT --to-source 11.12.13.14
+   $ iptables -t nat -A POSTROUTING -o eth1 -s 10.1.1.0/24 --to-source 11.12.13.14 -j SNAT 
    
    // case 2: 配置DNAT destination port 22 all packet destination ip-address set to 10.1.1.99
-   $ iptables -t nat -A PREROUTING -i eth1 -p tcp --dport 22 -j DNAT --to-destination 10.1.1.99
+   $ iptables -t nat -A PREROUTING -i eth1 -p tcp --dport 22 --to-destination 10.1.1.99 -j DNAT
    ```
 
