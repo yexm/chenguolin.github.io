@@ -30,11 +30,11 @@ tags:         #标签
 
 `chain` 指的是规则链，用于存储具有相同功能的规则，我们知道防火墙的作用就是对经过的IP数据包根据规则进行检测，然后执行相应的动作。可能有不止一条规则，因此我们把这些规则串到一条链上，`每个经过的IP数据包都要经过该链所有规则进行检测一遍`。
 
-1. `INPUT`: 发送到当前机器的IP数据包，都要经过INPUT规则链所有规则进行检测一遍
-2. `FORWARD`: 通过当前机器转发的IP数据包（目的地不是当前机器 同时 也不是当前机器生成的），都要经过FORWARD规则链所有规则进行检测一遍
-3. `OUTPUT`: 当前机器生成的IP数据包，都要经过OUTPUT规则链所有规则进行检测一遍
-4. `PREROUTING`: 当前机器在接收IP数据包之前，都会经过PREROUTING规则链所有规则进行检测一遍
-5. `POSTROUTING`: 当前机器在发送IP数据包之后，都会经过POSTROUTING规则链所有规则进行检测一遍
+1. `INPUT`: 发送到当前机器的IP数据包，都要经过INPUT规则链所有规则进行检测一遍，存在于 filter、mangle 表
+2. `FORWARD`: 通过当前机器转发的IP数据包（目的地不是当前机器 同时 也不是当前机器生成的），都要经过FORWARD规则链所有规则进行检测一遍，存在于 filter、mangle 表
+3. `OUTPUT`: 当前机器生成的IP数据包，都要经过OUTPUT规则链所有规则进行检测一遍，存在于 filter、nat、mangle 表
+4. `PREROUTING`: 当前机器在接收IP数据包之前，都会经过PREROUTING规则链所有规则进行检测一遍，存在于 nat、mangle 表
+5. `POSTROUTING`: 当前机器在发送IP数据包之后，都会经过POSTROUTING规则链所有规则进行检测一遍，存在于 nat、mangle 表
 
 `rule` 指的具体的规则，规则其实就是用户自定义的检测条件，表示如果IP数据包符合某个条件就执行某种处理动作。规则实际是存储在内核空间的 netfilter 的包过滤表中，如果IP数据包与规则匹配，则会根据规则定义的执行动作来进行处理，例如接收（ACCEPT）、丢弃（DROP）、返回（RETURN）或自定义的执行动作。
 
@@ -188,4 +188,13 @@ nat table 规则主要的功能是网络地址转换，用于变更IP数据包�
    // case 2: 配置DNAT destination port 22 all packet destination ip-address set to 10.1.1.99
    $ iptables -t nat -A PREROUTING -i eth1 -p tcp --dport 22 --to-destination 10.1.1.99 -j DNAT
    ```
+   
+# 四. iptables总结
+综上所述，IP数据包的整体流向如下图所示
+
+![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/iptables-3.png?raw=true)
+
+
+
+
 
