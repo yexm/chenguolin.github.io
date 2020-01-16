@@ -38,6 +38,10 @@ tags:         #标签
 
 `rule` 指的具体的规则，规则其实就是用户自定义的检测条件，表示如果IP数据包符合某个条件就执行某种处理动作。规则实际是存储在内核空间的 netfilter 的包过滤表中，如果IP数据包与规则匹配，则会根据规则定义的执行动作来进行处理，例如接收（ACCEPT）、丢弃（DROP）、返回（RETURN）或自定义的执行动作。
 
+1. `ACCEPT`: 接收IP数据包
+2. `DROP`: 直接丢弃IP数据包
+3. `RETURN`: 停止当前规则检测，检测当前链下一个规则
+
 因此，table、chain、rule 这3者的关系可以用以下这幅图来描述
 
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/iptables_1.png?raw=true)
@@ -47,7 +51,7 @@ tags:         #标签
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/iptables_2.png?raw=true)
 
 # 三. iptables命令
-iptables 常用的命令如下，可以通过 `man iptables` 进行查看，因为 iptables 是一个命令行工具而非后台守护进程，因此我们不需要通过 systemctl 或者 service 等命令进行启动（不过，可能有些Linux发行版会需要），Linux已经内置了，通过 iptables 命令修改完规则后立即生效。
+iptables 命令如下，可以通过 `man iptables` 进行查看，因为 iptables 是一个命令行工具而非后台守护进程，因此我们不需要通过 systemctl 或者 service 等命令进行启动（不过，可能有些Linux发行版会需要），Linux已经内置了，通过 iptables 命令修改完规则后立即生效。
 
 ```
 iptables v1.4.21
@@ -102,80 +106,63 @@ Options:
     --version       -V                       print package version.
 ```
 
+iptables 常用命令如下
+
 1. 查看当前机器iptables所有规则: `$ iptables-save`
-2. 查看指定table的规则列表
+2. filter table iptables使用
    ```
-   filter: $ iptables -t filter -L --line-numbers
-   nat: $ iptables -t nat -L --line-numbers
-   mangle: $ iptables -t mangle -L --line-numbers
-   ```
-3. 新增filter table 规则
-   ```
-   允许访问当前机器22端口
-   $ iptables -A INPUT -i eth0 -p tcp --dport 22 -j ACCEPT
-   $ iptables -A OUTPUT -o eth0 -p tcp --sport 22 -j ACCEPT
+   // 删除所有规则链
+   iptables -t filter -F   （内置规则链）
+   iptables -t filter -X   （自定义规则链）
+
+   // 删除所有规则
+   iptables -t filter -P INPUT DROP
+   iptables -t filter -P FORWARD DROP
+   iptables -t filter -P OUTPUT DROP
+
+   // 允许 loopback 设备
+   iptables -t filter -A INPUT -i lo -j ACCEPT
+   iptables -t filter -A OUTPUT -o lo -j ACCEPT
+
+   // case 1: allow ssh over eth0
+   iptables -t filter -A INPUT -i eth0 -p tcp --dport 22 -j ACCEPT
+   iptables -t filter -A OUTPUT -o eth0 -p tcp --sport 22 -j ACCEPT
+
+   // case 2: Allow icmp(ping) anywhere
+   iptables -t filter -A INPUT -p icmp --icmp-type any -j ACCEPT
+   iptables -t filter -A FORWARD -p icmp --icmp-type any -j ACCEPT
+   iptables -t filter -A OUTPUT -p icmp --icmp-type any -j ACCEPT
+
+   // case 3: allow http from internal(leftnet) to external(rightnet)
+   iptables -t filter -A FORWARD -i eth1 -o eth2 -p tcp --dport 80 -j ACCEPT
+   iptables -t filter -A FORWARD -i eth2 -o eth1 -p tcp --sport 80 -j ACCEPT
+
+   // case 4: allow ssh from internal(leftnet) to external(rightnet)
+   iptables -t filter -A FORWARD -i eth1 -o eth2 -p tcp --dport 22 -j ACCEPT
+   iptables -t filter -A FORWARD -i eth2 -o eth1 -p tcp --sport 22 -j ACCEPT
+
+   // allow http from external(rightnet) to internal(leftnet)
+   iptables -t filter -A FORWARD -i eth2 -o eth1 -p tcp --dport 80 -j ACCEPT
+   iptables -t filter -A FORWARD -i eth1 -o eth2 -p tcp --sport 80 -j ACCEPT
+
+   // allow rpcinfo over eth0 from outside to system
+   iptables -t filter -A INPUT -i eth2 -p tcp --dport 111 -j ACCEPT
+   iptables -t filter -A OUTPUT -o eth2 -p tcp --sport 111 -j ACCEPT
    
-   允许和10.1.1.0/24 子网进行通信
-   $ iptables -A INPUT -i eth1 -s 10.1.1.0/24 -p tcp -j ACCEPT
-   $ iptables -A OUTPUT -o eth1 -d 10.1.1.0/24 -p tcp -j ACCEPT
-   
-   禁止icmp（ping）
-   $ iptables -A INPUT -p icmp --icmp-type any -j DROP
-   $ iptables -A OUTPUT -p icmp --icmp-type any -j DROP
+   // 列出filter table 所有的规则
+   iptables -t filter -nL --line-numbers
    ```
-4. 新增nat table 规则
-5. 
 
-# 四. iptables使用
+3. nat table iptables使用
+   ```
+   // 删除所有规则链
+   iptables -t nat -F   （内置规则链）
+   iptables -t nat -X   （自定义规则链）
 
-## ① filter（过滤）
-filter 表存储一序列的IP数据包过滤规则列表，内核模块 netfilter 会根据这些规则决定如何处理每个IP数据包。filter table 内置了 `INPUT`、`FORWARD`、`OUTPUT` 3条规则链，可以毫无问题地对包进行 接收（ACCEPT）、丢弃（DROP）、返回（RETURN）以及自定义的执行动作。`每个数据包通过网卡进入之后，`
-
-
-我们先看一下当前机器的 filter table 的规则
-
-```
-$ iptables -t filter -L --line-numbers
-Chain INPUT (policy ACCEPT)
-num  target                  prot opt source       destination
-1    KUBE-SERVICES           all  --  anywhere     anywhere             ctstate NEW /* kubernetes service portals */
-2    KUBE-EXTERNAL-SERVICES  all  --  anywhere     anywhere             ctstate NEW /* kubernetes externally-visible service portals */
-3    KUBE-FIREWALL           all  --  anywhere     anywhere
-
-Chain FORWARD (policy ACCEPT)
-num  target                    prot opt source               destination
-1    KUBE-FORWARD              all  --  anywhere             anywhere             /* kubernetes forwarding rules */
-2    KUBE-SERVICES             all  --  anywhere             anywhere             ctstate NEW /* kubernetes service portals */
-3    DOCKER-USER               all  --  anywhere             anywhere
-4    DOCKER-ISOLATION-STAGE-1  all  --  anywhere             anywhere
-5    ACCEPT                    all  --  anywhere             anywhere             ctstate RELATED,ESTABLISHED
-6    DOCKER                    all  --  anywhere             anywhere
-7    ACCEPT                    all  --  anywhere             anywhere
-8    DROP                      all  --  anywhere             anywhere
-9    ACCEPT                    all  --  ecs-s6-large-2-linux-20200105130533/16  anywhere
-10   ACCEPT                    all  --  anywhere             ecs-s6-large-2-linux-20200105130533/16
-
-Chain OUTPUT (policy ACCEPT)
-num  target         prot opt source       destination
-1    KUBE-SERVICES  all  --  anywhere     anywhere             ctstate NEW /* kubernetes service portals */
-2    KUBE-FIREWALL  all  --  anywhere     anywhere
-```
-
-每条规则除了 接收（ACCEPT）、丢弃（DROP）、返回（RETURN）这3个内置的执行动作，还可以配置用户自定义的执行动作。
-
-1. ACCEPT: 接收IP数据包
-2. DROP: 直接丢弃IP数据包
-3. RETURN: 停止当前规则检测，检测当前链下一个规则
-
-因此，filter表的规则的处理
-
-使用举例
-```
-```
-
-## ② nat（地址转换）
-
-
-## ③ mangle（修改）
-
-# 三. 使用
+   // 删除所有规则
+   iptables -t nat -P INPUT DROP
+   iptables -t nat -P FORWARD DROP
+   iptables -t nat -P OUTPUT DROP
+   
+   
+   ```
