@@ -102,6 +102,29 @@ Options:
     --version       -V                       print package version.
 ```
 
+1. 查看当前机器iptables所有规则: `$ iptables-save`
+2. 查看指定table的规则列表
+   ```
+   filter: $ iptables -t filter -L --line-numbers
+   nat: $ iptables -t nat -L --line-numbers
+   mangle: $ iptables -t mangle -L --line-numbers
+   ```
+3. 新增filter table 规则
+   ```
+   允许访问当前机器22端口
+   $ iptables -A INPUT -i eth0 -p tcp --dport 22 -j ACCEPT
+   $ iptables -A OUTPUT -o eth0 -p tcp --sport 22 -j ACCEPT
+   
+   允许和10.1.1.0/24 子网进行通信
+   $ iptables -A INPUT -i eth1 -s 10.1.1.0/24 -p tcp -j ACCEPT
+   $ iptables -A OUTPUT -o eth1 -d 10.1.1.0/24 -p tcp -j ACCEPT
+   
+   禁止icmp
+   允许和子网进行通
+   ```
+4. 新增nat table 规则
+5. 
+
 # 四. iptables使用
 
 ## ① filter（过滤）
