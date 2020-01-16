@@ -30,9 +30,63 @@ table 指的是规则表，用于存储具有相同功能的规则，不同的�
 2. nat: 负责网络地址转换即Network Address Translation，内置了 `ROUTING`、`OUTPUT`、`POSTROUTING` 3条规则链
 3. mangle: 负责修改IP数据包，内置了`PREROUTING`、`POSTROUTING`、`OUTPUT`、`INPUT`、`FORWARD` 5条规则链
 
+iptables 常用的命令如下，可以通过 `man iptables` 进行查看
+
+```
+iptables v1.4.21
+
+Usage: iptables -[ACD] chain rule-specification [options]
+       iptables -I chain [rulenum] rule-specification [options]
+       iptables -R chain rulenum rule-specification [options]
+       iptables -D chain rulenum [options]
+       iptables -[LS] [chain [rulenum]] [options]
+       iptables -[FZ] [chain] [options]
+       iptables -[NX] chain
+       iptables -E old-chain-name new-chain-name
+       iptables -P chain target [options]
+       iptables -h (print this help information)
+       
+Commands:
+  --append     -A chain              Append to chain                                  //新增规则到某条规则链
+  --check      -C chain              Check for the existence of a rule                //检查规则是否存在
+  --delete     -D chain              Delete matching rule from chain                  //删除某条规则
+  --delete     -D chain rulenum      Delete rule rulenum (1 = first) from chain       //删除某条规则（根据编号）
+  --insert     -I chain [rulenum]    Insert in chain as rulenum (default 1=first)     //插入新的规则
+  --replace    -R chain rulenum      Replace rule rulenum (1 = first) in chain        //替换某条规则（根据编号）
+  --list       -L [chain [rulenum]]  List the rules in a chain or all chains          //列出所有规则
+  --list-rules -S [chain [rulenum]]  Print the rules in a chain or all chains         //打印所有规则
+  --flush      -F [chain]            Delete all rules in  chain or all chains         //删除所有规则
+  --zero       -Z [chain [rulenum]]  Zero counters in chain or all chains 
+  --new        -N chain              Create a new user-defined chain                  //创建用户新的自定义规则链
+  --delete-chain  -X [chain]         Delete a user-defined chain                      //删除用户自定义的规则链
+  --policy        -P chain target    Change policy on chain to target                 //变更规则链的执行动作 ACCEPT 或 DROP
+  --rename-chain                     Change chain name, (moving any references)       //重命名规则链
+				
+                
+Options:
+    --ipv4          -4                       Nothing (line is ignored by ip6tables-restore)    
+    --ipv6          -6                       Error (line is ignored by iptables-restore)
+    --protocol      -p   proto               protocol: by number or name, eg. `tcp'                //协议类型 tcp, udp, icmp, ssh 等
+    --source        -s   address[/mask][...] source specification                                  //源地址
+    --destination   -d   address[/mask][...] destination specification                             //目的地址
+    --in-interface  -i   input               name[+] network interface name ([+] for wildcard)     //输入网卡名称
+    --jump          -j   target              target for rule (may load target extension)           //执行动作 ACCEPT、DROP、QUEUE
+    --goto          -g   chain               jump to chain with no return
+    --match         -m   match               extended match (may load extension)
+    --numeric       -n	                     numeric output of addresses and ports                 
+    --out-interface -o   output              name[+] network interface name ([+] for wildcard)     //输出网卡名称
+    --table         -t   table               table to manipulate (default: `filter')               //指定table，默认filter
+    --verbose       -v                       verbose mode
+    --wait          -w  [seconds]            maximum wait to acquire xtables lock before give up
+    --wait-interval -W  [usecs]	             wait time to try to acquire xtables lock default is 1 second
+    --line-numbers                           print line numbers when listing                       //打印行号
+    --exact         -x                       expand numbers (display exact values)
+    --fragment      -f                       match second or further fragments only
+    --version       -V                       print package version.
+```
 
 ## ① filter
-
+我们先看一下的 filter table 的规则
 
 ## ② nat
 
