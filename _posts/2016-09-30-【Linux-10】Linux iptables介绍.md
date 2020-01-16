@@ -110,9 +110,10 @@ iptables 常用命令如下
 
 1. 查看当前机器iptables所有规则: `$ iptables-save`
 2. 查看指定table的所有规则: `$ iptables -t {table} -nL --line-numbers`
+3. 删除所有的规则: `$ iptables -t {table} -F`
 
 ## ① filter
-filter table规则主要的功能是`防火墙`，主要用于过滤
+filter table 规则主要的功能是`防火墙`，主要用于过滤IP数据包，是Linux防火墙主要的功能。
 
 1. 删除所有规则链
    ```
@@ -160,6 +161,9 @@ filter table规则主要的功能是`防火墙`，主要用于过滤
    ```
    
 ## ② nat
+nat table 规则主要的功能是网络地址转换，用于变更IP数据包中的源/目标IP地址，常见的 nat 有 SNAT (Source NAT) 和 DNAT（Destination NAT）。`SNAT` 常用于IP数据包离开主机之前改变源IP地址，`DNAT` 常用于IP数据包到达主机之前改变目的IP地址。
+
+举个例子，我们在局域网内某个机器访问公网某个服务的时候，对外发请求的时候IP数据包从局域网到达网关的时候会执行 SNAT，把源IP地址改成网关的IP地址。当请求响应回来的时候，网关会执行 DNAT 把目的IP地址改成局域网内机器IP地址。（通常网关会在内存中维护这些映射关系）
 
 1. 删除所有规则链
    ```
@@ -173,6 +177,13 @@ filter table规则主要的功能是`防火墙`，主要用于过滤
    $ iptables -t nat -P FORWARD DROP
    $ iptables -t nat -P OUTPUT DROP
    ```
-   
 
+3. 规则配置
+   ```
+   // case 1: 配置SNAT coming from 10.1.1.0/24 network and exiting via eth1 will get the source ip-address set to 11.12.13.14
+   $ iptables -t nat -A POSTROUTING -o eth1 -s 10.1.1.0/24 -j SNAT --to-source 11.12.13.14
+   
+   // case 2: 配置DNAT destination port 22 all packet destination ip-address set to 10.1.1.99
+   $ iptables -t nat -A PREROUTING -i eth1 -p tcp --dport 22 -j DNAT --to-destination 10.1.1.99
+   ```
 
