@@ -19,23 +19,30 @@ tags:         #标签
 
 所以，Linux内置的防火墙实际上是通过 iptables 控制 netfilter 数据包过滤表中的规则，从而达到对IP数据包过滤、更改、转发的目的。
 
-# 二. iptables
+# 二. iptables简介
 [iptables](https://en.wikipedia.org/wiki/Iptables) 是一个用户空间的命令行工具，通过 iptables 创建新规则，其实就是往 netfilter 中插入一个hook，从而实现修改数据包、控制数据包流向等。iptables 适用于用于 IPv4 数据包，如果是 IPv6 则需要使用 ip6tables。iptables 主要由 规则表（table）、规则链（chain）以及规则（rule）三部分组成。
 
 `table` 指的是规则表，用于存储具有相同功能的规则，不同的功能的规则放置在不同的 table 中。iptables 内置了5个 table，filter、nat、mangle、raw、security，最常用的是 filter 、nat 和 mangle 这3个 table，这3个 table 主要的作用如下。
 
-1. filter: 负责IP数据包过滤（防火墙），是 iptables 命令默认查看的 table，内置了 `INPUT`、`FORWARD`、`OUTPUT` 3条规则链
-2. nat: 负责网络地址转换即Network Address Translation，内置了 `ROUTING`、`OUTPUT`、`POSTROUTING` 3条规则链
-3. mangle: 负责修改IP数据包，内置了`PREROUTING`、`POSTROUTING`、`OUTPUT`、`INPUT`、`FORWARD` 5条规则链
+1. `filter`: 负责IP数据包过滤（防火墙），是 iptables 命令默认查看的 table，内置了 `INPUT`、`FORWARD`、`OUTPUT` 3条规则链
+2. `nat`: 负责网络地址转换即Network Address Translation，内置了 `PREROUTING`、`OUTPUT`、`POSTROUTING` 3条规则链
+3. `mangle`: 负责修改IP数据包，内置了`PREROUTING`、`POSTROUTING`、`OUTPUT`、`INPUT`、`FORWARD` 5条规则链
 
 `chain` 指的是规则链，用于存储具有相同功能的规则，我们知道防火墙的作用就是对经过的IP数据包根据规则进行检测，然后执行相应的动作。可能有不止一条规则，因此我们把这些规则串到一条链上，每个经过的IP数据包都要经过该链所有规则进行检测一遍
 
-1. INPUT: 发送到当前机器的IP数据包，都要经过INPUT规则链所有规则进行检测一遍
-2. FORWARD: 所有通过当前机器转发的IP数据包，都要经过FORWARD规则链所有规则进行检测一遍
-3. OUTPUT: 当前机器生成的IP数据包，都要经过OUTPUT规则链所有规则进行检测一遍
+1. `INPUT`: 发送到当前机器的IP数据包，都要经过INPUT规则链所有规则进行检测一遍
+2. `FORWARD`: 所有通过当前机器转发的IP数据包，都要经过FORWARD规则链所有规则进行检测一遍
+3. `OUTPUT`: 当前机器生成的IP数据包，都要经过OUTPUT规则链所有规则进行检测一遍
+4. `PREROUTING`: 在
+5. `POSTROUTING`: 
 
-`rule` 指的
+`rule` 指的具体的规则，规则其实就是用户自定义的检测条件，表示如果IP数据包符合某个条件就执行某种处理动作。规则实际是存储在内核空间的 netfilter 的包过滤表中，如果IP数据包与规则匹配，则会根据规则定义的执行动作来进行处理，例如接收（ACCEPT）、丢弃（DROP）、返回（RETURN）或自定义的执行动作。
 
+因此，table、chain、rule 这3者的关系可以用以下这幅图来描述
+
+
+
+# 三. iptables命令
 iptables 常用的命令如下，可以通过 `man iptables` 进行查看，因为 iptables 是一个命令行工具而非后台守护进程，因此我们不需要通过 systemctl 或者 service 等命令进行启动（不过，可能有些Linux发行版会需要），Linux已经内置了，通过 iptables 命令修改完规则后立即生效。
 
 ```
@@ -90,6 +97,8 @@ Options:
     --fragment      -f                       match second or further fragments only
     --version       -V                       print package version.
 ```
+
+# 四. iptables使用
 
 ## ① filter
 filter 表存储一序列的IP数据包过滤规则列表，内核模块 netfilter 会根据这些规则决定如何处理每个IP数据包。filter table 内置了 `INPUT`、`FORWARD`、`OUTPUT` 3条规则链，可以毫无问题地对包进行 接收（ACCEPT）、丢弃（DROP）、返回（RETURN）以及自定义的执行动作。`每个数据包通过网卡进入之后，`
