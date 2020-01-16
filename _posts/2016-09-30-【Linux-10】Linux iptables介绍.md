@@ -28,15 +28,13 @@ tags:         #标签
 2. `nat`: 负责网络地址转换即Network Address Translation，包括Source NAT 和 Destination NAT，支持 `PREROUTING`、`OUTPUT`、`POSTROUTING` 3条规则链。
 3. `mangle`: 负责修改IP数据包，支持 `PREROUTING`、`INPUT`、`FORWARD`、`POSTROUTING`、`OUTPUT` 5条规则链。
 
-`chain` 指的是规则链，iptables 内置了5条链，用于存储具有相同功能的规则，不同规则表的规则共享这5条链。`注意每个IP数据包经过一条规则链的时候，都需要将当前链的所有规则检测一遍，由于不同表共享同一条规则链，因此同一条规则链的检测顺序为 raw->mangle->nat->filter。`
+`chain` 指的是规则链，用于存储具有相同功能的规则。注意每个IP数据包经过一条规则链的时候，都需要将当前链的所有规则检测一遍。`除了内置的规则链，用户还可以在table里面创建自定义的规则链，但是自定义规则链不能直接使用，只能被当做某个内置链的执行动作才能起作用。因为，自定义的规则链都是针对应用程序进行定制的，通过链接到iptables默认的规则链起作用。`
 
 1. `INPUT`: 发送到当前机器的IP数据包，都要经过INPUT规则链所有规则进行检测一遍，存放 filter、mangle 表的规则
 2. `FORWARD`: 通过当前机器转发的IP数据包（目的地不是当前机器 同时 也不是当前机器生成的），都要经过FORWARD规则链所有规则进行检测一遍，存放 filter、mangle 表的规则
 3. `OUTPUT`: 当前机器生成的IP数据包，都要经过OUTPUT规则链所有规则进行检测一遍，存放 filter、nat、mangle 表的规则
 4. `PREROUTING`: 当前机器在接收IP数据包之前，都会经过PREROUTING规则链所有规则进行检测一遍，存放 nat、mangle 表的规则
 5. `POSTROUTING`: 当前机器在发送IP数据包之后，都会经过POSTROUTING规则链所有规则进行检测一遍，存放 nat、mangle 表的规则
-
-`除了上诉提到的规则链，用户还可以在table里面创建自定义的规则链，但是自定义链不能直接使用，只能被当做某个内置链的执行动作才能起作用。因为，自定义的规则链都是针对应用程序进行定制的，通过链接到iptables默认的规则链。`
 
 `rule` 指的具体的规则，规则其实就是用户自定义的检测条件，表示如果IP数据包符合某个条件就执行某种处理动作。规则实际是存储在内核空间的 netfilter 的包过滤表中，如果IP数据包与规则匹配，则会根据规则定义的执行动作来进行处理，例如接收（ACCEPT）、丢弃（DROP）、返回（RETURN）或自定义的执行动作。
 
@@ -46,7 +44,7 @@ tags:         #标签
 4. `SNAT`: 源地址转换（局域网内所有用户共用同一个公网IP地址）
 5. `DNAT`: 目标地址转换
 
-因此，table、chain、rule 这3者的关系可以用以下这幅图来描述
+基于上诉内容，table、chain、rule 这3者的关系可以用以下这幅图来描述
 
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/iptables_1.png?raw=true)
 
