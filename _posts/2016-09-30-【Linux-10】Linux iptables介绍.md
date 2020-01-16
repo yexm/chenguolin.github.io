@@ -24,7 +24,7 @@ tags:         #标签
 
 `table` 指的是规则表，用于存储具有相同功能的规则，不同的功能的规则放置在不同的 table 中。iptables 内置了5个 table，filter、nat、mangle、raw、security，最常用的是 filter 、nat 和 mangle 这3个 table，这3个 table 主要的作用如下。
 
-1. `filter`: 负责IP数据包过滤，是 iptables 命令默认查看的 table，支持 `INPUT`、`FORWARD`、`OUTPUT` 3条规则链。
+1. `filter`: 负责IP数据包过滤，是 iptables 命令默认查看的 table，支持 `INPUT`、`FORWARD`、`OUTPUT` 3条规则链。（我们通常所说的防火墙指的是filter表的过滤规则）
 2. `nat`: 负责网络地址转换即Network Address Translation，包括Source NAT 和 Destination NAT，支持 `PREROUTING`、`OUTPUT`、`POSTROUTING` 3条规则链。
 3. `mangle`: 负责修改IP数据包，支持 `PREROUTING`、`INPUT`、`FORWARD`、`POSTROUTING`、`OUTPUT` 5条规则链。
 
@@ -114,6 +114,8 @@ iptables 常用命令如下
 1. 查看当前机器iptables所有规则: `$ iptables-save`
 2. 查看指定table的所有规则: `$ iptables -t {table} -nL --line-numbers`
 3. 删除所有的规则: `$ iptables -t {table} -F`
+4. 保存当前机器iptables所有规则到文件: `$ iptables-save > filename`
+5. 从指定文件恢复iptables规则: `$ iptables-restore < fileName`
 
 ## ① filter
 filter table 规则主要的功能是`防火墙`，主要用于过滤IP数据包，是Linux防火墙主要的功能。
