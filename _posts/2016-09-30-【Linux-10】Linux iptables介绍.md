@@ -86,7 +86,46 @@ Options:
 ```
 
 ## ① filter
-我们先看一下的 filter table 的规则
+filter 表存储一序列的IP数据包过滤规则列表，内核模块 netfilter 会根据这些规则决定如何处理每个IP数据包。filter table 内置了 `INPUT`、`FORWARD`、`OUTPUT` 3条规则链，可以毫无问题地对包进行 接收（ACCEPT）、丢弃（DROP）、返回（RETURN）以及自定义的执行动作
+
+1. INPUT: 发送到当前机器的IP数据包的处理规则
+2. FORWARD: 通过当前机器转发的IP数据包的处理规则
+3. OUTPUT: 当前机器生成的IP数据包的处理规则
+
+我们先看一下当前机器的 filter table 的规则
+
+```
+$ iptables -t filter -L --line-numbers
+Chain INPUT (policy ACCEPT)
+num  target                  prot opt source       destination
+1    KUBE-SERVICES           all  --  anywhere     anywhere             ctstate NEW /* kubernetes service portals */
+2    KUBE-EXTERNAL-SERVICES  all  --  anywhere     anywhere             ctstate NEW /* kubernetes externally-visible service portals */
+3    KUBE-FIREWALL           all  --  anywhere     anywhere
+
+Chain FORWARD (policy ACCEPT)
+num  target                    prot opt source               destination
+1    KUBE-FORWARD              all  --  anywhere             anywhere             /* kubernetes forwarding rules */
+2    KUBE-SERVICES             all  --  anywhere             anywhere             ctstate NEW /* kubernetes service portals */
+3    DOCKER-USER               all  --  anywhere             anywhere
+4    DOCKER-ISOLATION-STAGE-1  all  --  anywhere             anywhere
+5    ACCEPT                    all  --  anywhere             anywhere             ctstate RELATED,ESTABLISHED
+6    DOCKER                    all  --  anywhere             anywhere
+7    ACCEPT                    all  --  anywhere             anywhere
+8    DROP                      all  --  anywhere             anywhere
+9    ACCEPT                    all  --  ecs-s6-large-2-linux-20200105130533/16  anywhere
+10   ACCEPT                    all  --  anywhere             ecs-s6-large-2-linux-20200105130533/16
+
+Chain OUTPUT (policy ACCEPT)
+num  target         prot opt source       destination
+1    KUBE-SERVICES  all  --  anywhere     anywhere             ctstate NEW /* kubernetes service portals */
+2    KUBE-FIREWALL  all  --  anywhere     anywhere
+```
+
+每条规则除了 接收（ACCEPT）、丢弃（DROP）、返回（RETURN）这3个内置的执行动作，还可以配置用户自定义的执行动作
+
+1. ACCEPT: 接收包，直接放行，不需要在匹配该链上的其他规则，注意是该链，其他链的还是需要匹配的，即只是说明通了一关，后面几关能不能通过还不好说。
+2. DROP: 直接丢弃包，包都丢了，当然也不需要在匹配其他任何规则了。
+3. RETURN: 
 
 ## ② nat
 
