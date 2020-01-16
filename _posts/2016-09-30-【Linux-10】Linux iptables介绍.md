@@ -22,13 +22,13 @@ tags:         #标签
 # 二. iptables简介
 [iptables](https://en.wikipedia.org/wiki/Iptables) 是一个用户空间的命令行工具，通过 iptables 创建新规则，其实就是往 netfilter 中插入一个hook，从而实现修改数据包、控制数据包流向等。iptables 适用于用于 IPv4 数据包，如果是 IPv6 则需要使用 ip6tables。iptables 主要由 规则表（table）、规则链（chain）以及规则（rule）三部分组成。
 
-`table` 指的是规则表，用于存储具有相同功能的规则链，不同的功能的规则放置在不同的 table 中。iptables 内置了5个 table，filter、nat、mangle、raw、security，最常用的是 filter 、nat 和 mangle 这3个 table，这3个 table 主要的作用如下。
+`table` 指的是规则表，用于存储具有相同功能的规则，不同的功能的规则放置在不同的 table 中。iptables 内置了5个 table，filter、nat、mangle、raw、security，最常用的是 filter 、nat 和 mangle 这3个 table，这3个 table 主要的作用如下。
 
 1. `filter`: 负责IP数据包过滤，是 iptables 命令默认查看的 table，支持 `INPUT`、`FORWARD`、`OUTPUT` 3条规则链。
 2. `nat`: 负责网络地址转换即Network Address Translation，包括Source NAT 和 Destination NAT，支持 `PREROUTING`、`OUTPUT`、`POSTROUTING` 3条规则链。
 3. `mangle`: 负责修改IP数据包，支持 `PREROUTING`、`INPUT`、`FORWARD`、`POSTROUTING`、`OUTPUT` 5条规则链。
 
-`chain` 指的是规则链，用于存储具有相同功能的规则。注意每个IP数据包经过一条规则链的时候，都需要将当前链的所有规则检测一遍。`除了内置的规则链，用户还可以在table里面创建自定义的规则链，但是自定义规则链不能直接使用，只能被当做某个内置链的执行动作才能起作用。因为，自定义的规则链都是针对应用程序进行定制的，通过链接到iptables默认的规则链起作用。`
+`chain` 指的是规则链，iptables内置了5条规则链，用于存储具有相同功能的规则，不同表共享这些规则链。注意每个IP数据包经过一条规则链的时候，都需要将当前链的所有规则检测一遍。`除了内置的5条规则链，用户还可以在table里面创建自定义的规则链，但是自定义规则链不能直接使用，只能被当做某个内置链的执行动作才能起作用。因为，自定义的规则链都是针对应用程序进行定制的，通过链接到iptables默认的规则链起作用。`
 
 1. `INPUT`: 发送到当前机器的IP数据包，都要经过INPUT规则链所有规则进行检测一遍，存放 filter、mangle 表的规则
 2. `FORWARD`: 通过当前机器转发的IP数据包（目的地不是当前机器 同时 也不是当前机器生成的），都要经过FORWARD规则链所有规则进行检测一遍，存放 filter、mangle 表的规则
@@ -44,13 +44,14 @@ tags:         #标签
 4. `SNAT`: 源地址转换（局域网内所有用户共用同一个公网IP地址）
 5. `DNAT`: 目标地址转换
 
-基于上诉内容，table、chain、rule 这3者的关系可以用以下这幅图来描述
+基于上诉内容，规则表（table）、规则链（chain）、规则（rule） 这3者的关系为
 
-![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/iptables_1.png?raw=true)
+1. table 用于存储具有相同功能的规则，每个 table 可以包含多个规则
+2. iptables 内置5条规则链，所有 table 共享这5条规则链
+3. 每条规则链包含一序列规则，每个IP数据包都要经过所有的规则进行检测
 
 所以，根据以上的介绍，我们IP数据包的流向如下图所示
-
-![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/iptables_2.png?raw=true)
+![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/iptables-4.png?raw=true)
 
 # 三. iptables命令
 iptables 命令如下，可以通过 `man iptables` 进行查看，因为 iptables 是一个命令行工具而非后台守护进程，因此我们不需要通过 systemctl 或者 service 等命令进行启动（不过，可能有些Linux发行版会需要），Linux已经内置了，通过 iptables 命令修改完规则后立即生效。
