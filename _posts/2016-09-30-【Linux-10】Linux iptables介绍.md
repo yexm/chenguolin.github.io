@@ -119,8 +119,9 @@ Options:
    $ iptables -A INPUT -i eth1 -s 10.1.1.0/24 -p tcp -j ACCEPT
    $ iptables -A OUTPUT -o eth1 -d 10.1.1.0/24 -p tcp -j ACCEPT
    
-   禁止icmp
-   允许和子网进行通
+   禁止icmp（ping）
+   $ iptables -A INPUT -p icmp --icmp-type any -j DROP
+   $ iptables -A OUTPUT -p icmp --icmp-type any -j DROP
    ```
 4. 新增nat table 规则
 5. 
