@@ -85,25 +85,25 @@ Commands:
 				
                 
 Options:
-    --ipv4          -4                       Nothing (line is ignored by ip6tables-restore)    
-    --ipv6          -6                       Error (line is ignored by iptables-restore)
-    --protocol      -p   proto               protocol: by number or name, eg. `tcp'                //协议类型 tcp, udp, icmp, ssh 等
-    --source        -s   address[/mask][...] source specification                                  //源地址
-    --destination   -d   address[/mask][...] destination specification                             //目的地址
-    --in-interface  -i   input               name[+] network interface name ([+] for wildcard)     //输入网卡名称
-    --jump          -j   target              target for rule (may load target extension)           //执行动作 ACCEPT、DROP、QUEUE
-    --goto          -g   chain               jump to chain with no return
-    --match         -m   match               extended match (may load extension)
-    --numeric       -n	                     numeric output of addresses and ports                 
-    --out-interface -o   output              name[+] network interface name ([+] for wildcard)     //输出网卡名称
-    --table         -t   table               table to manipulate (default: `filter')               //指定table，默认filter
-    --verbose       -v                       verbose mode
-    --wait          -w  [seconds]            maximum wait to acquire xtables lock before give up
-    --wait-interval -W  [usecs]	             wait time to try to acquire xtables lock default is 1 second
-    --line-numbers                           print line numbers when listing                       //打印行号
-    --exact         -x                       expand numbers (display exact values)
-    --fragment      -f                       match second or further fragments only
-    --version       -V                       print package version.
+  --ipv4          -4                       Nothing (line is ignored by ip6tables-restore)    
+  --ipv6          -6                       Error (line is ignored by iptables-restore)
+  --protocol      -p   proto               protocol: by number or name, eg. `tcp'                //协议类型 tcp, udp, icmp, ssh 等
+  --source        -s   address[/mask][...] source specification                                  //源地址
+  --destination   -d   address[/mask][...] destination specification                             //目的地址
+  --in-interface  -i   input               name[+] network interface name ([+] for wildcard)     //输入网卡名称
+  --jump          -j   target              target for rule (may load target extension)           //执行动作 ACCEPT、DROP、QUEUE
+  --goto          -g   chain               jump to chain with no return
+  --match         -m   match               extended match (may load extension)
+  --numeric       -n	                     numeric output of addresses and ports                 
+  --out-interface -o   output              name[+] network interface name ([+] for wildcard)     //输出网卡名称
+  --table         -t   table               table to manipulate (default: `filter')               //指定table，默认filter
+  --verbose       -v                       verbose mode
+  --wait          -w  [seconds]            maximum wait to acquire xtables lock before give up
+  --wait-interval -W  [usecs]	             wait time to try to acquire xtables lock default is 1 second
+  --line-numbers                           print line numbers when listing                       //打印行号
+  --exact         -x                       expand numbers (display exact values)
+  --fragment      -f                       match second or further fragments only
+  --version       -V                       print package version.
 ```
 
 iptables 常用命令如下
