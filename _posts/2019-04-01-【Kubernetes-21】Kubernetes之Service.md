@@ -64,9 +64,36 @@ spec:
     port: 9376
     targetPort: 9376
     protocol: TCP
-  selector:                 //筛选Pod
+  selector:                 //筛选 app=hostnames 标签的Pod
     app: hostnames
 ```
+
+1. 创建Deployment: `$ kubectl apply -f deployment.yaml`
+2. 查看Deployment管理的Pod
+   ```
+   $ kubectl get po -n kube-system
+   NAME                          READY   STATUS      RESTARTS   AGE     IP              NODE                                  NOMINATED NODE   READINESS GATES
+   hostnames-85cd66c585-4w9rh    1/1     Running     0          2d23h   10.244.0.74     ecs-s6-large-2-linux-20200105130533   <none>           <none>
+   hostnames-85cd66c585-ch4zk    1/1     Running     0          2d23h   10.244.0.73     ecs-s6-large-2-linux-20200105130533   <none>           <none>
+   hostnames-85cd66c585-p99c5    1/1     Running     0          2d23h   10.244.0.72     ecs-s6-large-2-linux-20200105130533   <none>           <none>
+   ```
+3. 创建Service: `$ kubectl apply -f service.yaml`
+4. 查看Service
+   ```
+   $ kubectl get service -n kube-system
+   NAME          TYPE           CLUSTER-IP      EXTERNAL-IP     PORT(S)                  AGE
+   hostnames     ClusterIP      10.96.250.206   <none>          9376/TCP                 2d23h
+   ```
+5. 查看Service筛选的Pod  (Service 选中的 Pod 称为Endpoints)
+   ```
+   $ kubectl get ep -n kube-system hostnames
+   NAME        ENDPOINTS                                            AGE
+   hostnames   10.244.0.72:9376,10.244.0.73:9376,10.244.0.74:9376   2d23h
+   ```
+6. 根据以上信息，确认 hostnames Service 的 Endpoints 正是 Deployment 所管理的3个 Pod。需要注意的是，只有处于 Running 状态，且 readinessProbe 检查通过的 Pod，才会出现在 Service 的 Endpoints 列表里。并且，当某一个 Pod 出现问题时，Kubernetes 会自动把它从 Service 里摘除掉。
+7. 我们
+
+
 
 每个 Service 都会被分配一个唯一的IP地址，这个IP地址与 Service 的生命周期绑定在一起，当 Service 存在的时候它不会改变。每个节点都运行了一个 kube-proxy 组件，kube-proxy 监控着 Kubernetes 增加和删除 Service，对于每个 Service kube-proxy 会随机开启一个本机端口，任何向这个端口的请求都会被转发到一个后台的Pod中，如何选择哪一个后台Pod是基于SessionAffnity进行的分配。
 
