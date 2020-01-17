@@ -220,11 +220,6 @@ IP数据包 `出方向` 规则如下
 $ iptables -t filter -F   （内置规则链）
 $ iptables -t filter -X   （自定义规则链）
 
-// 删除所有规则
-$ iptables -t filter -P INPUT DROP
-$ iptables -t filter -P FORWARD DROP
-$ iptables -t filter -P OUTPUT DROP
-
 // 规则配置 (允许 入方向 tcp:22)
 $ iptables -t filter -A INPUT -p tcp --dport 22 -j ACCEPT
 $ iptables -t filter -A OUTPUT -p tcp --sport 22 -j ACCEPT
