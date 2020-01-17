@@ -183,7 +183,7 @@ status相关的字段的定义可以参考 [kubernetes api core/v1/types Service
 只有一个字段 loadBalancer，默认情况下为空，spec.type 为 LoadBalancer 时该字段会有值。
 
 # 四. 实现
+`Service 是由 kube-proxy 组件，加上 iptables 来共同实现的`。每个 Service 都会被分配一个唯一的IP地址，这个IP地址与 Service 的生命周期绑定在一起，当 Service 存在的时候它不会改变。每个节点都运行了一个 kube-proxy 组件，kube-proxy 通过 Service 的 Informer 感知到一个 Service 对象的创建或删除，然后在宿主机上创建或删除 iptables 规则。关于这部分的源码可以参考 [kubernetes/pkg/proxy/iptables](https://github.com/kubernetes/kubernetes/tree/master/pkg/proxy/iptables)，关于 iptables 可以参考 [Linux iptables介绍](https://chenguolin.github.io/2016/09/30/Linux-10-Linux-iptables%E4%BB%8B%E7%BB%8D/)
 
-每个 Service 都会被分配一个唯一的IP地址，这个IP地址与 Service 的生命周期绑定在一起，当 Service 存在的时候它不会改变。每个节点都运行了一个 kube-proxy 组件，kube-proxy 监控着 Kubernetes 增加和删除 Service，对于每个 Service kube-proxy 会随机开启一个本机端口，任何向这个端口的请求都会被转发到一个后台的Pod中，如何选择哪一个后台Pod是基于SessionAffnity进行的分配。
 
-在创建Service的时候可以指定IP地址，将spec.clusterIP的值设置为我们想要的IP地址即可。
+
