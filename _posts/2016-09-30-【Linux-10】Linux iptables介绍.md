@@ -244,9 +244,8 @@ $ iptables -t filter -A INPUT -p tcp --dport 6379 -j ACCEPT
 // 规则配置 (允许 入方向 icmp:all)
 $ iptables -t filter -A INPUT -p icmp -s 0.0.0.0/0 -j ACCEPT
 
-// 修改规则链默认策略位DROP（表示丢弃IP数据包）
+// 修改INPUT规则链默认策略位DROP（表示丢弃IP数据包）
 $ iptables -t filter -P INPUT DROP
-$ iptables -t filter -P FORWARD DROP
 ```
 
 执行完成之后，我们可以通过 `$ iptables -t filter -nL --line-numbers` 确认规则是否符合上诉的配置
@@ -263,7 +262,7 @@ ACCEPT     tcp  --  0.0.0.0/0            0.0.0.0/0            tcp dpt:3306
 ACCEPT     tcp  --  0.0.0.0/0            0.0.0.0/0            tcp dpt:6379
            icmp --  0.0.0.0              0.0.0.0/0
 
-Chain FORWARD (policy DROP)
+Chain FORWARD (policy ACCEPT)
 target     prot opt source               destination
 
 Chain OUTPUT (policy ACCEPT)
