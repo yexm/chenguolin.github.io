@@ -64,7 +64,7 @@ spec:
     port: 9376
     targetPort: 9376
     protocol: TCP
-  selector:                 //筛选
+  selector:                 //筛选Pod
     app: hostnames
 ```
 
