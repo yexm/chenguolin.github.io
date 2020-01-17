@@ -169,7 +169,8 @@ meta相关的字段的定义可以参考 [kubernetes apimachinery meta/v1/types 
 ## ③ spec字段
 spec相关的字段的定义可以参考 [kubernetes api core/v1/types ServiceSpec](https://github.com/kubernetes/api/blob/master/core/v1/types.go#L3836) 主要是以下字段
 
-1. selector: Service所
+1. selector: 用于筛选Pod
+2. clusterIP: Service的
 
 ## ④ status字段
 
