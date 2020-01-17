@@ -206,7 +206,7 @@ IP数据包 `入方向` 规则如下
 | TCP |  3306 | 0.0.0.0/0   |  Mysql 端口  | 
 | TCP |  6379 | 0.0.0.0/0   |  Redis 端口  | 
 | ICMP |  All | 0.0.0.0/0   |  Redis 端口  | 
-| All |  32768 ~ 65535 | 0.0.0.0/0   |  允许所有源端口为 32768 ~ 61000 区间IP数据包 | 
+| TCP、UDP |  32768 ~ 65535 | 0.0.0.0/0   |  允许所有源端口为 32768 ~ 61000 区间IP数据包 | 
 
 IP数据包 `出方向` 规则如下
 
@@ -245,8 +245,9 @@ $ iptables -t filter -A INPUT -p tcp --dport 6379 -j ACCEPT
 // 规则配置 (允许 入方向 icmp:all)
 $ iptables -t filter -A INPUT -p icmp -s 0.0.0.0/0 -j ACCEPT
 
-// 规则配置 (允许 入方向 All:32768:65535)
-$ iptables -t filter -A INPUT -sports 32768:65535 -j ACCEPT
+// 规则配置 (允许 入方向 tcp/udp:32768~65535)
+$ iptables -t filter -A INPUT -p tcp --match multiport --sports 32768:65535 -j ACCEPT
+$ iptables -t filter -A INPUT -p udp --match multiport --sports 32768:65535 -j ACCEPT
 
 // 修改INPUT规则链默认策略位DROP（表示丢弃IP数据包），只需要控制入的IP数据库，因此 FORWARD、OUTPUT不需要变更
 $ iptables -t filter -P INPUT DROP
