@@ -126,7 +126,7 @@ filter table 规则主要的功能是`防火墙`，主要用于过滤IP数据包
    $ iptables -t filter -X   （自定义规则链）
    ```
 
-2. 删除所有规则
+2. 修改规则链默认策略位DROP（表示丢弃IP数据包）
    ```
    $ iptables -t filter -P INPUT DROP
    $ iptables -t filter -P FORWARD DROP
@@ -176,11 +176,11 @@ nat table 规则主要的功能是网络地址转换，用于变更IP数据包�
    $ iptables -t nat -X   （自定义规则链）
    ```
 
-2. 删除所有规则
+2. 修改规则链默认策略位DROP（表示丢弃IP数据包）
    ```
-   $ iptables -t nat -P INPUT DROP
+   $ iptables -t nat -P PREROUTING DROP
    $ iptables -t nat -P FORWARD DROP
-   $ iptables -t nat -P OUTPUT DROP
+   $ iptables -t nat -P POSTROUTING DROP
    ```
 
 3. 规则配置
@@ -205,12 +205,59 @@ IP数据包 `入方向` 规则如下
 | TCP |  443 | 0.0.0.0/0   |  HTTPS 服务端口  | 
 | TCP |  3306 | 0.0.0.0/0   |  Mysql 端口  | 
 | TCP |  6379 | 0.0.0.0/0   |  Redis 端口  | 
+| ICMP |  All | 0.0.0.0/0   |  Redis 端口  | 
 
 IP数据包 `出方向` 规则如下
 
 | 协议   |      端口      |  目的地址 |
-|----------|:-------------|------|
-| all |  all | 0.0.0.0/0  （表示所有IP地址） |
+|----------|:-------------|:------|
+| All |  All | 0.0.0.0/0  （表示所有IP地址） |
+
+因此，我们的 iptables 规则可以这么设置，安全组类似防火墙的概念，因此我们只需要设置 filter 表即可。
+
+```
+// 删除所有规则链
+$ iptables -t filter -F   （内置规则链）
+$ iptables -t filter -X   （自定义规则链）
+
+// 删除所有规则
+$ iptables -t filter -P INPUT DROP
+$ iptables -t filter -P FORWARD DROP
+$ iptables -t filter -P OUTPUT DROP
+
+// 规则配置 (允许 入方向 tcp:22)
+$ iptables -t filter -A INPUT -p tcp --dport 22 -j ACCEPT
+$ iptables -t filter -A OUTPUT -p tcp --sport 22 -j ACCEPT
+
+// 规则配置 (允许 入方向 tcp:23)
+$ iptables -t filter -A INPUT -p tcp --dport 23 -j ACCEPT
+$ iptables -t filter -A OUTPUT -p tcp --sport 23 -j ACCEPT
+
+// 规则配置 (允许 入方向 tcp:80)
+$ iptables -t filter -A INPUT -p tcp --dport 80 -j ACCEPT
+$ iptables -t filter -A OUTPUT -p tcp --sport 80 -j ACCEPT
+
+// 规则配置 (允许 入方向 tcp:443)
+$ iptables -t filter -A INPUT -p tcp --dport 443 -j ACCEPT
+$ iptables -t filter -A OUTPUT -p tcp --sport 443 -j ACCEPT
+
+// 规则配置 (允许 入方向 tcp:3306)
+$ iptables -t filter -A INPUT -p tcp --dport 3306 -j ACCEPT
+$ iptables -t filter -A OUTPUT -p tcp --sport 3306 -j ACCEPT
+
+// 规则配置 (允许 入方向 tcp:6379)
+$ iptables -t filter -A INPUT -p tcp --dport 6379 -j ACCEPT
+$ iptables -t filter -A OUTPUT -p tcp --sport 6379 -j ACCEPT
+
+// 规则配置 (允许 入方向 icmp:all)
+$ iptables -t filter -A INPUT -p icmp -s 0.0.0.0/0 -j ACCEPT
+$ iptables -t filter -A OUTPUT -p icmp -d 0.0.0.0/0-j ACCEPT
+
+// 修改规则链默认策略位DROP（表示丢弃IP数据包）
+$ iptables -t filter -P INPUT DROP
+$ iptables -t filter -P FORWARD DROP
+$ iptables -t filter -P OUTPUT DROP
+```
 
 # 五. iptables总结
 综上所述，IP数据包的整体流向如下图所示
