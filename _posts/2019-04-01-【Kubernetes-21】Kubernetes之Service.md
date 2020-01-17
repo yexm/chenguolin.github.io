@@ -108,6 +108,7 @@ hostnames-85cd66c585-p99c5
 通过三次连续不断地访问 Service 的 VIP 地址和代理端口 9376，它就为我们依次返回了三个 Pod 的 hostname，因为 Service 提供的是 Round Robin 方式的负载均衡。对于这种方式，我们称为 `ClusterIP 模式的 Service`。
 
 ## ② 命令
+Service
 
 ## ③ 属性
 
