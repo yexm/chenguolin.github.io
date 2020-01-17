@@ -275,7 +275,7 @@ kube-proxy 通过 iptables 处理 Service 的过程，需要在`每台宿主机`
 `因此，在大规模集群里，强烈建议 kube-proxy 使用 ipvs 这个模式（通过kube-proxy --proxy-mode参数进行设置），它为 Kubernetes 集群规模带来的提升，还是非常巨大的。`
 
 # 五. Service访问
-Kubernetes 支持2种 Service 的访问方式 `环境变量` 和 `DNS`，下面我们来介绍一下。
+Kubernetes 支持2种 Service 的访问方式 `环境变量` 和 `DNS`，但是我们推荐使用 DNS 的方式。
 
 ## ① 环境变量
 每创建一个 Pod 的时候，kubelet 会给每个容器添加当前namespace Service 相关的环境变量，只能添加当前已经存在的 Service 相关的环境变量，如果 Service 是在 Pod 启动之后创建，那么在 Pod 内是不会有关于该 Service 的环境变量的。
@@ -288,10 +288,23 @@ $ kubectl get service -n kube-system
   kube-dns    ClusterIP   10.96.0.10      <none>        53/UDP,53/TCP,9153/TCP   11d
 ```
 
+部署一个新的Pod，然后进入Pod打印环境变量
+```
+env | grep HOSTNAMES
+HOSTNAMES_SERVICE_PORT=9376
+HOSTNAMES_PORT=tcp://10.96.250.206:9376
+HOSTNAMES_PORT_9376_TCP_ADDR=10.96.250.206
+HOSTNAMES_PORT_9376_TCP_PORT=9376
+HOSTNAMES_PORT_9376_TCP_PROTO=tcp
+HOSTNAMES_PORT_9376_TCP=tcp://10.96.250.206:9376
+HOSTNAMES_SERVICE_PORT_HTTP=9376
+HOSTNAMES_SERVICE_HOST=10.96.250.206
+```
 
+因此，在容器内我们可以使用内置的环境变量来访问 Service。
 
 ## ② DNS
+通常我们都会在 Kubernetes 安装 DNS 插件，例如 CoreDNS，DNS 插件会监听 ApiServer Service的创建事件，当有新 Service 创建的时候就会生成一个新的 DNS 域名 `{service-name}.{namespace}.svc.cluster.local`。因此，我们可以在 Pod 内通过 DNS 域名访问一个 Service 服务。
 
-
-
+例如 hostsname Service 在 kube-system 下，那么 DNS 域名为 `hostsname.kube-system.svc.cluster.local`。
 
