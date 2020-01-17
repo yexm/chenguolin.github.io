@@ -185,5 +185,71 @@ status相关的字段的定义可以参考 [kubernetes api core/v1/types Service
 # 四. 实现
 `Service 是由 kube-proxy 组件，加上 iptables 来共同实现的`。每个 Service 都会被分配一个唯一的IP地址，这个IP地址与 Service 的生命周期绑定在一起，当 Service 存在的时候它不会改变。每个节点都运行了一个 kube-proxy 组件，kube-proxy 通过 Service 的 Informer 感知到一个 Service 对象的创建或删除，然后在宿主机上创建或删除 iptables 规则。关于这部分的源码可以参考 [kubernetes/pkg/proxy/iptables](https://github.com/kubernetes/kubernetes/tree/master/pkg/proxy/iptables)，关于 iptables 可以参考 [Linux iptables介绍](https://chenguolin.github.io/2016/09/30/Linux-10-Linux-iptables%E4%BB%8B%E7%BB%8D/)
 
+我们看下 hostnames Service 在宿主机创建的 iptables 规则，从 [kubernetes/pkg/proxy/iptables](https://github.com/kubernetes/kubernetes/blob/master/pkg/proxy/iptables/proxier.go#L222) 源码可以知道 kube-proxy 在写 iptables 的时候只会更新 filter、nat 这两个规则表，但是我们主要看的还是 nat 这个表。
+
+```
+Chain PREROUTING (policy ACCEPT)
+num  target                prot opt source               destination
+1    KUBE-SERVICES         all  --  0.0.0.0/0            0.0.0.0/0            /* kubernetes service portals */
+
+Chain OUTPUT (policy ACCEPT)
+num  target                prot opt source               destination
+1    KUBE-SERVICES         all  --  0.0.0.0/0            0.0.0.0/0            /* kubernetes service portals */
+
+Chain POSTROUTING (policy ACCEPT)
+num  target                prot opt source               destination
+1    KUBE-POSTROUTING      all  --  0.0.0.0/0            0.0.0.0/0            /* kubernetes postrouting rules */
+2    MASQUERADE            all  --  0.0.0.0/0            0.0.0.0/0            ADDRTYPE match src-type LOCAL
+3    RETURN                all  --  10.244.0.0/16        10.244.0.0/16
+4    MASQUERADE            all  --  10.244.0.0/16       !224.0.0.0/4
+5    RETURN                all  -- !10.244.0.0/16        10.244.0.0/24
+6    MASQUERADE            all  -- !10.244.0.0/16        10.244.0.0/16
+
+Chain KUBE-MARK-DROP (0 references)
+num  target                prot opt source               destination
+1    MARK                  all  --  0.0.0.0/0            0.0.0.0/0            MARK or 0x8000
+
+Chain KUBE-MARK-MASQ (27 references)
+num  target                prot opt source               destination
+1    MARK                  all  --  0.0.0.0/0            0.0.0.0/0            MARK or 0x4000
+
+Chain KUBE-POSTROUTING (1 references)
+num  target                     prot opt source               destination
+1    MASQUERADE                 all  --  0.0.0.0/0            0.0.0.0/0            /* kubernetes service traffic requiring SNAT */ mark match 0x4000/0x4000
+
+Chain KUBE-SERVICES (2 references)
+num  target                     prot opt source               destination
+1    KUBE-MARK-MASQ             tcp  -- !10.244.0.0/16        10.96.250.206        /* kube-system/hostnames:http cluster IP */ tcp dpt:9376
+1    KUBE-SVC-7HKTMCUATIQNHXGP  tcp  --  0.0.0.0/0            10.96.250.206        /* kube-system/hostnames:http cluster IP */ tcp dpt:9376
+
+Chain KUBE-SVC-7HKTMCUATIQNHXGP (1 references)
+num  target                     prot opt source               destination
+1    KUBE-SEP-OH65HOU34ABHBAW4  all  --  0.0.0.0/0            0.0.0.0/0            statistic mode random probability 0.33333333349
+2    KUBE-SEP-26C2QCRVMOQSAR6D  all  --  0.0.0.0/0            0.0.0.0/0            statistic mode random probability 0.50000000000
+3    KUBE-SEP-5ASQB7OILPK5E4ER  all  --  0.0.0.0/0            0.0.0.0/0
+
+Chain KUBE-SEP-OH65HOU34ABHBAW4 (1 references)
+num  target                     prot opt source               destination
+1    KUBE-MARK-MASQ             all  --  10.244.0.72          0.0.0.0/0
+2    DNAT                       tcp  --  0.0.0.0/0            0.0.0.0/0            tcp to:10.244.0.72:9376
+
+Chain KUBE-SEP-26C2QCRVMOQSAR6D (1 references)
+num  target                     prot opt source               destination
+1    KUBE-MARK-MASQ             all  --  10.244.0.73          0.0.0.0/0
+2    DNAT                       tcp  --  0.0.0.0/0            0.0.0.0/0            tcp to:10.244.0.73:9376
+
+Chain KUBE-SEP-5ASQB7OILPK5E4ER (1 references)
+num  target                     prot opt source               destination
+1    KUBE-MARK-MASQ             all  --  10.244.0.74          0.0.0.0/0
+2    DNAT                       tcp  --  0.0.0.0/0            0.0.0.0/0            tcp to:10.244.0.74:9376
+```
+
+从上面的规则，参考 [Linux iptables介绍](https://chenguolin.github.io/2016/09/30/Linux-10-Linux-iptables%E4%BB%8B%E7%BB%8D/) 内容，我们可以知道当我们在集群内访问 hostnames Service 的时候，IP数据包的流程是这样的 `PREROUTING -> KUBE-SERVICES）-> KUBE-SVC-7HKTMCUATIQNHXGP -> KUBE-SEP-OH65HOU34ABHBAW4 / KUBE-SEP-26C2QCRVMOQSAR6D / KUBE-SEP-5ASQB7OILPK5E4ER`。
+
+10.96.250.206 是 hostnames 这个 Service 的 VIP，所以 `KUBE-SVC-7HKTMCUATIQNHXGP  tcp  --  0.0.0.0/0      10.96.250.206     /* kube-system/hostnames:http cluster IP */ tcp dpt:9376` 这一条规则就为这个 Service 设置了一个固定的入口地址。而最终指向三条自定义链，这3个自定义链其实就是这个 Service 代理的三个 Pod，所以这一组规则，就是 Service 实现负载均衡的位置。
+
+所以，访问 Service VIP 的 IP数据包经过 iptables 规则链处理之后，就已经变成了访问具体某一个后端 Pod 的 IP数据包了。这些 iptables 规则，正是 kube-proxy 通过监听 Pod 的变化事件，在宿主机上生成并维护的。kube-proxy 通过 iptables 处理 Service 的过程，需要在宿主机上设置相当多的 iptables 规则。当宿主机上有大量 Pod 的时候，成百上千条 iptables 规则不断地被刷新，会大量占用该宿主机的 CPU 资源，甚至会让宿主机卡在这个过程中。所以说，一直以来，基于 iptables 的 Service 实现，都是制约 Kubernetes 项目承载更多量级的 Pod 的主要障碍。
+
+
 
 
