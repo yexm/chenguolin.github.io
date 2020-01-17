@@ -248,7 +248,9 @@ num  target                     prot opt source               destination
 
 10.96.250.206 是 hostnames 这个 Service 的 VIP，所以 `KUBE-SVC-7HKTMCUATIQNHXGP  tcp  --  0.0.0.0/0      10.96.250.206     /* kube-system/hostnames:http cluster IP */ tcp dpt:9376` 这一条规则就为这个 Service 设置了一个固定的入口地址。而最终指向三条自定义链，这3个自定义链其实就是这个 Service 代理的三个 Pod，所以这一组规则，就是 Service 实现负载均衡的位置。
 
-所以，访问 Service VIP 的 IP数据包经过 iptables 规则链处理之后，就已经变成了访问具体某一个后端 Pod 的 IP数据包了。这些 iptables 规则，正是 kube-proxy 通过监听 Pod 的变化事件，在宿主机上生成并维护的。kube-proxy 通过 iptables 处理 Service 的过程，需要在宿主机上设置相当多的 iptables 规则。当宿主机上有大量 Pod 的时候，成百上千条 iptables 规则不断地被刷新，会大量占用该宿主机的 CPU 资源，甚至会让宿主机卡在这个过程中。所以说，一直以来，基于 iptables 的 Service 实现，都是制约 Kubernetes 项目承载更多量级的 Pod 的主要障碍。
+所以，访问 Service VIP 的 IP数据包经过 iptables 规则链处理之后，就已经变成了访问具体某一个后端 Pod 的 IP数据包了。这些 iptables 规则，正是 kube-proxy 通过监听 Pod 的变化事件，在宿主机上生成并维护的。
+
+kube-proxy 通过 iptables 处理 Service 的过程，需要在`每台宿主机`上设置相当多的 iptables 规则。当宿主机上有大量 Pod 的时候，成百上千条 iptables 规则不断地被刷新，会大量占用该宿主机的 CPU 资源，甚至会让宿主机卡在这个过程中。因此，基于 iptables 的 Service 实现，是制约 Kubernetes 项目承载更多量级的 Pod 的主要障碍。
 
 
 
