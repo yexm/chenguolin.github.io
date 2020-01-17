@@ -45,7 +45,7 @@ spec:
         ports:
         - containerPort: 9376
           protocol: TCP
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: IfNotPresent 
 ```
 
 Service yaml 配置如下
@@ -170,9 +170,17 @@ meta相关的字段的定义可以参考 [kubernetes apimachinery meta/v1/types 
 spec相关的字段的定义可以参考 [kubernetes api core/v1/types ServiceSpec](https://github.com/kubernetes/api/blob/master/core/v1/types.go#L3836) 主要是以下字段
 
 1. selector: 用于筛选Pod
-2. clusterIP: Service的
+2. clusterIP: Service的VIP地址 （ClusterIP是Service默认类型，Service只能在集群内被访问）
+3. type: Service类型，主要有以下4种类型 ClusterIP、NodePort、LoadBalancer 和 ExternalName
+4. ports: Service暴露的一序列端口
+5. externalIPs: Service配置的外部IP，通过外部的 IP 路由到集群中一个或多个 Node 上
+6. loadBalancerIP: type为LoadBalancer时必须要设置的LoadBalancer IP地址（常用于公有云场景）
+7. externalName: type为ExternalName时必须要设置的Service name （类似CNAME，使用方式可以参考 [Service externalname](https://kubernetes.io/docs/concepts/services-networking/service/#externalname)）
 
 ## ④ status字段
+status相关的字段的定义可以参考 [kubernetes api core/v1/types ServiceStatus](https://github.com/kubernetes/api/blob/master/core/v1/types.go#L3793) 主要是以下字段
+
+只有一个字段 loadBalancer，默认情况下为空，spec.type 为 LoadBalancer 时该字段会有值。
 
 # 四. 实现
 
