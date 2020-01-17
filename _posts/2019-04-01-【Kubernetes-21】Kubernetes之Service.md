@@ -21,7 +21,7 @@ Kubernetes 中 Service 是一个抽象的概念，它定义了 Pod 的逻辑分�
 
 知道 Service 的基本定义后，我们来看一下如何创建一个 Service。我们先通过先创建一个 Deployment 对象管理3个 Pod，然后通过再创建 Service，通过  LabelSelector 选择 Pod。
 
-Deployment yaml 配置如下
+Deployment yaml 配置如下，Pod 的作用是每次访问 9376 端口时，返回它自己的 hostname。
 
 ```
 apiVersion: apps/v1
@@ -78,7 +78,7 @@ spec:
    hostnames-85cd66c585-p99c5    1/1     Running     0          2d23h   10.244.0.72     ecs-s6-large-2-linux-20200105130533   <none>           <none>
    ```
 3. 创建Service: `$ kubectl apply -f service.yaml`
-4. 查看Service
+4. 查看Service，发现Service VIP地址为10.96.250.206，代理端口为9376
    ```
    $ kubectl get service -n kube-system
    NAME          TYPE           CLUSTER-IP      EXTERNAL-IP     PORT(S)                  AGE
@@ -90,14 +90,22 @@ spec:
    NAME        ENDPOINTS                                            AGE
    hostnames   10.244.0.72:9376,10.244.0.73:9376,10.244.0.74:9376   2d23h
    ```
-6. 根据以上信息，确认 hostnames Service 的 Endpoints 正是 Deployment 所管理的3个 Pod。需要注意的是，只有处于 Running 状态，且 readinessProbe 检查通过的 Pod，才会出现在 Service 的 Endpoints 列表里。并且，当某一个 Pod 出现问题时，Kubernetes 会自动把它从 Service 里摘除掉。
-7. 我们
 
+根据以上信息，确认 hostnames Service 的 Endpoints 正是 Deployment 所管理的3个 Pod。需要注意的是，只有处于 Running 状态，且 readinessProbe 检查通过的 Pod，才会出现在 Service 的 Endpoints 列表里。并且，当某一个 Pod 出现问题时，Kubernetes 会自动把它从 Service 里摘除掉。
 
+通过 Service VIP 10.96.250.206 访问 Pod，这个 VIP 地址是 Kubernetes 自动为 Service 分配的。
+```
+$ curl "10.96.250.206:9376"
+hostnames-85cd66c585-ch4zk
+   
+$ curl "10.96.250.206:9376"
+hostnames-85cd66c585-4w9rh
+   
+$ curl "10.96.250.206:9376"
+hostnames-85cd66c585-p99c5
+```
 
-每个 Service 都会被分配一个唯一的IP地址，这个IP地址与 Service 的生命周期绑定在一起，当 Service 存在的时候它不会改变。每个节点都运行了一个 kube-proxy 组件，kube-proxy 监控着 Kubernetes 增加和删除 Service，对于每个 Service kube-proxy 会随机开启一个本机端口，任何向这个端口的请求都会被转发到一个后台的Pod中，如何选择哪一个后台Pod是基于SessionAffnity进行的分配。
-
-在创建Service的时候可以指定IP地址，将spec.clusterIP的值设置为我们想要的IP地址即可。
+通过三次连续不断地访问 Service 的 VIP 地址和代理端口 9376，它就为我们依次返回了三个 Pod 的 hostname，因为 Service 提供的是 Round Robin 方式的负载均衡。对于这种方式，我们称为 `ClusterIP 模式的 Service`。
 
 ## ② 命令
 
@@ -105,3 +113,6 @@ spec:
 
 # 三. 实现
 
+每个 Service 都会被分配一个唯一的IP地址，这个IP地址与 Service 的生命周期绑定在一起，当 Service 存在的时候它不会改变。每个节点都运行了一个 kube-proxy 组件，kube-proxy 监控着 Kubernetes 增加和删除 Service，对于每个 Service kube-proxy 会随机开启一个本机端口，任何向这个端口的请求都会被转发到一个后台的Pod中，如何选择哪一个后台Pod是基于SessionAffnity进行的分配。
+
+在创建Service的时候可以指定IP地址，将spec.clusterIP的值设置为我们想要的IP地址即可。
