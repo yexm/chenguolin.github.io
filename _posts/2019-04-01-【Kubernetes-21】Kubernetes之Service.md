@@ -278,6 +278,16 @@ kube-proxy 通过 iptables 处理 Service 的过程，需要在`每台宿主机`
 Kubernetes 支持2种 Service 的访问方式 `环境变量` 和 `DNS`，下面我们来介绍一下。
 
 ## ① 环境变量
+每创建一个 Pod 的时候，kubelet 会给每个容器添加当前namespace Service 相关的环境变量，只能添加当前已经存在的 Service 相关的环境变量，如果 Service 是在 Pod 启动之后创建，那么在 Pod 内是不会有关于该 Service 的环境变量的。
+
+我们查看下当前 Service 列表 
+```
+$ kubectl get service -n kube-system 
+  NAME        TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                  AGE
+  hostnames   ClusterIP   10.96.250.206   <none>        9376/TCP                 3d8h
+  kube-dns    ClusterIP   10.96.0.10      <none>        53/UDP,53/TCP,9153/TCP   11d
+```
+
 
 
 ## ② DNS
