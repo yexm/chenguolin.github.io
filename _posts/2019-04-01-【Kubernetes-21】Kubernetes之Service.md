@@ -272,9 +272,16 @@ kube-proxy 通过 iptables 处理 Service 的过程，需要在`每台宿主机`
 
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/service-ipvs-mode.png?raw=true)
 
-`因此，在大规模集群里，强烈建议 kube-proxy 使用 ipvs 这个模式，它为 Kubernetes 集群规模带来的提升，还是非常巨大的。`
+`因此，在大规模集群里，强烈建议 kube-proxy 使用 ipvs 这个模式（通过kube-proxy --proxy-mode参数进行设置），它为 Kubernetes 集群规模带来的提升，还是非常巨大的。`
 
-# 五. Service发现
+# 五. Service访问
+Kubernetes 支持2种 Service 的访问方式 `环境变量` 和 `DNS`，下面我们来介绍一下。
+
+## ① 环境变量
+
+
+## ② DNS
+
 
 
 
