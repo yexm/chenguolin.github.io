@@ -306,5 +306,5 @@ HOSTNAMES_SERVICE_HOST=10.96.250.206
 ## ② DNS
 通常我们都会在 Kubernetes 安装 DNS 插件，例如 CoreDNS，DNS 插件会监听 ApiServer Service的创建事件，当有新 Service 创建的时候就会生成一个新的 DNS 域名 `{service-name}.{namespace}.svc.cluster.local`。因此，我们可以在 Pod 内通过 DNS 域名访问一个 Service 服务。
 
-例如 hostsname Service 在 kube-system 下，那么 DNS 域名为 `hostsname.kube-system.svc.cluster.local`。
+例如 hostsname Service 在 kube-system 下，那么 DNS 域名为 `hostsname.kube-system.svc.cluster.local`，这个域名的解析结果为 Service 的 VIP 地址。
 
