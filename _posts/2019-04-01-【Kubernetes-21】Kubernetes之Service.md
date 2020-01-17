@@ -15,8 +15,7 @@ tags:          #标签
 
 所以，为了解决这个问题，我们需要使用 Kubernetes Service。`Kubernetes 之所以需要 Service，一方面是因为 Pod 的 IP 不是固定的，另一方面则是因为一组 Pod 实例之间总会有负载均衡的需求，核心的需求是找到Pod。`
 
-# 二. Service
-## ① 介绍
+# 二. Service介绍
 Kubernetes 中 Service 是一个抽象的概念，它定义了 Pod 的逻辑分组和一种可以访问它们的策略，这组 Pod 能被Service访问，使用YAML（优先）或JSON 来定义 Service，Service 所针对的一组 Pod 通常由 LabelSelector 选择。Service是一个抽象层，它定义了一组逻辑的Pods，这些Pod提供了相同的功能，借助Service，应用可以方便的实现服务发现与负载均衡，可以把 Service 加上一组 Pod 称作是一个微服务。
 
 知道 Service 的基本定义后，我们来看一下如何创建一个 Service。我们先通过先创建一个 Deployment 对象管理3个 Pod，然后通过再创建 Service，通过  LabelSelector 选择 Pod。
@@ -105,9 +104,9 @@ $ curl "10.96.250.206:9376"
 hostnames-85cd66c585-p99c5
 ```
 
-通过三次连续不断地访问 Service 的 VIP 地址和代理端口 9376，它就为我们依次返回了三个 Pod 的 hostname，因为 Service 提供的是 Round Robin 方式的负载均衡。对于这种方式，我们称为 `ClusterIP 模式的 Service`。
+通过三次连续不断地访问 Service 的 VIP 地址和代理端口 9376，它就为我们依次返回了三个 Pod 的 hostname，因为 Service 提供的是 Round Robin 方式的负载均衡。对于这种方式，我们称为 `ClusterIP 模式的 Service`。每个 Service 都会被分配一个唯一的IP地址，这个IP地址与 Service 的生命周期绑定在一起，当 Service 存在的时候它不会改变。
 
-# 三. 使用
+# 三. Service使用
 Service 常用的命令如下
 
 1. 创建Service: kubectl apply -f service.yaml
@@ -170,9 +169,13 @@ meta相关的字段的定义可以参考 [kubernetes apimachinery meta/v1/types 
 spec相关的字段的定义可以参考 [kubernetes api core/v1/types ServiceSpec](https://github.com/kubernetes/api/blob/master/core/v1/types.go#L3836) 主要是以下字段
 
 1. selector: 用于筛选Pod
-2. clusterIP: Service的VIP地址 （ClusterIP是Service默认类型，Service只能在集群内被访问）
-3. type: Service类型，主要有以下4种类型 ClusterIP、NodePort、LoadBalancer 和 ExternalName
-4. ports: Service暴露的一序列端口
+2. clusterIP: Service的VIP地址，如果用户没有设置 kubernetes 会随机生成一个
+3. type: Service类型，主要有以下4种类型 ClusterIP、NodePort、LoadBalancer 和 ExternalName （ClusterIP是Service默认类型，Service只能在集群内被访问）
+4. ports: Service暴露的一序列端口，关键的字段如下
+    + name: 这组Port的配置名称，只能包含`小写字母`和`-`，并且只能以字母开头
+    + protocol: 协议名称，默认tcp
+    + port: Service暴露的端口
+    + TargetPort: Pod提供访问的端口
 5. externalIPs: Service配置的外部IP，通过外部的 IP 路由到集群中一个或多个 Node 上
 6. loadBalancerIP: type为LoadBalancer时必须要设置的LoadBalancer IP地址（常用于公有云场景）
 7. externalName: type为ExternalName时必须要设置的Service name （类似CNAME，使用方式可以参考 [Service externalname](https://kubernetes.io/docs/concepts/services-networking/service/#externalname)）
@@ -182,8 +185,16 @@ status相关的字段的定义可以参考 [kubernetes api core/v1/types Service
 
 只有一个字段 loadBalancer，默认情况下为空，spec.type 为 LoadBalancer 时该字段会有值。
 
-# 四. 实现
-`Service 是由 kube-proxy 组件，加上 iptables 来共同实现的`。每个 Service 都会被分配一个唯一的IP地址，这个IP地址与 Service 的生命周期绑定在一起，当 Service 存在的时候它不会改变。每个节点都运行了一个 kube-proxy 组件，kube-proxy 通过 Service 的 Informer 感知到一个 Service 对象的创建或删除，然后在宿主机上创建或删除 iptables 规则。关于这部分的源码可以参考 [kubernetes/pkg/proxy/iptables](https://github.com/kubernetes/kubernetes/tree/master/pkg/proxy/iptables)，关于 iptables 可以参考 [Linux iptables介绍](https://chenguolin.github.io/2016/09/30/Linux-10-Linux-iptables%E4%BB%8B%E7%BB%8D/)
+# 四. Service实现
+Service 实现由 kube-proxy 组件负责的，每个 kubernetes 节点都运行了一个 kube-proxy 组件，kube-proxy 组件目前支持3种模式 `userspace`、`iptables`、`ipvs`，可以参考 [kube-proxy --proxy-mode ProxyMode](https://kubernetes.io/docs/reference/command-line-tools-reference/kube-proxy/)
+
+## ① userspace
+userspace 模式是 Kubernetes v1.0 之前 kube-proxy 默认的实现方案，现在已经不再使用了。实现方案是每个节点都运行了一个 kube-proxy 组件，kube-proxy 通过 Service 的 Informer 感知到一个 Service 对象的创建或删除，然后在宿主机上创建或删除 iptables 规则，请求经过 iptables 后，再转发给kube-proxy端口。默认情况下，kube-proxy 请求后端 Pod 会使用 `round-robin` 算法实现负载均衡。关于这部分的源码可以参考 [kubernetes/pkg/proxy/iptables](https://github.com/kubernetes/kubernetes/tree/master/pkg/proxy/userspace)
+
+![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/service-userspace-mode.png?raw=true)
+
+## ② iptables
+iptables 模式是 Kubernetes v1.1 版本新增的，从 Kubernetes v1.2 起，kube-proxy 默认实现模式为 iptables。每个节点都运行了一个 kube-proxy 组件，kube-proxy 通过 Service 的 Informer 感知到一个 Service 对象的创建或删除，然后在宿主机上创建或删除 iptables 规则。关于这部分的源码可以参考 [kubernetes/pkg/proxy/iptables](https://github.com/kubernetes/kubernetes/tree/master/pkg/proxy/iptables)，关于 iptables 可以参考 [Linux iptables介绍](https://chenguolin.github.io/2016/09/30/Linux-10-Linux-iptables%E4%BB%8B%E7%BB%8D/)
 
 我们看下 hostnames Service 在宿主机创建的 iptables 规则，从 [kubernetes/pkg/proxy/iptables](https://github.com/kubernetes/kubernetes/blob/master/pkg/proxy/iptables/proxier.go#L222) 源码可以知道 kube-proxy 在写 iptables 的时候只会更新 filter、nat 这两个规则表，但是我们主要看的还是 nat 这个表。
 
@@ -250,8 +261,20 @@ num  target                     prot opt source               destination
 
 所以，访问 Service VIP 的 IP数据包经过 iptables 规则链处理之后，就已经变成了访问具体某一个后端 Pod 的 IP数据包了。这些 iptables 规则，正是 kube-proxy 通过监听 Pod 的变化事件，在宿主机上生成并维护的。
 
+![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/service-iptables-mode.png?raw=true)
+
+## ③ ipvs
 kube-proxy 通过 iptables 处理 Service 的过程，需要在`每台宿主机`上设置相当多的 iptables 规则。当宿主机上有大量 Pod 的时候，成百上千条 iptables 规则不断地被刷新，会大量占用该宿主机的 CPU 资源，甚至会让宿主机卡在这个过程中。因此，基于 iptables 的 Service 实现，是制约 Kubernetes 项目承载更多量级的 Pod 的主要障碍。
 
+从 Kubernetes v1.11 之后，kube-proxy 新增了 ipvs 模式。ipvs 模式的工作原理跟 iptables 模式类似，当我们创建了 Service 之后，kube-proxy 首先会在宿主机上创建一个虚拟网卡 kube-ipvs0 ，并为它分配 Service VIP 作为 IP 地址，kube-proxy 就会通过 Linux 的 ipvs 模块，为这个 IP 地址设置 N 个 ipvs 虚拟主机，并使用轮询模式 (rr) 来作为负载均衡策略。
+
+相比于 iptables，ipvs 在内核中的实现其实也是基于 Netfilter 的 NAT 模式，所以在转发这一层上，理论上 ipvs 并没有显著的性能提升。但是，ipvs 并不需要在每个宿主机上为每个 Pod 设置 iptables 规则，而是把对这些规则的处理放到了内核态，从而极大地降低了维护这些规则的代价。ipvs 模块只负责上述的负载均衡和代理功能。而一个完整的 Service 流程正常工作所需要的包过滤、SNAT 等操作，还是要靠 iptables 来实现。只不过，这些辅助性的 iptables 规则数量有限，也不会随着 Pod 数量的增加而增加。
+
+![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/service-ipvs-mode.png?raw=true)
+
+`因此，在大规模集群里，强烈建议 kube-proxy 使用 ipvs 这个模式，它为 Kubernetes 集群规模带来的提升，还是非常巨大的。`
+
+# 五. Service发现
 
 
 
