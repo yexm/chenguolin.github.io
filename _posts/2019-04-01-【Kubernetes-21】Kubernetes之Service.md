@@ -107,12 +107,73 @@ hostnames-85cd66c585-p99c5
 
 通过三次连续不断地访问 Service 的 VIP 地址和代理端口 9376，它就为我们依次返回了三个 Pod 的 hostname，因为 Service 提供的是 Round Robin 方式的负载均衡。对于这种方式，我们称为 `ClusterIP 模式的 Service`。
 
-## ② 命令
-Service
+# 三. 使用
+Service 常用的命令如下
 
-## ③ 属性
+1. 创建Service: kubectl apply -f service.yaml
+2. 列出Service: kubectl get service -n {kube-system}
+3. 查看Service: kubectl get service -n {kube-system} {service-name} -o yaml
+4. 描述Service: kubectl describe service -n {kube-system} {service-name}
+5. 编辑Service: kubectl edit service -n {kube-system} {service-name}
+6. 删除Service: kubectl delete service -n {kube-system} {service-name}
 
-# 三. 实现
+为了更好的了解 Service，我们需要熟悉 Service yaml 配置文件相关属性字段的含义，我们通过下面这个例子来了解一下 Service。有关 Service 属性字段的相关含义，可以参考 [kubernetes api core/v1/types Service](https://github.com/kubernetes/api/blob/master/core/v1/types.go#L4023)
+
+```
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"labels":{"app":"hostnames"},"name":"hostnames","namespace":"kube-system"},"spec":{"ports":[{"name":"http","port":9376,"protocol":"TCP","targetPort":9376}],"selector":{"app":"hostnames"}}}
+  creationTimestamp: "2020-01-14T01:59:23Z"
+  labels:
+    app: hostnames
+  name: hostnames
+  namespace: kube-system
+  resourceVersion: "2353260"
+  selfLink: /api/v1/namespaces/kube-system/services/hostnames
+  uid: 3585fd62-3df4-4ef4-9b99-ac6716f8fffb
+spec:
+  clusterIP: 10.96.250.206
+  ports:
+  - name: http
+    port: 9376
+    protocol: TCP
+    targetPort: 9376
+  selector:
+    app: hostnames
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
+```
+
+## ① type字段
+type相关的字段的定义可以参考 [kubernetes apimachinery meta/v1/types TypeMeta](https://github.com/kubernetes/apimachinery/blob/master/pkg/apis/meta/v1/types.go#L41) 主要是以下字段
+
+1. apiVersion: 使用的API对象的版本，可以参考kubernetes github源码 v1beta1 就是表示版本
+2. kind: API对象类型，对于Service来说一直是 Service
+
+## ② meta字段
+meta相关的字段的定义可以参考 [kubernetes apimachinery meta/v1/types ObjectMeta](https://github.com/kubernetes/apimachinery/blob/master/pkg/apis/meta/v1/types.go#L110) 主要是以下字段
+
+1. name: Service名称，一般由业务在yaml文件里面设置
+2. namespace: Service所属的namespace （kubernetes namespace类似组的概念，和linux namespace不同）
+3. creationTimestamp: Service创建时间
+4. labels: Service相关的label，有些是用户设置的，有些则是kubernetes自动设置的
+5. uid: kubernetes自动生成的唯一的Service id
+6. selfLink: 当前Service的url，可以通过访问该url获取到Service的相关信息
+7. annotations: 用户自己设置的一些key-value键值对注释，类似labels
+
+## ③ spec字段
+spec相关的字段的定义可以参考 [kubernetes api core/v1/types ServiceSpec](https://github.com/kubernetes/api/blob/master/core/v1/types.go#L3836) 主要是以下字段
+
+1. selector: Service所
+
+## ④ status字段
+
+# 四. 实现
 
 每个 Service 都会被分配一个唯一的IP地址，这个IP地址与 Service 的生命周期绑定在一起，当 Service 存在的时候它不会改变。每个节点都运行了一个 kube-proxy 组件，kube-proxy 监控着 Kubernetes 增加和删除 Service，对于每个 Service kube-proxy 会随机开启一个本机端口，任何向这个端口的请求都会被转发到一个后台的Pod中，如何选择哪一个后台Pod是基于SessionAffnity进行的分配。
 
