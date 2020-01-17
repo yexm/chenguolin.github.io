@@ -220,38 +220,54 @@ IP数据包 `出方向` 规则如下
 $ iptables -t filter -F   （内置规则链）
 $ iptables -t filter -X   （自定义规则链）
 
+// 允许 loopback 设备
+iptables -t filter -A INPUT -i lo -j ACCEPT
+
 // 规则配置 (允许 入方向 tcp:22)
 $ iptables -t filter -A INPUT -p tcp --dport 22 -j ACCEPT
-$ iptables -t filter -A OUTPUT -p tcp --sport 22 -j ACCEPT
 
 // 规则配置 (允许 入方向 tcp:23)
 $ iptables -t filter -A INPUT -p tcp --dport 23 -j ACCEPT
-$ iptables -t filter -A OUTPUT -p tcp --sport 23 -j ACCEPT
 
 // 规则配置 (允许 入方向 tcp:80)
 $ iptables -t filter -A INPUT -p tcp --dport 80 -j ACCEPT
-$ iptables -t filter -A OUTPUT -p tcp --sport 80 -j ACCEPT
 
 // 规则配置 (允许 入方向 tcp:443)
 $ iptables -t filter -A INPUT -p tcp --dport 443 -j ACCEPT
-$ iptables -t filter -A OUTPUT -p tcp --sport 443 -j ACCEPT
 
 // 规则配置 (允许 入方向 tcp:3306)
 $ iptables -t filter -A INPUT -p tcp --dport 3306 -j ACCEPT
-$ iptables -t filter -A OUTPUT -p tcp --sport 3306 -j ACCEPT
 
 // 规则配置 (允许 入方向 tcp:6379)
 $ iptables -t filter -A INPUT -p tcp --dport 6379 -j ACCEPT
-$ iptables -t filter -A OUTPUT -p tcp --sport 6379 -j ACCEPT
 
 // 规则配置 (允许 入方向 icmp:all)
 $ iptables -t filter -A INPUT -p icmp -s 0.0.0.0/0 -j ACCEPT
-$ iptables -t filter -A OUTPUT -p icmp -d 0.0.0.0/0-j ACCEPT
 
 // 修改规则链默认策略位DROP（表示丢弃IP数据包）
 $ iptables -t filter -P INPUT DROP
 $ iptables -t filter -P FORWARD DROP
-$ iptables -t filter -P OUTPUT DROP
+```
+
+执行完成之后，我们可以通过 `$ iptables -t filter -nL --line-numbers` 确认规则是否符合上诉的配置
+
+```
+Chain INPUT (policy DROP)
+target     prot opt source               destination
+ACCEPT     all  --  0.0.0.0/0            0.0.0.0/0
+ACCEPT     tcp  --  0.0.0.0/0            0.0.0.0/0            tcp dpt:22
+ACCEPT     tcp  --  0.0.0.0/0            0.0.0.0/0            tcp dpt:23
+ACCEPT     tcp  --  0.0.0.0/0            0.0.0.0/0            tcp dpt:80
+ACCEPT     tcp  --  0.0.0.0/0            0.0.0.0/0            tcp dpt:443
+ACCEPT     tcp  --  0.0.0.0/0            0.0.0.0/0            tcp dpt:3306
+ACCEPT     tcp  --  0.0.0.0/0            0.0.0.0/0            tcp dpt:6379
+           icmp --  0.0.0.0              0.0.0.0/0
+
+Chain FORWARD (policy DROP)
+target     prot opt source               destination
+
+Chain OUTPUT (policy ACCEPT)
+target     prot opt source               destination
 ```
 
 # 五. iptables总结
