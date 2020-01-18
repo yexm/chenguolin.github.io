@@ -17,7 +17,7 @@ Apiserver 做为 Kubernetes master 的核心组件之一起着非常重要的作
    访问 apiserver 需要进行权限控制，因此我们需要有相关的访问凭证，而这些访问凭证会存储在 kubeconfig 文件内。
     
 2. kubectl proxy  
-   kubectl proxy 实际上是启动一个代理的 HTTP 服务，使得我们可以通过 HTTP 协议进行访问 apiserver，具体的步骤如下
+   kubectl proxy 实际上是启动一个代理的 HTTP 服务，使得我们可以通过 HTTP 协议进行访问 apiserver，具体的步骤如下  
    1). 启动proxy: `kubectl proxy --port=8080`  
    2). 访问api: `curl http://localhost:8080/api/v1/namespaces/kube-system/services/hostnames`  
 
