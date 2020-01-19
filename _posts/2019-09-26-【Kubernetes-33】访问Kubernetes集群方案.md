@@ -113,7 +113,11 @@ spec:
 
 默认情况下，Kubernetes 会给每个 Pod 加上 `default` 这个 ServiceAccount，默认情况下 default 具有 admin 的权限。
 
-# 二. 访问业务Server
+# 二. 访问业务Service
+之前我们在 [kubernetes之service](https://chenguolin.github.io/2019/04/01/Kubernetes-21-Kubernetes%E4%B9%8BService/) 文章学习了 Kubernetes Service 对象，了解了 Service 的基本原理、使用的实现的机制。文章里面
+2. 
+
+
 
 
 
