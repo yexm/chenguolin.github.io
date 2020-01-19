@@ -119,7 +119,7 @@ spec:
 通过 [Service 实现](https://chenguolin.github.io/2019/04/01/Kubernetes-21-Kubernetes%E4%B9%8BService/#%E5%9B%9B-service%E5%AE%9E%E7%8E%B0) 我们知道 `所谓 Service 的访问入口，其实就是每台宿主机上由 kube-proxy 生成的 iptables 规则，以及 dns组件 生成的 DNS 域名，一旦离开了这个集群，这些信息就无效了。`
 
 ## ① NodePort 
-NodePort的方式指的是 `每个worker节点通过kube-proxy和指定端口代理了Service`，通过 `nodeIp:port` 就可以直接访问 Service。
+NodePort的方式指的是 `每个节点通过kube-proxy和指定端口代理业务Service`，通过 `nodeIp:port` 就可以直接访问 Service。
 
 ```
 apiVersion: v1
@@ -130,10 +130,10 @@ metadata:
   labels:
     app: hostnames
 spec:
-  type: NodePort          //指定 NodePort类型
+  type: NodePort          //指定 NodePort 类型
   ports:
   - name: http
-    nodePort: 30001       //每个worker节点指定端口为 30001 （如果不显式地声明 Kubernetes 随机分配一个可用端口，范围是 30000-32767）
+    nodePort: 30001       //每个节点指定端口为 30001 （如果不显式地声明 Kubernetes 随机分配一个可用端口，范围是 30000-32767）
     port: 9376
     targetPort: 9376
     protocol: TCP
@@ -156,7 +156,7 @@ spec:
    hostnames-85cd66c585-4w9rh
    ```
 
-NodePort的原理实际上是在每个worker节点上通过 iptables 添加了一下这些规则，然后剩下的规则和 ClusterIP 是一样的，通过 iptables nat 来控制IP数据包的流向。新增的规则为 `KUBE-NODEPORTS  all  --  0.0.0.0/0       0.0.0.0/0            /* kubernetes service nodeports; NOTE: this must be the last rule in this chain */ ADDRTYPE match dst-type LOCAL`
+NodePort的原理实际上是在每个节点上通过 iptables 添加了一下这些规则，然后剩下的规则和 ClusterIP 是一样的，通过 iptables nat 来控制IP数据包的流向。新增的规则为 `KUBE-NODEPORTS  all  --  0.0.0.0/0       0.0.0.0/0            /* kubernetes service nodeports; NOTE: this must be the last rule in this chain */ ADDRTYPE match dst-type LOCAL`
 
 ```
 Chain PREROUTING (policy ACCEPT)
@@ -201,6 +201,27 @@ DNAT            tcp  --  0.0.0.0/0            0.0.0.0/0            tcp to:10.244
 因此，实际的IP数据包流向为 `PREROUTING -> KUBE-SERVICES -> KUBE-NODEPORTS -> KUBE-SVC-US4ITFTMXMOU3US2 -> KUBE-SEP-xxxx`
 
 ## ② LoadBalancer
+LoadBalancer 适用于公有云上的 Kubernetes 服务，可以参考 [华为云Kubernetes LoadBalancer Service](https://support.huaweicloud.com/usermanual-cce/cce_01_0014.html)、[阿里云Kubernetes LoadBalancer Service](https://help.aliyun.com/document_detail/86531.html)
+
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: loadbalance-hostnames
+  namespace: kube-system
+  labels:
+    app: hostnames
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 121.36.85.100     //共有云/私有云 LB IP地址
+  ports:
+  - name: http
+    port: 9376
+    targetPort: 9376
+    protocol: TCP
+  selector:
+    app: hostnames
+```
 
 ## ③
 
