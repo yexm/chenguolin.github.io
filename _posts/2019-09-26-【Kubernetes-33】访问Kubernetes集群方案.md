@@ -224,14 +224,6 @@ spec:
 ```
 
 ## ③ Ingress
-上面提到的2种方案实际上在生产环境用的不多，作为用户，其实更希望看到 Kubernetes 为我们内置一个全局的负载均衡器。然后通过我访问的 URL，把请求转发给不同的后端 Service。`这种全局的、为了代理不同后端 Service 而设置的负载均衡服务，就是 Kubernetes 里的 Ingress 服务。所谓 Ingress，就是 Service 的 Service`。具体可以参考 [kubernetes ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/)。
-
-
-
-
-
-
-
-
+上面提到的2种方案实际上在生产环境用的不多，作为用户，其实更希望看到 Kubernetes 为我们内置一个全局的负载均衡器。然后通过我访问的 URL，把请求转发给不同的后端 Service。`这种全局的、为了代理不同后端 Service 而设置的负载均衡服务，就是 Kubernetes 里的 Ingress 服务。所谓 Ingress，就是 Service 的 Service`。由于Ingress比较复杂，具体可以参考 [kubernetes ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/)。
 
 
