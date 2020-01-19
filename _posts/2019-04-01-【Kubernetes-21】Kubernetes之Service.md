@@ -186,7 +186,7 @@ status相关的字段的定义可以参考 [kubernetes api core/v1/types Service
 只有一个字段 loadBalancer，默认情况下为空，spec.type 为 LoadBalancer 时该字段会有值。
 
 # 四. Service实现
-Service 实现由 kube-proxy 组件负责的，每个 kubernetes 节点都运行了一个 kube-proxy 组件，kube-proxy 组件目前支持3种模式 `userspace`、`iptables`、`ipvs`，可以参考 [kube-proxy --proxy-mode ProxyMode](https://kubernetes.io/docs/reference/command-line-tools-reference/kube-proxy/)
+Service 实现由 kube-proxy 组件负责的，每个 kubernetes 节点都运行了一个 kube-proxy 组件，kube-proxy 组件目前支持3种模式 `userspace`、`iptables`、`ipvs`，可以参考 [kube-proxy --proxy-mode ProxyMode](https://kubernetes.io/docs/reference/command-line-tools-reference/kube-proxy/)。所谓 Service，其实就是 Kubernetes 为 Pod 分配的、固定的、基于 iptables（或者 IPVS）的访问入口。而这些访问入口代理的 Pod 信息，则来自于 Etcd，由 kube-proxy 通过控制循环来维护。
 
 ## ① userspace
 userspace 模式是 Kubernetes v1.0 之前 kube-proxy 默认的实现方案，现在已经不再使用了。实现方案是每个节点都运行了一个 kube-proxy 组件，kube-proxy 通过 Service 的 Informer 感知到一个 Service 对象的创建或删除，然后在宿主机上创建或删除 iptables 规则，请求经过 iptables 后，再转发给kube-proxy端口。默认情况下，kube-proxy 请求后端 Pod 会使用 `round-robin` 算法实现负载均衡。关于这部分的源码可以参考 [kubernetes/pkg/proxy/iptables](https://github.com/kubernetes/kubernetes/tree/master/pkg/proxy/userspace)
