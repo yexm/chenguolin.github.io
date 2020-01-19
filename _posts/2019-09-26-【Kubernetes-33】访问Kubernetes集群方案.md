@@ -111,13 +111,97 @@ spec:
       secretName: default-token-n4slb
 ```
 
-默认情况下，Kubernetes 会给每个 Pod 加上 `default` 这个 ServiceAccount，默认情况下 default 具有 admin 的权限。
+默认情况下，Kubernetes 会给每个 Pod 加上 `default` 这个 ServiceAccount，默认情况下 default 具有 admin 的权限。我们也可以创建自定义的 ServiceAccount，绑定相关的Role来控制访问 apiserver 的权限。
 
 # 二. 访问业务Service
-之前我们在 [kubernetes之service](https://chenguolin.github.io/2019/04/01/Kubernetes-21-Kubernetes%E4%B9%8BService/) 文章学习了 Kubernetes Service 对象，了解了 Service 的基本原理、使用的实现的机制。文章里面
-2. 
+之前我们在 [kubernetes之service](https://chenguolin.github.io/2019/04/01/Kubernetes-21-Kubernetes%E4%B9%8BService/) 文章学习了 Kubernetes Service 对象，了解了 Service 的基本原理、使用的实现的机制。文章里面介绍了 [集群内Service访问方式](https://chenguolin.github.io/2019/04/01/Kubernetes-21-Kubernetes%E4%B9%8BService/#%E4%BA%94-service%E8%AE%BF%E9%97%AE)，但是我们并没有介绍集群外该如何访问 Service，下面我们来介绍一下。
 
+通过 [Service 实现](https://chenguolin.github.io/2019/04/01/Kubernetes-21-Kubernetes%E4%B9%8BService/#%E5%9B%9B-service%E5%AE%9E%E7%8E%B0) 我们知道 `所谓 Service 的访问入口，其实就是每台宿主机上由 kube-proxy 生成的 iptables 规则，以及 dns组件 生成的 DNS 域名，一旦离开了这个集群，这些信息就无效了。`
 
+## ① NodePort 
+NodePort的方式指的是 `每个worker节点通过kube-proxy和指定端口代理了Service`，通过 `nodeIp:port` 就可以直接访问 Service。
 
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodeport-hostnames
+  namespace: kube-system
+  labels:
+    app: hostnames
+spec:
+  type: NodePort          //指定 NodePort类型
+  ports:
+  - name: http
+    nodePort: 30001       //每个worker节点指定端口为 30001 （如果不显式地声明 Kubernetes 随机分配一个可用端口，范围是 30000-32767）
+    port: 9376
+    targetPort: 9376
+    protocol: TCP
+  selector:
+    app: hostnames
+```
+
+在这个 Service 的定义里，我们声明它的类型是，type=NodePort。然后在 ports 字段里声明了 Service 的 9376 端口代理 Pod 的 9376 端口，同时每个节点30001 端口代理了 Service 的 9376 端口。
+
+1. 创建Service: `$ kubectl apply -f service.yaml`
+2. 查看Service
+   ```
+   $ kubectl get service -n kube-system
+   NAME                 TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                  AGE
+   nodeport-hostnames   NodePort    10.96.50.225    <none>        9376:30001/TCP           8s
+   ```
+3. 访问Service （node-ip指的是节点IP）
+   ```
+   $ curl "http://{node-ip}:30001"
+   hostnames-85cd66c585-4w9rh
+   ```
+
+NodePort的原理实际上是在每个worker节点上通过 iptables 添加了一下这些规则，然后剩下的规则和 ClusterIP 是一样的，通过 iptables nat 来控制IP数据包的流向。新增的规则为 `KUBE-NODEPORTS  all  --  0.0.0.0/0       0.0.0.0/0            /* kubernetes service nodeports; NOTE: this must be the last rule in this chain */ ADDRTYPE match dst-type LOCAL`
+
+```
+Chain PREROUTING (policy ACCEPT)
+target         prot opt source               destination
+KUBE-SERVICES  all  --  0.0.0.0/0            0.0.0.0/0            /* kubernetes service portals */
+
+Chain KUBE-SERVICES (2 references)
+target          prot opt source          destination
+KUBE-NODEPORTS  all  --  0.0.0.0/0       0.0.0.0/0            /* kubernetes service nodeports; NOTE: this must be the last rule in this chain */ ADDRTYPE match dst-type LOCAL
+
+Chain KUBE-NODEPORTS (1 references)
+target                     prot opt source        destination
+KUBE-MARK-MASQ             tcp  --  0.0.0.0/0     0.0.0.0/0            /* kube-system/nodeport-hostnames:http */ tcp dpt:30001
+KUBE-SVC-US4ITFTMXMOU3US2  tcp  --  0.0.0.0/0     0.0.0.0/0            /* kube-system/nodeport-hostnames:http */ tcp dpt:30001
+
+Chain KUBE-MARK-MASQ (32 references)
+target     prot opt source               destination
+MARK       all  --  0.0.0.0/0            0.0.0.0/0            MARK or 0x4000
+
+Chain KUBE-SVC-US4ITFTMXMOU3US2 (2 references)
+target                     prot opt source               destination
+KUBE-SEP-AHHOLAQDDJX3HTPO  all  --  0.0.0.0/0            0.0.0.0/0            statistic mode random probability 0.33333333349
+KUBE-SEP-SZF5QQDOLQINGNE2  all  --  0.0.0.0/0            0.0.0.0/0            statistic mode random probability 0.50000000000
+KUBE-SEP-IYZ6I5322MC53TDK  all  --  0.0.0.0/0            0.0.0.0/0
+
+Chain KUBE-SEP-AHHOLAQDDJX3HTPO (1 references)
+target          prot opt source               destination
+KUBE-MARK-MASQ  all  --  10.244.0.72          0.0.0.0/0
+DNAT            tcp  --  0.0.0.0/0            0.0.0.0/0            tcp to:10.244.0.72:9376
+
+Chain KUBE-SEP-SZF5QQDOLQINGNE2 (1 references)
+target          prot opt source               destination
+KUBE-MARK-MASQ  all  --  10.244.0.73          0.0.0.0/0
+DNAT            tcp  --  0.0.0.0/0            0.0.0.0/0            tcp to:10.244.0.73:9376
+
+Chain KUBE-SEP-IYZ6I5322MC53TDK (1 references)
+target          prot opt source               destination
+KUBE-MARK-MASQ  all  --  10.244.0.74          0.0.0.0/0
+DNAT            tcp  --  0.0.0.0/0            0.0.0.0/0            tcp to:10.244.0.74:9376
+```
+
+因此，实际的IP数据包流向为 `PREROUTING -> KUBE-SERVICES -> KUBE-NODEPORTS -> KUBE-SVC-US4ITFTMXMOU3US2 -> KUBE-SEP-xxxx`
+
+## ② LoadBalancer
+
+## ③
 
 
