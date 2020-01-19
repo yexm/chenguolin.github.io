@@ -324,3 +324,14 @@ HOSTNAMES_SERVICE_HOST=10.96.250.206
 
 因此，在`容器内`我们可以使用 DNS 域名 来访问 Service。
 
+# 六. 总结
+在理解了 Kubernetes Service 机制的工作原理之后，很多与 Service 相关的问题，其实都可以通过分析 Service 在宿主机上对应的 iptables 规则得到解决。
+参考 [debug-service](https://kubernetes.io/docs/tasks/debug-application-cluster/debug-service/)，可以用以下步骤来排查 Service 相关问题。
+
+1. Service是否存在: `$ kubectl get service -n {namespace} {service}`
+2. 查看Service yaml 确认配置是否正确: `$ kubectl get service -n {namespace} {service} -o yaml`
+3. 查看Service EndPoints: `$ kubectl get ep -n {namespace} {service}`
+4. 确认Service所筛选的Pod是否正常: `$ kubectl get pods -n {namespace} -l app=hostnames`
+5. kube-proxy是否在运行: `$ ps auxw | grep kube-proxy`
+6. 查看iptables规则是否正确: `$ iptables-save | grep hostnames` (主要看 nat 表规则)
+
