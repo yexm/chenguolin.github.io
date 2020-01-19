@@ -38,11 +38,7 @@ Apiserver 做为 Kubernetes master 的核心组件之一起着非常重要的作
    ```
 
 ## ② 容器内
-
-4. Go client   （建议用在生产开发场景）
-   ```
-   
-   ```
+容器内大部分场景指的是我们在代码层面访问 apiserver，例如我们需要实现一个 Kubernetes watcher 组件用于监听 Pod 事件，那这个时候我们就需要访问 apiserver 获取 Pod 的事件。由于 Kubernetes 是 Golang 开发的，建议业务代码使用 Golang 开发，那么就可以直接 Kubernetes 社区提供的 [client-go](https://github.com/kubernetes/client-go)。
 
 
 # 二. 访问业务Server
