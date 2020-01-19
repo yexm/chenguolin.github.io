@@ -277,7 +277,21 @@ kube-proxy 通过 iptables 处理 Service 的过程，需要在`每台宿主机`
 # 五. Service访问
 Kubernetes 支持2种 Service 的访问方式 `环境变量` 和 `DNS`，但是我们推荐使用 DNS 的方式。
 
-## ① 环境变量
+## ① ClusterIP
+默认情况下 Service type 为 ClusterIP，在集群内我们可以通过直接访问 ClusterIP和端口 访问业务 Service。
+   
+```
+$ kubectl get service -n kube-system
+NAME        TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                  AGE
+hostnames   ClusterIP   10.96.250.206   <none>        9376/TCP                 5d4h
+   
+$ curl "http://10.96.250.206:9376"
+hostnames-85cd66c585-ch4zk
+```
+
+因此，在`容器外`我们可以使用 ClusterIP 来访问 Service。
+
+## ② 环境变量
 每创建一个 Pod 的时候，kubelet 会给每个容器添加当前namespace Service 相关的环境变量，只能添加当前已经存在的 Service 相关的环境变量，如果 Service 是在 Pod 启动之后创建，那么在 Pod 内是不会有关于该 Service 的环境变量的。
 
 我们查看下当前 Service 列表 
@@ -301,10 +315,12 @@ HOSTNAMES_SERVICE_PORT_HTTP=9376
 HOSTNAMES_SERVICE_HOST=10.96.250.206
 ```
 
-因此，在容器内我们可以使用内置的环境变量来访问 Service。
+因此，在`容器内`我们可以使用内置的环境变量来访问 Service。
 
-## ② DNS
+## ③ DNS
 通常我们都会在 Kubernetes 安装 DNS 插件，例如 CoreDNS，DNS 插件会监听 ApiServer Service的创建事件，当有新 Service 创建的时候就会生成一个新的 DNS 域名 `{service-name}.{namespace}.svc.cluster.local`。因此，我们可以在 Pod 内通过 DNS 域名访问一个 Service 服务。
 
 例如 hostsname Service 在 kube-system 下，那么 DNS 域名为 `hostsname.kube-system.svc.cluster.local`，这个域名的解析结果为 Service 的 VIP 地址。
+
+因此，在`容器内`我们可以使用 DNS 域名 来访问 Service。
 
