@@ -275,7 +275,7 @@ kube-proxy 通过 iptables 处理 Service 的过程，需要在`每台宿主机`
 `因此，在大规模集群里，强烈建议 kube-proxy 使用 ipvs 这个模式（通过kube-proxy --proxy-mode参数进行设置），它为 Kubernetes 集群规模带来的提升，还是非常巨大的。`
 
 # 五. Service访问
-Kubernetes 支持2种 Service 的访问方式 `环境变量` 和 `DNS`，但是我们推荐使用 DNS 的方式。
+Kubernetes 支持3种 Service 的访问方式 `ClusterIP`、`环境变量` 和 `DNS`，但是我们推荐使用 DNS 的方式。
 
 ## ① ClusterIP
 默认情况下 Service type 为 ClusterIP，在集群内我们可以通过直接访问 ClusterIP和端口 访问业务 Service。
