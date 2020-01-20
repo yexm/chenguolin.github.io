@@ -42,16 +42,17 @@ tags:         #标签
 InfluxDB API提供了较简单的方式用于数据库交互，该API使用了HTTP的方式，并以JSON格式进行返回。
 
 ## ① /ping
-`/ping` 支持GET和HEAD，都可用于获取指定信息，例如获取InfluxDB版本信息。
+`/ping` 支持GET和HEAD，都可用于获取指定信息
 
-```
-$ curl -sl -I http://localhost:8086/ping
-HTTP/1.1 204 No Content
-Content-Type: application/json
-Request-Id: ebe357b8-ea19-11e7-8001-000000000000
-X-Influxdb-Version: v1.3.6
-Date: Tue, 26 Dec 2017 08:51:11 GM
-```
+1. 获取InfluxDB版本信息。
+   ```
+   $ curl -sl -I http://localhost:8086/ping
+   HTTP/1.1 204 No Content
+   Content-Type: application/json
+   Request-Id: ebe357b8-ea19-11e7-8001-000000000000
+   X-Influxdb-Version: v1.3.6
+   Date: Tue, 26 Dec 2017 08:51:11 GM
+   ```
 
 ## ② /query
 `/query` 支持GET和POST的HTTP请求，可用于查询数据和管理数据库。
@@ -109,16 +110,15 @@ Date: Tue, 26 Dec 2017 08:51:11 GM
    $ curl -i -XPOST -u myusername:mypassword "http://localhost:8086/write?db=mydb" --data-binary 'mymeas,mytag=1 myfield=91'
    ```
 
-5. 写多个points到数据库中,需要使用新的一行
+5. 写多个points到数据库中，需要使用新的一行
    ```
-   $ curl -i -XPOST "http://localhost:8086/write?db=mydb" --data-binary 'mymeas,mytag=3,myfield=89,mymeas,mytag=2 myfield=34 1463689152000000000'
+   $ curl -i -XPOST "http://localhost:8086/write?db=mydb" --data-binary 'mymeas,mytag=3,myfield=89,mymeas,mytag=2,myfield=34 1463689152000000000'
    ```
 
 6. 通过导入文件的形式，写入多个points，需要使用`@`来指定文件
    ```
    $ curl -i -XPOST "http://localhost:8086/write?db=mydb" --data-binary @data.txt
-   
-   文件内容如下
+   @data.txt 文件内容如下
    mymeas,mytag1=1 value=21 1463689680000000000
    mymeas,mytag1=1 value=34 1463689690000000000
    mymeas,mytag2=8 value=78 1463689700000000000    
