@@ -6,26 +6,40 @@ tags:         #标签
     - TSDB
 ---
 
-# 一. 数据库配置
-1. 查询: show database
-2. 创建: CREATE DATABASE {database_name} [WITH [DURATION <duration>] [REPLICATION <n>] [SHARD DURATION <duration>] [NAME <retention-policy-name>]
-3. 删除: DROP DATABASE {database_name}
+# 一. 常用命令
+## ① database
+1. 查询database: `$ SHOW database`
+2. 创建database: `$ CREATE database {database_name}`
+3. 删除database: `$ DROP database {database_name}`
 
-# 二. RETENTION POLICY
-1. 查询: SHOW RETENTION POLICIES
-2. 创建: CREATE RETENTION POLICY {retention_policy_name} ON {database_name} DURATION {duration} REPLICATION {n} [SHARD DURATION {duration}] [DEFAULT]
-    * CREATE RETENTION POLICY rp_10m on hubble duration 9408h0m0s REPLICATION 1 SHARD DURATION 168h0m0s
-    *  CREATE RETENTION POLICY rp_1h on hubble duration 8760h0m0s REPLICATION 1 SHARD DURATION 168h0m0s
-    *  CREATE RETENTION POLICY rp_6h on hubble duration 52560h0m0s REPLICATION 1 SHARD DURATION 168h0m0s
-3. 修改: ALTER RETENTION POLICY {rp_name} ON {database_name} DURATION {duration} REPLICATION {n} SHARD DURATION {duration} DEFAULT
-4. 删除: DROP RETENTION POLICY {rp_name} ON {database_name}
+## ② measurement
+5. 删除所有的measurement: `$ DROP SERIES FROM /.*/`
+6. 查看某个measurement的所有tags: `$ SHOW tag keys from {measurement_name}`
+7. 查看某个measurement的所有fields: `$ SHOW field keys from {measurement_name}`
 
-# 三. CONTINUOUS QUERY
-1. 查询: SHOW CONTINUOUS QUERY
-2. 删除: DROP CONTINUOUS QUERY {cq_name} ON {database_name}
+## ③ continuous query（CQ）
+1. 查询CONTINUOUS QUERY: `$ SHOW CONTINUOUS QUERY`
+2. 删除CONTINUOUS QUERY: `$ DROP CONTINUOUS QUERY {cq_name} ON {database_name}`
+3. CQ创建
+   ```
+   CREATE CONTINUOUS QUERY xxxx_cq ON {database_name} 
+   RESAMPLE FOR 20m 
+   BEGIN SELECT 
+   sum(play_num) AS play_num, 
+   ... 
+   INTO xxx.rp_10m.yyy 
+   FROM xxx.autogen.yyy GROUP BY time(10m), * 
+   END
+   ```
+   
+## ④ retention policy(RP)   
+1. 查询RETENTION POLICY: `$ SHOW RETENTION POLICIES`
+2. 创建RETENTION POLICY: `$ CREATE RETENTION POLICY {retention_policy_name} ON {database_name} DURATION {duration} REPLICATION {n} [SHARD DURATION {duration}] [DEFAULT]`
+3. 修改RETENTION POLICY: `$ ALTER RETENTION POLICY {rp_name} ON {database_name} DURATION {duration} REPLICATION {n} SHARD DURATION {duration} DEFAULT`
+4. 删除RETENTION POLICY: `$ DROP RETENTION POLICY {rp_name} ON {database_name}`
 
-# 四. API
-InfluxDB API提供了较简单的方式用于数据库交互。该API使用了HTTP的方式，并以JSON格式进行返回。
+# 二. API
+InfluxDB API提供了较简单的方式用于数据库交互，该API使用了HTTP的方式，并以JSON格式进行返回。
 
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/influxdb-endpoint.png?raw=true)
 
