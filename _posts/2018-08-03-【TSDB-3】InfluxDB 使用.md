@@ -41,17 +41,11 @@ tags:         #标签
 # 二. API
 InfluxDB API提供了较简单的方式用于数据库交互，该API使用了HTTP的方式，并以JSON格式进行返回。
 
-![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/influxdb-endpoint.png?raw=true)
-
 ## ① /ping
-`/ping` 支持GET和HEAD，都可用于获取指定信息。
+`/ping` 支持GET和HEAD，都可用于获取指定信息，例如获取InfluxDB版本信息。
 
-定义：
-1. GET [http://localhost:8086/ping](http://localhost:8086/ping)
-2. HEAD [http://localhost:8086/ping](http://localhost:8086/ping)
-
-获取InfluxDB版本信息: $ curl -sl -I [http://localhost:8086/ping](http://localhost:8086/ping)
 ```
+$ curl -sl -I [http://localhost:8086/ping](http://localhost:8086/ping)
 HTTP/1.1 204 No Content
 Content-Type: application/json
 Request-Id: ebe357b8-ea19-11e7-8001-000000000000
@@ -60,13 +54,7 @@ Date: Tue, 26 Dec 2017 08:51:11 GM
 ```
 
 ## ② /query
-`/query` 支持GET和POST的HTTP请求。可用于查询数据和管理数据库、rp、users。
-
-定义：
-1. GET [http://localhost:8086/](http://localhost:8086/ping)query
-2. HEAD [http://localhost:8086/](http://localhost:8086/ping)query
-
-![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/influxdb-query-args.png?raw=true)
+`/query` 支持GET和POST的HTTP请求，可用于查询数据和管理数据库。
 
 1. 使用SELECT查询数据
    ```
@@ -100,12 +88,6 @@ Date: Tue, 26 Dec 2017 08:51:11 GM
 
 ## ③ /write
 `/wirte` 只支持POST的HTTP请求，使用该Endpoint可以写数据到已存在的数据库中。
-
-定义：POST [http://localhost:8086/write](http://localhost:8086/write)
-
-![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/influxdb-write-args.png?raw=true) 
-
-数据请求体：--data-binary '< Data in Line Protocol format >'
 
 1. 使用秒级的时间戳，将一个point写入数据库mydb
    ```
@@ -143,7 +125,4 @@ Date: Tue, 26 Dec 2017 08:51:11 GM
    mymeas,mytag2=8 value=78 1463689700000000000    
    mymeas,mytag3=9 value=89 1463689710000000000
    ```
-
-响应的状态码  
-![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/influxdb-http-code.png?raw=true)
 
