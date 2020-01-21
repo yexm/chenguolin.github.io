@@ -46,6 +46,8 @@ Prometheus和其它监控告警方案对比，具有以下几个特点
 
 `Prometheus`在设计上放弃了一部分数据准确性（例如2次数据采集间隔数据观察不到），放弃一点准确性得到的是更高可靠性，这里的可靠性提现为架构简单、数据简单、运维简单。
 
+目前一般不会直接使用 Prometheus，而是采用开源社区的 [thanos](https://github.com/thanos-io/thanos)，thanos 是开源的大规模Prometheus集群解决方案，也是[CNCF](https://landscape.cncf.io/selected=thanos)的成员项目。
+
 # 三. Prometheus安装
 安装Prometheus有三种方法，详见[Prometheus installation](https://prometheus.io/docs/prometheus/latest/installation/)。  
 为了方便，我们选择使用Docker安装Prometheus
