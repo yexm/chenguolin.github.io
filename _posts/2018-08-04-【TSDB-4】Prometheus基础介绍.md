@@ -572,50 +572,51 @@ alerting:
 
 
 ## ① 默认查询  
-   查询http_requests_total所有数据: `http_requests_total`
-   ```
-   {job="prometheus",group="canary",environment="test",method="Get"}       5.0
-   {job="prometheus",group="canary",environment="test",method="Post"}      4.0
-   {job="prometheus",group="canary",environment="test",method="Put"}       3.0
-   {job="prometheus",group="canary",environment="beta",method="Get"}       10.0
-   {job="prometheus",group="canary",environment="beta",method="Post"}      8.0
-   {job="prometheus",group="canary",environment="beta",method="Put"}       6.0
-   {job="prometheus",group="canary",environment="release",method="Get"}    20.0
-   {job="prometheus",group="canary",environment="release",method="Post"}   16.0
-   {job="prometheus",group="canary",environment="release",method="Put"}    12.0
-   ```
+查询http_requests_total所有数据: `http_requests_total`
+```
+{job="prometheus",group="canary",environment="test",method="Get"}       5.0
+{job="prometheus",group="canary",environment="test",method="Post"}      4.0
+{job="prometheus",group="canary",environment="test",method="Put"}       3.0
+{job="prometheus",group="canary",environment="beta",method="Get"}       10.0
+{job="prometheus",group="canary",environment="beta",method="Post"}      8.0
+{job="prometheus",group="canary",environment="beta",method="Put"}       6.0
+{job="prometheus",group="canary",environment="release",method="Get"}    20.0
+{job="prometheus",group="canary",environment="release",method="Post"}   16.0
+{job="prometheus",group="canary",environment="release",method="Put"}    12.0
+```
 
 ## ② 条件查询  
-   PromQL支持4种label条件表达式
-   > `=`: 等于条件，例如 http_requests_total{environment="test"}  
-   > `!=`: 不等于条件，例如 http_requests_total{environment!="test"}  
-   > `=~`: 匹配正则表达式条件，例如 http_requests_total{environment=~"t.*"}  
-   > `!~`: 不匹配正则表达式条件，例如 http_requests_total{environment!=~"t.*"}  
-    
-   1. 查询http_requests_total environment label值为test的时序数据  
+PromQL支持4种label条件表达式
+```
+=: 等于条件，例如 http_requests_total{environment="test"}  
+!=: 不等于条件，例如 http_requests_total{environment!="test"}  
+=~: 匹配正则表达式条件，例如 http_requests_total{environment=~"t.*"}  
+!~: 不匹配正则表达式条件，例如 http_requests_total{environment!=~"t.*"}  
+```
+
+1. 查询http_requests_total environment label值为test的时序数据  
    `http_requests_total{environment="test"}`
    ```
    {job="prometheus",group="canary",environment="test",method="Get"}       5.0
    {job="prometheus",group="canary",environment="test",method="Post"}      4.0
    {job="prometheus",group="canary",environment="test",method="Put"}       3.0
    ```
-   2. 查询http_requests_total environment label值为test, method label值为Get的时序数据  
+   
+2. 查询http_requests_total environment label值为test, method label值为Get的时序数据  
    `http_requests_total{environment="test",method="Get"}`
    ```
    {job="prometheus",group="canary",environment="test",method="Get"}       5.0
    ```
    
 ## ③ 模糊查询  
-   1. 查询http_requests_total environment label值匹配`t.*`正则的时序数据  
-   `http_requests_total{environment=~"t.*"}`
+1. 查询http_requests_total environment label值匹配`t.*`正则的时序数据  `http_requests_total{environment=~"t.*"}`
    ```
    {job="prometheus",group="canary",environment="test",method="Get"}       5.0
    {job="prometheus",group="canary",environment="test",method="Post"}      4.0
    {job="prometheus",group="canary",environment="test",method="Put"}       3.0
    ```
    
-   2. 查询http_requests_total environment label值不匹配`t.*`正则的时序数据  
-   `http_requests_total{environment!~"t.*"}`
+2. 查询http_requests_total environment label值不匹配`t.*`正则的时序数据  `http_requests_total{environment!~"t.*"}`
    ```
    {job="prometheus",group="canary",environment="beta",method="Get"}       10.0
    {job="prometheus",group="canary",environment="beta",method="Post"}      8.0
@@ -626,16 +627,17 @@ alerting:
    ```
   
 ## ④ 区间查询
-   Prometheus支持在查询条件后通过`[]`指定，由数字和单位组成，支持以下几种类型单位
-   > `s`: 秒  
-   > `m`: 分  
-   > `h`: 时  
-   > `d`: 天  
-   > `w`: 周  
-   > `y`: 年  
+Prometheus支持在查询条件后通过`[]`指定，由数字和单位组成，支持以下几种类型单位
+```
+s: 秒  
+m: 分  
+h: 时  
+d: 天  
+w: 周  
+y: 年  
+```
 
-   1. 查询http_requests_total 最近10s environment label值为test的数据  
-   `http_requests_total{environment="test"}[10s]`
+1. 查询http_requests_total 最近10s environment label值为test的数据  `http_requests_total{environment="test"}[10s]`
    ```
    {job="prometheus",group="canary",environment="test",method="Get"}   5.0  @1551769822.89
                                                                        4.0  @1551769817.89 
@@ -645,49 +647,46 @@ alerting:
                                                                        2.0  @1551769817.89
    ```
    
-   2. 查询http_requests_total 最近10s environment label值为test，method label值为Get的数据  
-   `http_requests_total{environment="test", method="Get"}[10s]`
+2. 查询http_requests_total 最近10s environment label值为test，method label值为Get的数据  `http_requests_total{environment="test", method="Get"}[10s]`
    ```
    {job="prometheus",group="canary",environment="test",method="Get"}   5.0  @1551769822.89
                                                                        4.0  @1551769817.89
    ```
    
 ## ⑤. 聚合查询
-   Prometheus内置支持以下几种类型的聚合函数，用于即时向量聚合操作
-   > `sum`: 求和  
-   > `min`: 求最小值  
-   > `max`: 求最大值  
-   > `avg`: 求平均值  
-   > `stddev`: 求标准差  
-   > `stdvar`: 求标准差异  
-   > `count`: 计数  
-   > `count_values`: 相同数据值计数  
-   > `bottomk`: 最小k个数  
-   > `topk`: 最大k个数  
-   > `quantile`: 分布统计  
-    
-   1. 求http_requests_total 所有指标和  
-   `sum(http_requests_total){environment="test"}`
+Prometheus内置支持以下几种类型的聚合函数，用于即时向量聚合操作
+```
+sum: 求和  
+min: 求最小值  
+max: 求最大值  
+avg: 求平均值  
+stddev: 求标准差  
+stdvar: 求标准差异  
+count: 计数  
+count_values: 相同数据值计数  
+bottomk: 最小k个数  
+topk: 最大k个数  
+quantile: 分布统计  
+```
+
+1. 求http_requests_total 所有指标和  `sum(http_requests_total){environment="test"}`
    ```
    29
    ```
 
-   2. 统计http_requests_total 所有记录数   
-   `count(http_requests_total{environment="test"})`
+2. 统计http_requests_total 所有记录数  `count(http_requests_total{environment="test"})`
    ```
    9
    ```
    
-   3. 计算http_requests_total 具有相同Value的记录  
-   `count_values("total_request",http_requests_total{environment="test"})`
+3. 计算http_requests_total 具有相同Value的记录  `count_values("total_request",http_requests_total{environment="test"})`
    ```
    {total_request="5.0"}   1
    {total_request="4.0"}   1
    {total_request="3.0"}   1
    ```
    
-   4. 计算http_requests_total top3指标  
-   `topk(3, http_requests_total)`
+4. 计算http_requests_total top3指标  `topk(3, http_requests_total)`
    ```
    {job="prometheus",group="canary",environment="release",method="Get"}    20.0
    {job="prometheus",group="canary",environment="release",method="Post"}   16.0
@@ -695,21 +694,22 @@ alerting:
    ```
    
 ## ⑥ 函数计算
-   除了上面提到的聚合函数外，Prometheus有很多内置函数[Prometheus functions](https://prometheus.io/docs/prometheus/latest/querying/functions/)，常用的函数有以下几个  
-   > `rate(range vector)`: 用于计算过去一段时间每秒平均值，取指定时间范围内所有数据点，算出一组速率，然后取平均值作为结果。仅适用于counter类型数据，适合缓慢变化的数据分析。  
-   > `irate(range vector)`: 用于计算过去一段时间每秒平均值，取指定时间范围内最近两个数据点来算速率，然后作为结果。仅适用于counter类型数据，适合快速变化的数据分析。 
-    
-   1. 分析http_requests_total指标变化，常用在Grafana上统计某一个指标的趋势分析  
+除了上面提到的聚合函数外，Prometheus有很多内置函数[Prometheus functions](https://prometheus.io/docs/prometheus/latest/querying/functions/)，常用的函数有以下几个  
+```
+rate(range vector): 用于计算过去一段时间每秒平均值，取指定时间范围内所有数据点，算出一组速率，然后取平均值作为结果。仅适用于counter类型数据，适合缓慢变化的数据分析。  
+irate(range vector): 用于计算过去一段时间每秒平均值，取指定时间范围内最近两个数据点来算速率，然后作为结果。仅适用于counter类型数据，适合快速变化的数据分析。 
+```
+
+1. 分析http_requests_total指标变化，常用在Grafana上统计某一个指标的趋势分析  
    `sum(rate(http_requests_total{environment="release"}[2m]))`  
    `sum(rate(http_requests_total{environment="release"}[2m])) by (method)`
     
 # 七. Prometheus可视化
-  Prometheus默认有Expression Browser进行数据展示，当Prometheus启动后访问`http://host:9090/graph`即可进行数据查询
+Prometheus默认有Expression Browser进行数据展示，当Prometheus启动后访问`http://host:9090/graph`即可进行数据查询
+![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/prometheus-localhost.png?raw=true)
   
-  ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/prometheus-localhost.png?raw=true)
-  
-  1. `Alerts`: 告警相关的配置
-  2. `Graph`: 数据查询、展示
-  3. `Status`: Prometheus服务运行状态、配置以及服务发现等
+1. `Alerts`: 告警相关的配置
+2. `Graph`: 数据查询、展示
+3. `Status`: Prometheus服务运行状态、配置以及服务发现等
   
 
