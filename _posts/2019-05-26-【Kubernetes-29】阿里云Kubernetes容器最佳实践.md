@@ -128,11 +128,44 @@ tags:          #标签
    NoExecute: 驱逐不带toleration的pod  
 
 # 三. 容器平台配置管理
+1. **配置原则**  
+   配置与镜像务必严格分离  
+   区分清楚初始化配置还是需要运行时可改动配置  
+   初始化配置放到configmap以及secret上  
+   动态配置通过配置中心(如阿里云的ACM)配置和推送   
+   不影响兼容性的新功能特性(feature)务必配置动态开关，确保可以实时关闭，避免新功能错误带来的影响  
+   影响业务性能的特性务必配置动态开关，确保可以实时关闭，避免业务高峰无法支撑的影响  
+   务必通过灰度方式打开动态的配置开关  
+   配置一定要做到有迹可循  
+   
+2. **configmap/secret**  
+   可以通过Env或者Volume方式使用  
+   配置变更了，POD的Env是不会发生变化的  
+   配置变更了，Volume的文件在POD是会发生变更的，但是变更生效时间不可控  
+   无论那种方式，都建议用POD rolling upgrade的方式来获取新的配置  
+   Configmap/secret映射到容器文件都是只读的  
 
-# 四. 容器平台日志管理
+# 三. 容器平台开发管理
+1. **容器安全**  
+   严格约束使用主机IPC, PID namespace选项(hostPID, hostIPC)  
+   避免使用root用户运行，设置securityContext来设置运行用户(runAsUser)或者是设置为非root用户(runAsNonRoot)  
+   严格约束使用特权模式(privileged)  
+   根据特定需求来增加/删除细粒度的容器能力  
+   根据需要禁止写入容器的本地文件系统  
+   使用PodSecurityPolicy/Pod Preset来简化运维  
 
-# 五. 容器平台监控管理
+2. **容器运行**  
+   Namespace的资源受quota控制  
+   每个pod都应该设置limit, request  
+   通过limitRange来配置默认limit, request  
 
-# 六. 容器平台安全管理
+3. **健康检查**  
+   k8s健康检查双保险: liveness和readiness  
+   Readiness: 确保应用已经可以接收流量了，不然不会分发流量给POD  
+   Liveness: 确保应用还存活，不然就会重启这个POD （用于检查的三种类型探针:http, cmd, tcp） 
 
-# 七. 容器平台开发管理
+4. **优雅退出**  
+   容器中的主进程(pid=1)将会收到SIGTERM，然后需要处理相应的程序内资源释放处理，时间由terminationGracePeriodSeconds控制  
+   利用好preStop hook，执行对应的进程外清理操作(没有参数传递)， 这个设置执行前，terminationGracePeriodSeconds已经开始计算  
+   Dockerfile中使用CMD ["/bin/bash", "-c", "myapp -- arg=$ENV_VAR"]格式启动程序，避免SIGTERM不被传递问题(因为 CMD xxx，实际是/bin/sh –c xxx，在某些Linux下会不传递 SIGTERM)
+   
