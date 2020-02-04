@@ -93,7 +93,7 @@ tags:          #标签
    优先级会启用抢占特性(scheduler开关disablePreemption控制，默认false)  
 
 9. **容器伸缩**  
-   HPA伸缩
+   HPA伸缩  
    Cluster Autoscaler  
    
 10. **查错步骤**  
