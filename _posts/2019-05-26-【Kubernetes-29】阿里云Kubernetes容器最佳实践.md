@@ -145,7 +145,7 @@ tags:          #标签
    无论那种方式，都建议用POD rolling upgrade的方式来获取新的配置  
    Configmap/secret映射到容器文件都是只读的  
 
-# 三. 容器平台开发管理
+# 四. 容器平台开发管理
 1. **容器安全**  
    严格约束使用主机IPC, PID namespace选项(hostPID, hostIPC)  
    避免使用root用户运行，设置securityContext来设置运行用户(runAsUser)或者是设置为非root用户(runAsNonRoot)  
