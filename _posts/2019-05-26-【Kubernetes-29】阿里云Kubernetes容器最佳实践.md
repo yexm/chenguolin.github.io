@@ -9,7 +9,7 @@ tags:          #标签
 本文参考自 [阿里云容器产品实践.pdf](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/pdf/%E9%98%BF%E9%87%8C%E4%BA%91%E5%AE%B9%E5%99%A8%E4%BA%A7%E5%93%81%E5%AE%9E%E8%B7%B5.pdf)
 
 # 一. 容器平台构建
-1. **集群容量规划**
+1. **集群容量规划**  
    服务总实例 * 实例规格 * 冗余，例如有18个微服务每个服务2个实例，每个实例用2c/4g，预留10%冗余  
    总资源:18 X 2 X 2c/4g X 110% = 72c/144g X 110% = 80c/160g   
    注意:需要估算daemonset, job等类型的资源
@@ -42,6 +42,33 @@ tags:          #标签
    磁盘的空间不要设置太小，生产一般给系统盘留`100G`，尽量使用SSD云盘
 
 # 二. 容器平台运维
+1. **多集群与Namespace**  
+   集群区分环境(开发/测试/生产)，Namespace用于区分不同的业务领域  
+
+2. **独立部署Ingress Controller**  
+   选用神龙32c/64g的配置2~3台对应一个SLB(5G入口流量)   
+   为部署的机器打上污点标签例如Taint: Ingress=:NoEexcute  
+   设置Ingress controller的POD资源限制为request/limit: 16c/32g  
+   设置Ingress controller使用ENI  
+   设置对应的Nginx的配置的worker数为16  
+   更改对应的SLB个规格(支持的并发数)，以及选择按照流量计费 (最大支持5G)  
+
+3. **多集群kubectl管理适配**  
+   通过kubectl config view 查看集群配置  
+   配置环境变量KUBECONFIG=<C1>:<C2>，使用KUBECONFIG环境变量配置多个集群的config文件  
+   通过kubectl config get-contexts获取对应的集群信息，通过kubectl config user-context <context name>切换集群  
+   对于子账户，可以无缝使用config合并方式操作  
+   对于主账户，需要做下config文件修改，因为默认都使用了 kubernetes-admin 作为用户，kubernetes作为集群名字，kubernetes-admin@kubernetes作为context名字  
+   对于第二个主账户下的集群，对应修改config文件的 kubernetes-admin 用户名，kubernetes集群名字，kubernetes-admin@kubernetescontext名字，不与其它集群冲突就可
+    
+4. **kubectl工具集**  
+   集群切换、命名空间切换工具kubectlx、kubens: `https://github.com/ahmetb/kubectx`  
+   Kubectl短命令集: `https://github.com/ahmetb/kubectl-aliases`  
+   命令行展示Kubernetes的集群名称和NS名称: `https://github.com/jonmosco/kube-ps1`  
+   K8S资源跟踪工具kubespy: `https://github.com/pulumi/kubespy`  
+   Kubectl插件管理工具krew: `https://github.com/GoogleContainerTools/krew`  
+   同时查看多个POD中多个容器的log: `https://github.com/wercker/stern`  
+   Docker Image分析工具: `https://github.com/wagoodman/dive`  
 
 # 三. 容器平台配置管理
 
