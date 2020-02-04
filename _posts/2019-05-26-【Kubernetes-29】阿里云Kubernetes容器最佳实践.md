@@ -77,7 +77,7 @@ tags:          #标签
    镜像只由Dockerfile构建，使用多阶段构建，确保镜像最干净/最小
    
 6. **Master控制**  
-   默认情况下，Master不会运行业务的POD，除非设置对应的容忍 
+   默认情况下，Master不会运行业务的POD，除非设置对应的容忍  
    在测试环境下，可以去除Master的taint来运行对应的业务POD: `kubectl taint nodes --all node-role.kubernetes.io/master-`，如果需要恢复，则可以补充上这个taint，不过需要注意的是已经运行的POD是不会被驱逐的。注意不要给node节点打上这个taint
 
 7. **存储使用**  
@@ -86,7 +86,46 @@ tags:          #标签
    对于同一个Deployment每个POD需要共享存储用NAS，同时对于读/写都很频繁的场景也要用NAS  
    对于一次写入(少数写入)，然后多次读的场景，可以使用OSS  
 
-8. 
+8. **POD优先级**  
+   1.11.x开始，Pod优先级特性默认开启，默认优先级为0，最低优先级  
+   优先级资源priorityClass是全局的  
+   默认提供两个系统级的priorityClass给critical pod  
+   优先级会启用抢占特性(scheduler开关disablePreemption控制，默认false)  
+
+9. **容器伸缩**  
+   HPA伸缩
+   Cluster Autoscaler  
+   
+10. **查错步骤**  
+   ECS互通是否有异常  
+   安全组是否配置有误  
+   使用子账户，授权是否正确  
+   Docker run的方式运行，是否能正常提供服务  
+   在K8S里通过一个POD去访问目标的POD是否正常  
+   通过service方式访问是否正常  
+   通过SLB/Ingress方式访问是否正常   
+   Kubectl get event是否有异常  
+   Api server/schedule/controller日志是否有异常  
+   Docker daemon日志是否有异常  
+   
+11. **日志查看**  
+   kubectl describe xxx   
+   Docker引擎日志: `journalctl -u docker -f`   
+   Kubelet日志: `journalctl -u kubelet -f`  
+   API Server日志: `docker logs <api server container id>`  
+   Scheduler日志: `docker logs <scheduler container id>`  
+   Master proxy日志: `docker logs <master proxy container id>`  
+   Worker proxy日志: `docker logs <worker proxy container id>`  
+   Controller日志: `docker logs <controller container id>` 
+   
+12. **容器和主机时区一致**  
+   方式一:通过TZ环境变量设置时区 `TZ=Asia/Shanghai`   
+   方式二:通过挂载主机的时区文件  
+ 
+13. **taint的三种效果**  
+   Noschedule: 不调度没有toleration的新pod到该节点  
+   PreferNoSchedule: 不优先调度的节点  
+   NoExecute: 驱逐不带toleration的pod  
 
 # 三. 容器平台配置管理
 
