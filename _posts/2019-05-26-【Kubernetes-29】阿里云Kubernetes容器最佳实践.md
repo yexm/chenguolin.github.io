@@ -16,7 +16,7 @@ tags:          #标签
 
 2. **集群网络规划**  
    明确ECS所在的VPC的IP段，是否与其它服务关联(RDS)，是否有专线与私有云IDC互联，路由是否已经打通等   
-   明确POD的IP段，是否需要与非K8S集群的ECS互联，例如其它ECS上部署的服务 
+   明确POD的IP段，是否需要与非K8S集群的ECS互联，例如其它ECS上部署的服务  
    明确Service的IP段，此IP为虚IP不可与其它ECS的IP段冲突  
    需要考虑跨可用区的网络设计
 
@@ -56,7 +56,7 @@ tags:          #标签
 3. **多集群kubectl管理适配**  
    通过kubectl config view 查看集群配置  
    配置环境变量KUBECONFIG，使用KUBECONFIG环境变量配置多个集群的config文件  
-   通过kubectl config get-contexts获取对应的集群信息，通过kubectl config user-context <context name>切换集群  
+   通过kubectl config get-contexts获取对应的集群信息，通过kubectl config user-context {contextname} 切换集群  
    对于子账户，可以无缝使用config合并方式操作，对于主账户，需要做下config文件修改，因为默认都使用了 kubernetes-admin 作为用户，kubernetes作为集群名字，kubernetes-admin@kubernetes作为context名字  
     
 4. **kubectl工具集**  
