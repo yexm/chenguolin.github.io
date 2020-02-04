@@ -55,11 +55,9 @@ tags:          #标签
 
 3. **多集群kubectl管理适配**  
    通过kubectl config view 查看集群配置  
-   配置环境变量KUBECONFIG=<C1>:<C2>，使用KUBECONFIG环境变量配置多个集群的config文件  
+   配置环境变量KUBECONFIG，使用KUBECONFIG环境变量配置多个集群的config文件  
    通过kubectl config get-contexts获取对应的集群信息，通过kubectl config user-context <context name>切换集群  
-   对于子账户，可以无缝使用config合并方式操作  
-   对于主账户，需要做下config文件修改，因为默认都使用了 kubernetes-admin 作为用户，kubernetes作为集群名字，kubernetes-admin@kubernetes作为context名字  
-   对于第二个主账户下的集群，对应修改config文件的 kubernetes-admin 用户名，kubernetes集群名字，kubernetes-admin@kubernetescontext名字，不与其它集群冲突就可
+   对于子账户，可以无缝使用config合并方式操作，对于主账户，需要做下config文件修改，因为默认都使用了 kubernetes-admin 作为用户，kubernetes作为集群名字，kubernetes-admin@kubernetes作为context名字  
     
 4. **kubectl工具集**  
    集群切换、命名空间切换工具kubectlx、kubens: `https://github.com/ahmetb/kubectx`  
@@ -69,6 +67,26 @@ tags:          #标签
    Kubectl插件管理工具krew: `https://github.com/GoogleContainerTools/krew`  
    同时查看多个POD中多个容器的log: `https://github.com/wercker/stern`  
    Docker Image分析工具: `https://github.com/wagoodman/dive`  
+
+5. **Image使用**  
+   同一个版本的同一个应用确保只有一个Image，不要因为环境的不同，而使用不同的镜像  
+   配置信息务必脱离镜像  
+   继承的父镜像务必标示tag，不可以用latest作为生产镜像  
+   镜像务必来源与同一个镜像仓库  
+   镜像务必经过安全扫描  
+   镜像只由Dockerfile构建，使用多阶段构建，确保镜像最干净/最小
+   
+6. **Master控制**  
+   默认情况下，Master不会运行业务的POD，除非设置对应的容忍 
+   在测试环境下，可以去除Master的taint来运行对应的业务POD: `kubectl taint nodes --all node-role.kubernetes.io/master-`，如果需要恢复，则可以补充上这个taint，不过需要注意的是已经运行的POD是不会被驱逐的。注意不要给node节点打上这个taint
+
+7. **存储使用**  
+   对于需要POD消亡后保留数据，使用PV的方式，不可直接用本地磁盘Volume  
+   对于同一个StatefulSet每个POD需要自己的PV，可以使用云盘的存储  
+   对于同一个Deployment每个POD需要共享存储用NAS，同时对于读/写都很频繁的场景也要用NAS  
+   对于一次写入(少数写入)，然后多次读的场景，可以使用OSS  
+
+8. 
 
 # 三. 容器平台配置管理
 
