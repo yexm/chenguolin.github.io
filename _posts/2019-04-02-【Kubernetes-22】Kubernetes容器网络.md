@@ -181,7 +181,7 @@ tags:          #标签
 ## ② 跨主机访问
 `跨主机访问`指的是不同宿主机上的容器如何进行互相访问，Docker 默认配置下一台宿主机上的 docker0 网桥，和其他宿主机上的 docker0 网桥，它们互相之间是没办法连通。所以，不同宿主机上的容器通过 IP 地址进行互相访问是做不到的。
 
-Docker 支持[overlay](https://docs.docker.com/network/overlay/)模式，在已有的宿主机网络上再通过软件构建一个覆盖在已有宿主机网络之上的可以把所有容器连通在一起的虚拟网络。
+Docker 支持[overlay](https://docs.docker.com/network/overlay/) 驱动，在已有的宿主机网络上再通过软件构建一个覆盖在已有宿主机网络之上的可以把所有容器连通在一起的虚拟网络。
 
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/docker-overlay-network.png?raw=true)
 
