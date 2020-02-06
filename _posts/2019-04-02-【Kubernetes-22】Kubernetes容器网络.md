@@ -11,7 +11,7 @@ tags:          #标签
 
 所以，在大多数情况下，我们都希望容器进程能使用自己 Network Namespace 里的网络栈，也就是拥有属于自己的 IP 地址和端口。那问题来了，这个被隔离的容器进程，该如何跟其他 Network Namespace 里的容器进程进行交互呢？
 
-因此，这篇文章会通过 Docker网络、Kubernetes网络 2部分来介绍一下 Kubernetes容器网络，通过这篇文章可以知道在Docker环境下容器是如何通信的，在Kubernetes环境下Pod是如何通信的。
+因此，这篇文章会通过 Docker网络 部分介绍单宿主机容器之间通信、跨宿主机容器之间通信，通过 Kubernetes 网络 部分介绍 Kubernetes的网络模型以及社区比较有名的网络解决方案。
 
 # 二. Docker网络
 如果我们想要实现两台主机之间的通信，最直接的办法就是把它们用一根网线连接起来，而如果我们想要实现多台主机之间的通信，那就需要用网线，把它们连接在一台交换机上。在 Linux 中能够起到虚拟交换机作用的网络设备是网桥（Bridge），它是一个工作在数据链路层（Data Link）的设备，主要功能是根据 MAC 地址学习来将数据包转发到网桥的不同端口（Port）上。
@@ -185,7 +185,7 @@ Docker 支持[overlay](https://docs.docker.com/network/overlay/) 驱动，在已
 
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/docker-overlay-network.png?raw=true)
 
-实际在生产环境中很少只使用Docker来搭建应用部署环境，目前用的最多的是通过Kubernetes+Docker来搭建应用部署环境，因此跨主机容器网络访问方案会和Kubernetes结合，下文会仔细介绍社区几个容器网络方案。
+实际在生产环境中很少只使用 Docker 来搭建应用部署环境，目前用的最多的是通过 Kubernetes+Docker（容器运行时） 来搭建应用部署环境，因此跨主机容器网络访问方案会和Kubernetes结合，下文会仔细介绍社区几个容器网络方案。
 
 # 三. Kubernetes网络
 我们知道 Kubernetes 创建一个 Pod 的第一步就是创建并启动一个 Infra 容器，然后业务容器加入 Infra 容器的 Network Namespace。从 Docker 网络我们了解到 Docker 默认会创建 docker0 网桥，所有容器都连接在 docker0 网桥上。但是 Kubernetes 则是通过一个叫作 CNI 的接口，维护了一个单独的网桥来代替 docker0，这个网桥的名字就叫作 CNI 网桥，它在宿主机上的设备名称默认是 cni0。
