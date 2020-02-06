@@ -142,9 +142,9 @@ tags:          #标签
 6. 查看下 docker0 网桥信息（发现veth910802f和veth95dc570都成功绑定在docker0网桥上了）
    ```
    $ brctl show
-   bridge name	bridge id		    STP enabled	    interfaces
-   docker0		8000.0242564f4703	no		        veth910802f
-							                        veth95dc570
+   bridge name	bridge id		STP enabled	    interfaces
+   docker       8000.0242564f4703	no		    veth910802f
+							    veth95dc570
    ```
 
 7. 所以我们可以在容器1 nginx-1 和 容器2 nginx-2 内部互相访问对方
@@ -170,7 +170,7 @@ tags:          #标签
    
 这其中的原理其实非常简单，具体的流程如下
 
-1. nginx-1 容器里访问 nginx-2 容器的 IP 地址（比如 ping 172.17.0.3）的时候，这个目的 IP 地址会匹配到 nginx-1 容器里的第二条路由规则（172.17.0.0  *  255.255.0.0  U  0 0  0  eth0）。
+1. nginx-1 容器里访问 nginx-2 容器的 IP 地址（ping 172.17.0.3）的时候，这个目的 IP 地址会匹配到 nginx-1 容器里的第二条路由规则（172.17.0.0  *  255.255.0.0  U  0 0  0  eth0）。
 2. 根据这条路由规则，凡是匹配到这条规则的 IP 包，应该经过本机的 eth0 网卡，通过二层网络直接发往目的主机。我们前面提到过容器nginx-1 eth0 网卡是一个 Veth Pair 在容器内的一端，而另一端则位于宿主机上被绑定 docker0 网桥上即 veth95dc570。
 3. 数据包会从容器nginx-1 eho0网卡流入宿主机 docker0 网桥上veth95dc570，docker0 处理转发的过程会扮演二层交换机的角色。docker0 网桥根据数据包的目的 MAC 地址（也就是 nginx-2 容器的 MAC 地址），在它的 CAM 表（即交换机通过 MAC 地址学习维护的端口和 MAC 地址的对应表）里查到对应的端口（Port）为veth910802f，然后把数据包发往这个端口。
 4. veth910802f是 nginx-2 容器绑定在 docker0 网桥上一个 Veth Pair 设备的虚拟网卡。因此，数据包就进入到了 nginx-2 容器的 Network Namespace 里。
