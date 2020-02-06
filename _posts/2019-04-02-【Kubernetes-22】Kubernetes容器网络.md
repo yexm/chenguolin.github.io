@@ -185,6 +185,8 @@ Docker 支持[overlay](https://docs.docker.com/network/overlay/)模式，在已�
 
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/docker-overlay-network.png?raw=true)
 
+实际在生产环境中很少只使用Docker来搭建应用部署环境，目前用的最多的是通过Kubernetes+Docker来搭建应用部署环境，因此跨主机容器网络访问方案会和Kubernetes结合，下文会仔细介绍社区几个容器网络方案。
+
 # 三. Kubernetes网络
 
 ## ① flannel
