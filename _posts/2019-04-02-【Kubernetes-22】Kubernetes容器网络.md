@@ -142,9 +142,9 @@ tags:          #标签
 6. 查看下 docker0 网桥信息（发现veth910802f和veth95dc570都成功绑定在docker0网桥上了）
    ```
    $ brctl show
-   bridge name	bridge id		STP enabled	    interfaces
-   docker       8000.0242564f4703	no		    veth910802f
-							    veth95dc570
+   bridge name  bridge id            STP enabled      interfaces
+   docker       8000.0242564f4703    no               veth910802f
+                                                      veth95dc570
    ```
 
 7. 所以我们可以在容器1 nginx-1 和 容器2 nginx-2 内部互相访问对方
@@ -176,8 +176,11 @@ tags:          #标签
 4. veth910802f是 nginx-2 容器绑定在 docker0 网桥上一个 Veth Pair 设备的虚拟网卡。因此，数据包就进入到了 nginx-2 容器的 Network Namespace 里。
 5. 所以nginx-2 容器看到它自己的 eth0 网卡上出现了流入的数据包，容器 nginx-2 的网络协议栈就会对请求进行处理，最后将响应返回到容器 nginx-1。
 
+所以单宿主机容器要想跟外界进行通信，它发出的 IP 包就必须从它的 Network Namespace 里出来，来到宿主机上。而解决这个问题的方法就是为容器创建一个一端在容器里充当默认网卡、另一端在宿主机上 docker0 网桥的 Veth Pair 设备。
 
 ## ② 跨主机访问
+`跨主机访问`指的是不同宿主机上的容器如何进行互相访问，Docker 默认配置下一台宿主机上的 docker0 网桥，和其他宿主机上的 docker0 网桥，它们互相之间是没办法连通。所以，不同宿主机上的容器通过 IP 地址进行互相访问是做不到的。
+
 
 
 # 三. Kubernetes网络
