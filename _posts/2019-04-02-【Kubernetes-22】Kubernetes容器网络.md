@@ -188,7 +188,15 @@ Docker 支持[overlay](https://docs.docker.com/network/overlay/) 驱动，在已
 实际在生产环境中很少只使用Docker来搭建应用部署环境，目前用的最多的是通过Kubernetes+Docker来搭建应用部署环境，因此跨主机容器网络访问方案会和Kubernetes结合，下文会仔细介绍社区几个容器网络方案。
 
 # 三. Kubernetes网络
+我们知道 Kubernetes 创建一个 Pod 的第一步就是创建并启动一个 Infra 容器，然后业务容器加入 Infra 容器的 Network Namespace。从 Docker 网络我们了解到 Docker 默认会创建 docker0 网桥，所有容器都连接在 docker0 网桥上。但是 Kubernetes 则是通过一个叫作 CNI 的接口，维护了一个单独的网桥来代替 docker0，这个网桥的名字就叫作 CNI 网桥，它在宿主机上的设备名称默认是 cni0。
 
+注意 CNI 网桥只是接管所有 CNI 插件负责的、即 Kubernetes 创建的容器（Pod）。如果我们还是用 docker run 单独启动一个容器，那么 Docker 项目还是会把这个容器连接到 docker0 网桥上，所以这个容器的 IP 地址还是属于 docker0 网桥的 172.17.0.0/16 网段。
+
+Kubernetes 之所以要设置这样一个与 docker0 网桥功能几乎一样的 CNI 网桥，主要原因包括两个方面
+1. Kubernetes 项目并没有使用 Docker 的网络模型（CNM），所以它并不希望、也不具备配置 docker0 网桥的能力
+2. 与 Kubernetes 如何配置 Pod，也就是 Infra 容器的 Network Namespace 密切相关。CNI 的设计思想就是 Kubernetes 在启动 Infra 容器之后，就可以直接调用 CNI 网络插件，为这个 Infra 容器的 Network Namespace，配置符合预期的网络栈。
+
+社区比较出名的 CNI 网络插件有以下几种 [Flannel](https://github.com/coreos/flannel)、[Calico](https://github.com/projectcalico/calico)、[Canal](https://github.com/projectcalico/canal)
 
 ## ① flannel
 
