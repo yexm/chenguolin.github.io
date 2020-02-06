@@ -6,7 +6,7 @@ tags:          #标签
     - Kubernetes
 ---
 
-docker run 创建Docker容器时，可以用`--net`选项指定容器的网络模式，Docker有以下4种网络模式
+docker run 创建Docker容器时，可以用`--net`选项指定容器的网络模式，默认为 bridge 模式。Docker有以下4种网络模式，使用 `docker network ls` 可以查看当前宿主机的网络模式，关于Docker网络可以参考 [Docker network](https://docs.docker.com/network/)。
 
 1. `host`: `--net=host`
 2. `container`: ，`--net=container:xxx`
