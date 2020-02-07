@@ -5,3 +5,7 @@ author: 陈国林 # 作者
 tags:         #标签
     - Linux
 ---
+
+# 一. Routing table
+
+# 二. route command
