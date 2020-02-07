@@ -185,7 +185,77 @@ status相关的字段的定义可以参考 [kubernetes api core/v1/types Service
 
 只有一个字段 loadBalancer，默认情况下为空，spec.type 为 LoadBalancer 时该字段会有值。
 
-# 四. Service实现
+# 四. Service类型
+Kubernetes 支持4种 Service 的访问方式 `ClusterIP`、`NodePort`、`LoadBalancer` 和 `ExternalName`
+
+## ① ClusterIP
+默认情况下 Service type 为 ClusterIP，在集群内部暴露 Service 的IP，集群外无法访问该 Service
+
+1. 创建Deployment
+   ```
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     name: my-nginx
+   spec:
+     selector:
+       matchLabels:
+         run: my-nginx
+     replicas: 2
+     template:
+       metadata:
+         labels:
+           run: my-nginx
+       spec:
+         containers:
+         - name: my-nginx
+           image: nginx
+           ports:
+           - containerPort: 80
+   ```
+
+   $ kubectl apply -f  my-nginx.yaml
+   $ kubectl get pods -l run=my-nginx -o wide  
+   
+2. 创建Service
+   ```
+   apiVersion: v1
+   kind: Service
+   metadata:
+     name: my-nginx
+     labels:
+       run: my-nginx
+   spec:
+     ports:
+     - port: 80
+       protocol: TCP
+     selector:
+       run: my-nginx 
+     type: ClusterIP
+   ```
+
+3. 查看Service
+   ```
+   $ kubectl get svc my-nginx
+   NAME       TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE
+   my-nginx   ClusterIP   10.0.162.149   <none>        80/TCP    21s
+   ```
+
+4. 集群内访问Service
+   ```
+   $ curl "http://10.0.162.149:80"
+   ...
+   ```
+
+![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/Kubernetes-ClusterIP-Service.png?raw=true)
+
+## ② NodePort
+
+## ③ LoadBalancer
+
+## ④ ExternalName
+
+# 五. Service实现
 Service 实现由 kube-proxy 组件负责的，每个 kubernetes 节点都运行了一个 kube-proxy 组件，kube-proxy 组件目前支持3种模式 `userspace`、`iptables`、`ipvs`，可以参考 [kube-proxy --proxy-mode ProxyMode](https://kubernetes.io/docs/reference/command-line-tools-reference/kube-proxy/)。所谓 Service，其实就是 Kubernetes 为 Pod 分配的、固定的、基于 iptables（或者 IPVS）的访问入口。而这些访问入口代理的 Pod 信息，则来自于 Etcd，由 kube-proxy 通过控制循环来维护。
 
 ## ① userspace
@@ -273,77 +343,6 @@ kube-proxy 通过 iptables 处理 Service 的过程，需要在`每台宿主机`
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/service-ipvs-mode.png?raw=true)
 
 `因此，在大规模集群里，强烈建议 kube-proxy 使用 ipvs 这个模式（通过kube-proxy --proxy-mode参数进行设置），它为 Kubernetes 集群规模带来的提升，还是非常巨大的。`
-
-# 五. Service类型
-Kubernetes 支持4种 Service 的访问方式 `ClusterIP`、`NodePort`、`LoadBalancer` 和 `ExternalName`
-
-## ① ClusterIP
-默认情况下 Service type 为 ClusterIP，在集群内部暴露 Service 的IP，集群外无法访问该 Service
-
-1. 创建Deployment
-   ```
-   apiVersion: apps/v1
-   kind: Deployment
-   metadata:
-     name: my-nginx
-   spec:
-     selector:
-       matchLabels:
-         run: my-nginx
-     replicas: 2
-     template:
-       metadata:
-         labels:
-           run: my-nginx
-       spec:
-         containers:
-         - name: my-nginx
-           image: nginx
-           ports:
-           - containerPort: 80
-   ```
-
-   $ kubectl apply -f  my-nginx.yaml
-   $ kubectl get pods -l run=my-nginx -o wide  
-   
-2. 创建Service
-   ```
-   apiVersion: v1
-   kind: Service
-   metadata:
-     name: my-nginx
-     labels:
-       run: my-nginx
-   spec:
-     ports:
-     - port: 80
-       protocol: TCP
-     selector:
-       run: my-nginx 
-     type: ClusterIP
-   ```
-
-3. 查看Service
-   ```
-   $ kubectl get svc my-nginx
-   NAME       TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE
-   my-nginx   ClusterIP   10.0.162.149   <none>        80/TCP    21s
-   ```
-
-4. 集群内访问Service
-   ```
-   $ curl "http://10.0.162.149:80"
-   ...
-   ```
-
-![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/Kubernetes-ClusterIP-Service.png?raw=true)
-
-## ② NodePort
-
-## ③ LoadBalancer
-
-## ④ ExternalName
-
 
 # 六. 集群内访问Service
 Kubernetes 支持3种 Service 的访问方式 `ClusterIP`、`环境变量` 和 `DNS`，但是我们推荐使用 DNS 的方式。
