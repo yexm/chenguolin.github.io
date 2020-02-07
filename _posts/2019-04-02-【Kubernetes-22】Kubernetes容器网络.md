@@ -198,8 +198,11 @@ Kubernetes 之所以要设置这样一个与 docker0 网桥功能几乎一样的
 
 社区比较出名的 CNI 网络插件有以下几种 [Flannel](https://github.com/coreos/flannel)、[Calico](https://github.com/projectcalico/calico)、[Canal](https://github.com/projectcalico/canal)
 
-## ① flannel
+## ① Flannel
+Flannel 项目是 CoreOS 公司主推的容器网络方案，Flannel 项目本身只是一个框架真正为我们提供容器网络功能的是 Flannel 的后端实现。目前 Flannel 支持三种后端实现分别是 VXLAN、host-gw 和 UDP。
 
-## ② calico
+
+
+## ② Calico
 
 
