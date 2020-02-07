@@ -156,49 +156,7 @@ spec:
    hostnames-85cd66c585-4w9rh
    ```
 
-NodePort的原理实际上是在每个节点上通过 iptables 添加了一下这些规则，然后剩下的规则和 ClusterIP 是一样的，通过 iptables nat 来控制IP数据包的流向。新增的规则为 `KUBE-NODEPORTS  all  --  0.0.0.0/0       0.0.0.0/0            /* kubernetes service nodeports; NOTE: this must be the last rule in this chain */ ADDRTYPE match dst-type LOCAL`
-
-```
-Chain PREROUTING (policy ACCEPT)
-target         prot opt source               destination
-KUBE-SERVICES  all  --  0.0.0.0/0            0.0.0.0/0            /* kubernetes service portals */
-
-Chain KUBE-SERVICES (2 references)
-target          prot opt source          destination
-KUBE-NODEPORTS  all  --  0.0.0.0/0       0.0.0.0/0            /* kubernetes service nodeports; NOTE: this must be the last rule in this chain */ ADDRTYPE match dst-type LOCAL
-
-Chain KUBE-NODEPORTS (1 references)
-target                     prot opt source        destination
-KUBE-MARK-MASQ             tcp  --  0.0.0.0/0     0.0.0.0/0            /* kube-system/nodeport-hostnames:http */ tcp dpt:30001
-KUBE-SVC-US4ITFTMXMOU3US2  tcp  --  0.0.0.0/0     0.0.0.0/0            /* kube-system/nodeport-hostnames:http */ tcp dpt:30001
-
-Chain KUBE-MARK-MASQ (32 references)
-target     prot opt source               destination
-MARK       all  --  0.0.0.0/0            0.0.0.0/0            MARK or 0x4000
-
-Chain KUBE-SVC-US4ITFTMXMOU3US2 (2 references)
-target                     prot opt source               destination
-KUBE-SEP-AHHOLAQDDJX3HTPO  all  --  0.0.0.0/0            0.0.0.0/0            statistic mode random probability 0.33333333349
-KUBE-SEP-SZF5QQDOLQINGNE2  all  --  0.0.0.0/0            0.0.0.0/0            statistic mode random probability 0.50000000000
-KUBE-SEP-IYZ6I5322MC53TDK  all  --  0.0.0.0/0            0.0.0.0/0
-
-Chain KUBE-SEP-AHHOLAQDDJX3HTPO (1 references)
-target          prot opt source               destination
-KUBE-MARK-MASQ  all  --  10.244.0.72          0.0.0.0/0
-DNAT            tcp  --  0.0.0.0/0            0.0.0.0/0            tcp to:10.244.0.72:9376
-
-Chain KUBE-SEP-SZF5QQDOLQINGNE2 (1 references)
-target          prot opt source               destination
-KUBE-MARK-MASQ  all  --  10.244.0.73          0.0.0.0/0
-DNAT            tcp  --  0.0.0.0/0            0.0.0.0/0            tcp to:10.244.0.73:9376
-
-Chain KUBE-SEP-IYZ6I5322MC53TDK (1 references)
-target          prot opt source               destination
-KUBE-MARK-MASQ  all  --  10.244.0.74          0.0.0.0/0
-DNAT            tcp  --  0.0.0.0/0            0.0.0.0/0            tcp to:10.244.0.74:9376
-```
-
-因此，实际的IP数据包流向为 `PREROUTING -> KUBE-SERVICES -> KUBE-NODEPORTS -> KUBE-SVC-US4ITFTMXMOU3US2 -> KUBE-SEP-xxxx`
+NodePort的原理实际上是在每个节点上通过 iptables 添加了以下这些规则，然后剩下的规则和 ClusterIP 是一样的，通过 iptables nat 来控制IP数据包的流向。新增的规则为 `KUBE-NODEPORTS  all  --  0.0.0.0/0   0.0.0.0/0   /* kubernetes service nodeports; NOTE: this must be the last rule in this chain */ ADDRTYPE match dst-type LOCAL`
 
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/Kubernetes-NodePort-Service.png?raw=true)
 
