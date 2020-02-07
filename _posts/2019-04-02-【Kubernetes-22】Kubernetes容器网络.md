@@ -199,10 +199,21 @@ Kubernetes 之所以要设置这样一个与 docker0 网桥功能几乎一样的
 社区比较出名的 CNI 网络插件有以下几种 [Flannel](https://github.com/coreos/flannel)、[Calico](https://github.com/projectcalico/calico)、[Canal](https://github.com/projectcalico/canal)
 
 ## ① Flannel
-Flannel 项目是 CoreOS 公司主推的容器网络方案，Flannel 项目本身只是一个框架真正为我们提供容器网络功能的是 Flannel 的后端实现。目前 Flannel 支持三种后端实现分别是 VXLAN、host-gw 和 UDP。
+Flannel 项目是 CoreOS 公司主推的容器网络方案，Flannel 项目本身只是一个框架真正为我们提供容器网络功能的是 Flannel 的后端实现。目前 Flannel 支持多种后端实现例如 VXLAN、host-gw、UDP，详细可以参考  [flannel backends](https://github.com/coreos/flannel/blob/master/Documentation/backends.md)
 
+关于 Flannel 的实现可以参考下图，核心实现是在每个节点上部署 flanneld 进程，每个节点创建一个 flannel0 设备。
 
+![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/Kubernetes-flannel.png?raw=true)
 
 ## ② Calico
+Calico 创建和管理一个扁平的三层网络（不需要overlay），每个容器会分配一个可路由的IP。由于通信时不需要解包和封包，网络性能损耗小，易于排查，且易于水平扩展。小规模部署时可以通过BGP client直接互联，大规模下可通过指定的BGP Route Reflector来完成，这样保证所有的数据流量都是通过IP路由的方式完成互联的。Calico基于iptables还提供了丰富而灵活的网络Policy，保证通过各个节点上的ACL来提供Workload的多租户隔离、安全组以及其他可达性限制等功能。详细可以参考  [Kubernetes calico](https://docs.projectcalico.org/v2.0/getting-started/kubernetes/)
+
+关于 Calico 的实现可以参考下图，主要由3个部分组成
+
+1. Calico 的 CNI 插件，这是 Calico 与 Kubernetes 对接的部分
+2. Felix 它是一个 DaemonSet，负责在宿主机上插入路由规则，以及维护 Calico 所需的网络设备等工作
+3. BGP 客户端，专门负责在集群里分发路由规则信息
+
+![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/Kubernetes-calico.png?raw=true)
 
 
