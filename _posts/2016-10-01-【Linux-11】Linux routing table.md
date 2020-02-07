@@ -11,7 +11,7 @@ routing table 指的是路由表，所有的网络设备无论是主机、路由
 
 Linux routing table 是存储在内存中，路由表规则可以动态配置也可以静态配置。动态路由配置是通过动态路由协议自学习的方式，静态路由配置则一般由网络管理员配置。由于内存有限没有办法存储大量设备的路由信息，因此路由表中的路由规则使用的是IP段也就是[Classless Inter-Domain Routing (CIDR)](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)的方式。
 
-Linux下我们可以使用 route 命令查看当前内核的路由表，例如下面这个例子
+Linux 下我们可以使用 `route` 命令查看当前内核的路由表，例如下面这个例子
 
 ```
 Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
@@ -51,7 +51,7 @@ route {-h|--help} [<AF>]              使用帮助
 route {-V|--version}                  版本信息
 ```
 
-1. 查看路由表
+1. 查看路由表规则
    ```
    $ route
    Kernel IP routing table
@@ -70,8 +70,37 @@ route {-V|--version}                  版本信息
    127.0.0.0       0.0.0.0         255.0.0.0       U     0      0        0 lo
    172.17.0.0      0.0.0.0         255.255.0.0     U     0      0        0 docker0
    192.168.65.0    0.0.0.0         255.255.255.0   U     0      0        0 eth0
+   
+   $ route -e
+   Kernel IP routing table
+   Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface
+   default         192.168.65.1    0.0.0.0         UG        0 0          0 eth0
+   10.1.0.0        *               255.255.0.0     U         0 0          0 cni0
+   127.0.0.0       *               255.0.0.0       U         0 0          0 lo
+   172.17.0.0      *               255.255.0.0     U         0 0          0 docker0
+   192.168.65.0    *               255.255.255.0   U         0 0          0 eth0
    ```
 
-
+2. 更新路由表规则
+   ```
+   1). 添加路由规则
+   $ route add -net 192.56.76.0 netmask 255.255.255.0 dev eth0
+   $ route -n
+   route
+   Kernel IP routing table
+   Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+   default         192.168.65.1    0.0.0.0         UG    0      0        0 eth0
+   192.56.76.0     *               255.255.255.0   U     0      0        0 eth0
+   ...
+   
+   2). 删除路由规则
+   $ route del -net 192.56.76.0 netmask 255.255.255.0
+   $ route -n
+   route
+   Kernel IP routing table
+   Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+   default         192.168.65.1    0.0.0.0         UG    0      0        0 eth0
+   ...
+   ```
 
 
