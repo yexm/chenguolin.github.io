@@ -9,7 +9,7 @@ tags:         #标签
 # 一. routing table
 routing table 指的是路由表，所有的网络设备无论是主机、路由器还是其他设备都需要有配置决定如何将 TCP/IP 数据包路由到何处，路由表正是用来存储这些配置的。路由表包含一序列路由规则，当收到一个数据包的时候它会根据路由表规则决定把数据包发送到哪里去。除此之外，路由表还包含到目的地址的距离信息。
 
-Linux routing table 文件存储在内存中，路由表规则可以动态配置也可以静态配置。动态配置是通过动态路由协议自学习的方式，静态配置一般由网络管理员配置。由于内存有限没有办法存储大量设备的路由信息，因此路由表中的路由规则使用的是IP段也就是[Classless Inter-Domain Routing (CIDR)](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)的方式。
+Linux routing table 文件存储在内存中，路由表规则可以动态配置也可以静态配置。动态配置是通过动态路由协议自学习的方式，例如[OSPF and BGP](https://www.lartc.org/howto/lartc.dynamic-routing.html)，静态配置一般由网络管理员配置。由于内存有限没有办法存储大量设备的路由信息，因此路由表中的路由规则使用的是IP段也就是[Classless Inter-Domain Routing (CIDR)](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)的方式。
 
 Linux 下我们可以使用 `route` 命令查看当前内核的路由表的内容，如下所示
 
