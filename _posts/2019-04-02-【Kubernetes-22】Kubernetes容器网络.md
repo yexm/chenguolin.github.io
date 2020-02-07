@@ -211,7 +211,7 @@ Calico 创建和管理一个扁平的三层网络（不需要overlay），每个
 Calico 主要由3个部分组成，Kubernetes 使用 Calico 可以参考文章 [kubernetes-networking-with-calico](https://www.tigera.io/blog/kubernetes-networking-with-calico/)
 
 1. Calico 的 CNI 插件，这是 Calico 与 Kubernetes 对接的部分
-2. Felix 它是一个 DaemonSet，负责维护每台节点上iptables规则好路由表规则，以及维护 Calico 所需的网络设备等工作
+2. Felix 它是一个 DaemonSet，负责维护每台节点上iptables规则、路由表规则，以及维护 Calico 所需的网络设备等工作
 3. BGP 客户端，专门负责在集群里分发路由规则信息
 
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/Kubernetes-calico.png?raw=true)
