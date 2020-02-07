@@ -38,10 +38,39 @@ default         192.168.65.1    0.0.0.0         UG    0      0        0 eth0
 
 所以，正常来说路由表的路由规则很简单，简单的可以分为以下2类
 1. 如果目标网络地址是本地网络（局域网），则直接通过网卡发送给目标地址
-2. 如果目标网络地址是远程网络，则直接通过网卡发送到网关，通过网关再发送给目标地址
+2. 如果目标网络地址是远程网络，则直接通过网卡发送到网关，通过网关转发
 
 # 二. route command
+类 Unix 系统 [route](https://en.wikipedia.org/wiki/Route_(command)) 命令用于显示和操作路由表路由规则，属于静态路由配置。直接在命令行下执行 route 命令来添加路由规则是不会永久保存，当网卡重启或者机器重启之后该路由规则就失效了，可以在 /etc/rc.local 中添加 route 命令来保证该路由规则永久有效。
 
+route 命令的语法如下
+```
+route [-nNvee] [-FC] [<AF>]           查看路由表规则
+route [-v] [-FC] {add|del|flush} ...  更新路由表规则
+route {-h|--help} [<AF>]              使用帮助
+route {-V|--version}                  版本信息
+```
+
+1. 查看路由表
+   ```
+   $ route
+   Kernel IP routing table
+   Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+   default         192.168.65.1    0.0.0.0         UG    0      0        0 eth0
+   10.1.0.0        *               255.255.0.0     U     0      0        0 cni0
+   127.0.0.0       *               255.0.0.0       U     0      0        0 lo
+   172.17.0.0      *               255.255.0.0     U     0      0        0 docker0
+   192.168.65.0    *               255.255.255.0   U     0      0        0 eth0
+
+   $ route -n
+   Kernel IP routing table
+   Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+   0.0.0.0         192.168.65.1    0.0.0.0         UG    0      0        0 eth0
+   10.1.0.0        0.0.0.0         255.255.0.0     U     0      0        0 cni0
+   127.0.0.0       0.0.0.0         255.0.0.0       U     0      0        0 lo
+   172.17.0.0      0.0.0.0         255.255.0.0     U     0      0        0 docker0
+   192.168.65.0    0.0.0.0         255.255.255.0   U     0      0        0 eth0
+   ```
 
 
 
