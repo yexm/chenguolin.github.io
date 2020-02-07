@@ -200,6 +200,8 @@ DNAT            tcp  --  0.0.0.0/0            0.0.0.0/0            tcp to:10.244
 
 因此，实际的IP数据包流向为 `PREROUTING -> KUBE-SERVICES -> KUBE-NODEPORTS -> KUBE-SVC-US4ITFTMXMOU3US2 -> KUBE-SEP-xxxx`
 
+
+
 ## ② LoadBalancer
 LoadBalancer 适用于公有云上的 Kubernetes 服务，可以参考 [华为云Kubernetes LoadBalancer Service](https://support.huaweicloud.com/usermanual-cce/cce_01_0014.html)、[阿里云Kubernetes LoadBalancer Service](https://help.aliyun.com/document_detail/86531.html)
 
