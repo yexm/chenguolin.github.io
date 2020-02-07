@@ -114,11 +114,11 @@ spec:
 默认情况下，Kubernetes 会给每个 Pod 加上 `default` 这个 ServiceAccount，默认情况下 default 具有 admin 的权限。我们也可以创建自定义的 ServiceAccount，绑定相关的Role来控制访问 apiserver 的权限。
 
 # 二. 访问业务Service
-之前我们在 [kubernetes之service](https://chenguolin.github.io/2019/04/01/Kubernetes-21-Kubernetes%E4%B9%8BService/) 文章学习了 Kubernetes Service 对象，了解了 Service 的基本原理、使用的实现的机制。文章里面介绍了 [集群内Service访问方式](https://chenguolin.github.io/2019/04/01/Kubernetes-21-Kubernetes%E4%B9%8BService/#%E4%BA%94-service%E8%AE%BF%E9%97%AE)，但是我们并没有介绍集群外该如何访问 Service，下面我们来介绍一下。
+之前我们在 [kubernetes之service](https://chenguolin.github.io/2019/04/01/Kubernetes-21-Kubernetes%E4%B9%8BService/) 文章学习了 Kubernetes Service 对象，了解了 Service 的基本原理、类型、实现机制等等。
 
-通过 [Service 实现](https://chenguolin.github.io/2019/04/01/Kubernetes-21-Kubernetes%E4%B9%8BService/#%E5%9B%9B-service%E5%AE%9E%E7%8E%B0) 我们知道 `所谓 Service 的访问入口，其实就是每台宿主机上由 kube-proxy 生成的 iptables 规则，以及 dns组件 生成的 DNS 域名，一旦离开了这个集群，这些信息就无效了。`
+通过 [Service 实现](https://chenguolin.github.io/2019/04/01/Kubernetes-21-Kubernetes%E4%B9%8BService/#%E5%9B%9B-service%E5%AE%9E%E7%8E%B0) 我们知道 `所谓 Service 的访问入口，其实就是每台宿主机上由 kube-proxy 生成的 iptables 规则，以及 dns组件 生成的 DNS 域名，一旦离开了这个集群，这些信息就无效了。`，因此，如果要在集群外访问业务 Service 有以下几种方案。
 
-## ① NodePort 
+## ② NodePort 
 NodePort的方式指的是 `每个节点通过kube-proxy和指定端口代理业务Service`，通过 `nodeIp:port` 就可以直接访问 Service。
 
 ```
@@ -202,8 +202,7 @@ DNAT            tcp  --  0.0.0.0/0            0.0.0.0/0            tcp to:10.244
 
 如下图所示，集群外部可以访问任意个Node节点的30080端口达到访问业务Service的目的。
 
-![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/kubernetes-service-nodeport-1.png?raw=true)
-![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/kubernetes-service-nodeport-2.png?raw=true)
+![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/Kubernetes-NodePort-Service.png?raw=true)
 
 ## ② LoadBalancer
 LoadBalancer 适用于公有云上的 Kubernetes 服务，可以参考 [华为云Kubernetes LoadBalancer Service](https://support.huaweicloud.com/usermanual-cce/cce_01_0014.html)、[阿里云Kubernetes LoadBalancer Service](https://help.aliyun.com/document_detail/86531.html)
@@ -228,9 +227,13 @@ spec:
     app: hostnames
 ```
 
-
+![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/Kubernetes-Loadbalance-Service.png?raw=true)
 
 ## ③ Ingress
 上面提到的2种方案实际上在生产环境用的不多，作为用户，其实更希望看到 Kubernetes 为我们内置一个全局的负载均衡器。然后通过我访问的 URL，把请求转发给不同的后端 Service。`这种全局的、为了代理不同后端 Service 而设置的负载均衡服务，就是 Kubernetes 里的 Ingress 服务。所谓 Ingress，就是 Service 的 Service`。由于Ingress比较复杂，具体可以参考 [kubernetes ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/)。
+
+![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/Kubernetes-Ingress.png?raw=true)
+
+
 
 
