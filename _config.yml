@@ -23,6 +23,7 @@ sidebar-avatar: /img/head-img.jpeg      # use absolute URL, seeing it's used in 
 RSS: false
 zhihu_username:     chenguolin
 github_username:    chenguolin
+linkedin_username:  国林-陈-24832778
 
 # from 2016, 'pygments' is unsupported on GitHub Pages. Use 'rouge' for highlighting instead.
 permalink: pretty
