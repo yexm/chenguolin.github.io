@@ -200,8 +200,6 @@ DNAT            tcp  --  0.0.0.0/0            0.0.0.0/0            tcp to:10.244
 
 因此，实际的IP数据包流向为 `PREROUTING -> KUBE-SERVICES -> KUBE-NODEPORTS -> KUBE-SVC-US4ITFTMXMOU3US2 -> KUBE-SEP-xxxx`
 
-如下图所示，集群外部可以访问任意个Node节点的30080端口达到访问业务Service的目的。
-
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/Kubernetes-NodePort-Service.png?raw=true)
 
 ## ② LoadBalancer
