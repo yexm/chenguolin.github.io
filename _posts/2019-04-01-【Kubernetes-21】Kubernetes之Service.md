@@ -278,18 +278,65 @@ kube-proxy 通过 iptables 处理 Service 的过程，需要在`每台宿主机`
 Kubernetes 支持4种 Service 的访问方式 `ClusterIP`、`NodePort`、`LoadBalancer` 和 `ExternalName`
 
 ## ① ClusterIP
-默认情况下 Service type 为 ClusterIP，在集群内我们可以通过直接访问 ClusterIP和端口 访问业务 Service。
-   
-```
-$ kubectl get service -n kube-system
-NAME        TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                  AGE
-hostnames   ClusterIP   10.96.250.206   <none>        9376/TCP                 5d4h
-   
-$ curl "http://10.96.250.206:9376"
-hostnames-85cd66c585-ch4zk
-```
+默认情况下 Service type 为 ClusterIP，在集群内部暴露 Service 的IP，集群外无法访问该 Service
 
-因此，在`容器外`我们可以使用 ClusterIP 来访问 Service。
+1. 创建Deployment
+   ```
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     name: my-nginx
+   spec:
+     selector:
+       matchLabels:
+         run: my-nginx
+     replicas: 2
+     template:
+       metadata:
+         labels:
+           run: my-nginx
+       spec:
+         containers:
+         - name: my-nginx
+           image: nginx
+           ports:
+           - containerPort: 80
+   ```
+
+   $ kubectl apply -f  my-nginx.yaml
+   $ kubectl get pods -l run=my-nginx -o wide  
+   
+2. 创建Service
+   ```
+   apiVersion: v1
+   kind: Service
+   metadata:
+     name: my-nginx
+     labels:
+       run: my-nginx
+   spec:
+     ports:
+     - port: 80
+       protocol: TCP
+     selector:
+       run: my-nginx 
+     type: ClusterIP
+   ```
+
+3. 查看Service
+   ```
+   $ kubectl get svc my-nginx
+   NAME       TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE
+   my-nginx   ClusterIP   10.0.162.149   <none>        80/TCP    21s
+   ```
+
+4. 集群内访问Service
+   ```
+   $ curl "http://10.0.162.149:80"
+   ...
+   ```
+
+![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/Kubernetes-ClusterIP-Service.png?raw=true)
 
 ## ② NodePort
 
