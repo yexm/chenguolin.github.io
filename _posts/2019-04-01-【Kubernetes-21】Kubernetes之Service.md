@@ -249,11 +249,119 @@ Kubernetes 支持4种 Service 的访问方式 `ClusterIP`、`NodePort`、`LoadBa
 
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/Kubernetes-ClusterIP-Service.png?raw=true)
 
-## ② NodePort
+## ② NodePort 
+NodePort的方式指的是 `每个节点通过kube-proxy和指定端口代理业务Service`，通过 `nodeIp:port` 就可以直接访问 Service。
+
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodeport-hostnames
+  namespace: kube-system
+  labels:
+    app: hostnames
+spec:
+  type: NodePort          //指定 NodePort 类型
+  ports:
+  - name: http
+    nodePort: 30001       //每个节点指定端口为 30001 （如果不显式地声明 Kubernetes 随机分配一个可用端口，范围是 30000-32767）
+    port: 9376
+    targetPort: 9376
+    protocol: TCP
+  selector:
+    app: hostnames
+```
+
+在这个 Service 的定义里，我们声明它的类型是，type=NodePort。然后在 ports 字段里声明了 Service 的 9376 端口代理 Pod 的 9376 端口，同时每个节点30001 端口代理了 Service 的 9376 端口。
+
+1. 创建Service: `$ kubectl apply -f service.yaml`
+2. 查看Service
+   ```
+   $ kubectl get service -n kube-system
+   NAME                 TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                  AGE
+   nodeport-hostnames   NodePort    10.96.50.225    <none>        9376:30001/TCP           8s
+   ```
+3. 访问Service （node-ip指的是节点IP）
+   ```
+   $ curl "http://{node-ip}:30001"
+   hostnames-85cd66c585-4w9rh
+   ```
+
+NodePort的原理实际上是在每个节点上通过 iptables 添加了一下这些规则，然后剩下的规则和 ClusterIP 是一样的，通过 iptables nat 来控制IP数据包的流向。新增的规则为 `KUBE-NODEPORTS  all  --  0.0.0.0/0       0.0.0.0/0            /* kubernetes service nodeports; NOTE: this must be the last rule in this chain */ ADDRTYPE match dst-type LOCAL`
+
+```
+Chain PREROUTING (policy ACCEPT)
+target         prot opt source               destination
+KUBE-SERVICES  all  --  0.0.0.0/0            0.0.0.0/0            /* kubernetes service portals */
+
+Chain KUBE-SERVICES (2 references)
+target          prot opt source          destination
+KUBE-NODEPORTS  all  --  0.0.0.0/0       0.0.0.0/0            /* kubernetes service nodeports; NOTE: this must be the last rule in this chain */ ADDRTYPE match dst-type LOCAL
+
+Chain KUBE-NODEPORTS (1 references)
+target                     prot opt source        destination
+KUBE-MARK-MASQ             tcp  --  0.0.0.0/0     0.0.0.0/0            /* kube-system/nodeport-hostnames:http */ tcp dpt:30001
+KUBE-SVC-US4ITFTMXMOU3US2  tcp  --  0.0.0.0/0     0.0.0.0/0            /* kube-system/nodeport-hostnames:http */ tcp dpt:30001
+
+Chain KUBE-MARK-MASQ (32 references)
+target     prot opt source               destination
+MARK       all  --  0.0.0.0/0            0.0.0.0/0            MARK or 0x4000
+
+Chain KUBE-SVC-US4ITFTMXMOU3US2 (2 references)
+target                     prot opt source               destination
+KUBE-SEP-AHHOLAQDDJX3HTPO  all  --  0.0.0.0/0            0.0.0.0/0            statistic mode random probability 0.33333333349
+KUBE-SEP-SZF5QQDOLQINGNE2  all  --  0.0.0.0/0            0.0.0.0/0            statistic mode random probability 0.50000000000
+KUBE-SEP-IYZ6I5322MC53TDK  all  --  0.0.0.0/0            0.0.0.0/0
+
+Chain KUBE-SEP-AHHOLAQDDJX3HTPO (1 references)
+target          prot opt source               destination
+KUBE-MARK-MASQ  all  --  10.244.0.72          0.0.0.0/0
+DNAT            tcp  --  0.0.0.0/0            0.0.0.0/0            tcp to:10.244.0.72:9376
+
+Chain KUBE-SEP-SZF5QQDOLQINGNE2 (1 references)
+target          prot opt source               destination
+KUBE-MARK-MASQ  all  --  10.244.0.73          0.0.0.0/0
+DNAT            tcp  --  0.0.0.0/0            0.0.0.0/0            tcp to:10.244.0.73:9376
+
+Chain KUBE-SEP-IYZ6I5322MC53TDK (1 references)
+target          prot opt source               destination
+KUBE-MARK-MASQ  all  --  10.244.0.74          0.0.0.0/0
+DNAT            tcp  --  0.0.0.0/0            0.0.0.0/0            tcp to:10.244.0.74:9376
+```
+
+因此，实际的IP数据包流向为 `PREROUTING -> KUBE-SERVICES -> KUBE-NODEPORTS -> KUBE-SVC-US4ITFTMXMOU3US2 -> KUBE-SEP-xxxx`
+
+如下图所示，集群外部可以访问任意个Node节点的30080端口达到访问业务Service的目的。
+
+![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/Kubernetes-NodePort-Service.png?raw=true)
 
 ## ③ LoadBalancer
+LoadBalancer 适用于公有云上的 Kubernetes 服务，可以参考 [华为云Kubernetes LoadBalancer Service](https://support.huaweicloud.com/usermanual-cce/cce_01_0014.html)、[阿里云Kubernetes LoadBalancer Service](https://help.aliyun.com/document_detail/86531.html)
+
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: loadbalance-hostnames
+  namespace: kube-system
+  labels:
+    app: hostnames
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 121.36.85.100     //共有云/私有云 LB IP地址
+  ports:
+  - name: http
+    port: 9376
+    targetPort: 9376
+    protocol: TCP
+  selector:
+    app: hostnames
+```
+
+![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/Kubernetes-Loadbalance-Service.png?raw=true)
 
 ## ④ ExternalName
+ExternalName 主要是给 Servie 配置一个 DNS Cname，用的不多这里就不再详细介绍，可以参考 [service externalname](https://kubernetes.io/docs/concepts/services-networking/service/#externalname)
 
 # 五. Service实现
 Service 实现由 kube-proxy 组件负责的，每个 kubernetes 节点都运行了一个 kube-proxy 组件，kube-proxy 组件目前支持3种模式 `userspace`、`iptables`、`ipvs`，可以参考 [kube-proxy --proxy-mode ProxyMode](https://kubernetes.io/docs/reference/command-line-tools-reference/kube-proxy/)。所谓 Service，其实就是 Kubernetes 为 Pod 分配的、固定的、基于 iptables（或者 IPVS）的访问入口。而这些访问入口代理的 Pod 信息，则来自于 Etcd，由 kube-proxy 通过控制循环来维护。
