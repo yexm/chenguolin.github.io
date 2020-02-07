@@ -274,7 +274,31 @@ kube-proxy 通过 iptables 处理 Service 的过程，需要在`每台宿主机`
 
 `因此，在大规模集群里，强烈建议 kube-proxy 使用 ipvs 这个模式（通过kube-proxy --proxy-mode参数进行设置），它为 Kubernetes 集群规模带来的提升，还是非常巨大的。`
 
-# 五. Service访问
+# 五. Service类型
+Kubernetes 支持4种 Service 的访问方式 `ClusterIP`、`NodePort`、`LoadBalancer` 和 `ExternalName`
+
+## ① ClusterIP
+默认情况下 Service type 为 ClusterIP，在集群内我们可以通过直接访问 ClusterIP和端口 访问业务 Service。
+   
+```
+$ kubectl get service -n kube-system
+NAME        TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                  AGE
+hostnames   ClusterIP   10.96.250.206   <none>        9376/TCP                 5d4h
+   
+$ curl "http://10.96.250.206:9376"
+hostnames-85cd66c585-ch4zk
+```
+
+因此，在`容器外`我们可以使用 ClusterIP 来访问 Service。
+
+## ② NodePort
+
+## ③ LoadBalancer
+
+## ④ ExternalName
+
+
+# 六. 集群内访问Service
 Kubernetes 支持3种 Service 的访问方式 `ClusterIP`、`环境变量` 和 `DNS`，但是我们推荐使用 DNS 的方式。
 
 ## ① ClusterIP
@@ -324,7 +348,7 @@ HOSTNAMES_SERVICE_HOST=10.96.250.206
 
 因此，在`容器内`我们可以使用 DNS 域名 来访问 Service。
 
-# 六. 总结
+# 七. 总结
 在理解了 Kubernetes Service 机制的工作原理之后，很多与 Service 相关的问题，其实都可以通过分析 Service 在宿主机上对应的 iptables 规则得到解决。
 参考 [debug-service](https://kubernetes.io/docs/tasks/debug-application-cluster/debug-service/)，可以用以下步骤来排查 Service 相关问题。
 
