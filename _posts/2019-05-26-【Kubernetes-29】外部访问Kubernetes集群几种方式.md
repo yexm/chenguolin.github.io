@@ -200,7 +200,10 @@ DNAT            tcp  --  0.0.0.0/0            0.0.0.0/0            tcp to:10.244
 
 因此，实际的IP数据包流向为 `PREROUTING -> KUBE-SERVICES -> KUBE-NODEPORTS -> KUBE-SVC-US4ITFTMXMOU3US2 -> KUBE-SEP-xxxx`
 
+如下图所示，集群外部可以访问任意个Node节点的30080端口达到访问业务Service的目的。
 
+![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/kubernetes-service-nodeport-1.png?raw=true)
+![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/kubernetes-service-nodeport-2.png?raw=true)
 
 ## ② LoadBalancer
 LoadBalancer 适用于公有云上的 Kubernetes 服务，可以参考 [华为云Kubernetes LoadBalancer Service](https://support.huaweicloud.com/usermanual-cce/cce_01_0014.html)、[阿里云Kubernetes LoadBalancer Service](https://help.aliyun.com/document_detail/86531.html)
@@ -224,6 +227,8 @@ spec:
   selector:
     app: hostnames
 ```
+
+
 
 ## ③ Ingress
 上面提到的2种方案实际上在生产环境用的不多，作为用户，其实更希望看到 Kubernetes 为我们内置一个全局的负载均衡器。然后通过我访问的 URL，把请求转发给不同的后端 Service。`这种全局的、为了代理不同后端 Service 而设置的负载均衡服务，就是 Kubernetes 里的 Ingress 服务。所谓 Ingress，就是 Service 的 Service`。由于Ingress比较复杂，具体可以参考 [kubernetes ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/)。
