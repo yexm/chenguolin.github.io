@@ -208,7 +208,7 @@ Flannel 项目是 CoreOS 公司主推的容器网络方案，Flannel 项目本�
 ## ② Calico
 Calico 创建和管理一个扁平的三层网络（不需要overlay），每个容器会分配一个可路由的IP。由于通信时不需要解包和封包，网络性能损耗小，易于排查，且易于水平扩展。小规模部署时可以通过BGP client直接互联，大规模下可通过指定的BGP Route Reflector来完成，这样保证所有的数据流量都是通过IP路由的方式完成互联的。Calico基于iptables还提供了丰富而灵活的网络Policy，保证通过各个节点上的ACL来提供Workload的多租户隔离、安全组以及其他可达性限制等功能。详细可以参考  [Kubernetes calico](https://docs.projectcalico.org/v2.0/getting-started/kubernetes/)
 
-关于 Calico 的实现可以参考下图，主要由3个部分组成
+Calico 主要由3个部分组成，Kubernetes 使用 Calico 可以参考文章 [kubernetes-networking-with-calico](https://www.tigera.io/blog/kubernetes-networking-with-calico/)
 
 1. Calico 的 CNI 插件，这是 Calico 与 Kubernetes 对接的部分
 2. Felix 它是一个 DaemonSet，负责在宿主机上插入路由规则，以及维护 Calico 所需的网络设备等工作
