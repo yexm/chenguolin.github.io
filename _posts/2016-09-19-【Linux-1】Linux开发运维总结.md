@@ -199,6 +199,11 @@ tags:         #标签
    + POST请求: `$ curl -H 'Content-Type:application/json' -H "Cookie:xxxx" -d '{....}' "http://xxx/..."`
 7. 网卡相关
    + 查看网卡bond配置: `$ sudo cat /proc/net/bonding/bond0`   [Linux双网卡绑定bond详解](https://blog.51cto.com/lixin15/1769338)
+8. 其它命令
+   + [arp](https://www.computerhope.com/unix/route.htm) 命令用于查看ARP请求缓存信息
+   + [ifconfig](https://www.computerhope.com/unix/uifconfi.htm) 命令用于查看当前网络设备信息
+   + [ip](https://www.computerhope.com/unix/ip.htm) 命令用于查看路由表、设备等信息（最全的一个命令）
+   + [netstat](https://www.computerhope.com/unix/unetstat.htm) 命令用于查看连接、路由表、网卡等信息
    
 # 十四. 文件
 1. 查看两个文件间的差别: `$diff file1 file2`
