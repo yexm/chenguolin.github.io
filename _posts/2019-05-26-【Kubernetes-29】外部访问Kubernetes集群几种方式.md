@@ -116,7 +116,7 @@ spec:
 # 二. 访问业务Service
 之前我们在 [kubernetes之service](https://chenguolin.github.io/2019/04/01/Kubernetes-21-Kubernetes%E4%B9%8BService/) 文章学习了 Kubernetes Service 对象，了解了 Service 的基本原理、类型、实现机制等等。
 
-通过 [Service 实现](https://chenguolin.github.io/2019/04/01/Kubernetes-21-Kubernetes%E4%B9%8BService/#%E5%9B%9B-service%E5%AE%9E%E7%8E%B0) 我们知道 `所谓 Service 的访问入口，其实就是每台宿主机上由 kube-proxy 生成的 iptables 规则，以及 dns组件 生成的 DNS 域名，一旦离开了这个集群，这些信息就无效了。`，因此，如果要在集群外访问业务 Service 有以下几种方案。
+通过 [Service 实现](https://chenguolin.github.io/2019/04/01/Kubernetes-21-Kubernetes%E4%B9%8BService/#%E5%9B%9B-service%E5%AE%9E%E7%8E%B0) 我们知道 `所谓 Service 的访问入口，其实就是每台宿主机上由 kube-proxy 生成的 iptables 规则，以及 dns组件 生成的 DNS 域名，一旦离开了这个集群，这些信息就无效了。`，因此，如果要在集群外访问业务 Service 有以下几种方案，生产环境用的最多的是 Ingress 方案。
 
 ## ② NodePort 
 NodePort的方式指的是 `每个节点通过kube-proxy和指定端口代理业务Service`，通过 `nodeIp:port` 就可以直接访问 Service。
