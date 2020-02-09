@@ -8,6 +8,6 @@ tags:          #标签
 
 # 一. 概述
 
-# 二. Authentication(认证)
+# 二. Authentication(鉴权)
 
 # 三. Authorization(授权)
