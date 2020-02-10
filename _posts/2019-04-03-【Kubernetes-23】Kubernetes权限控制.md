@@ -145,33 +145,34 @@ Role 和 RoleBingding 是 Kubernetes 的 API 对象，Role 是一组对 Kubernet
 
 ### User
 1. 先定义Role对象（只能作用于 default namespace，允许用户对 default namespace pod 进行 GET、WATCH 和 LIST 操作）
-   ```
-   apiVersion: rbac.authorization.k8s.io/v1
-   kind: Role
-   metadata:
-     namespace: default                 #允许作用namespace
-     name: pod-reader                   #Role对象名称
-   rules:
-   - apiGroups: [""] #                  #空表示核心API对象
-     resources: ["pods"]                #允许访问API对象
-     verbs: ["get", "watch", "list"]    #允许操作列表，全集为 "get", "list", "watch", "create", "update", "patch", "delete"
-   ```
+```
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: default                 #允许作用namespace
+  name: pod-reader                   #Role对象名称
+rules:
+- apiGroups: [""] #                  #空表示核心API对象
+  resources: ["pods"]                #允许访问API对象
+  verbs: ["get", "watch", "list"]    #允许操作列表，全集为 "get", "list", "watch", "create", "update", "patch", "delete"
+```
+   
 2. 定义一个RoleBinding对象（把Role绑定在jane用户上）
-   ```
-   apiVersion: rbac.authorization.k8s.io/v1
-   kind: RoleBinding
-   metadata:
-     name: read-pods                   #RoleBinding对象名称
-     namespace: default                #允许作用namespace
-   subjects:                           #subjects定义要授予的用户或对象
-   - kind: User                        #类型，支持User、Group 和 ServiceAccount，用的最多的是ServiceAccount
-     name: jane
-     apiGroup: rbac.authorization.k8s.io
-   roleRef:                            #roleRef指向具体的Role对象
-     kind: Role                         
-     name: pod-reader 
-     apiGroup: rbac.authorization.k8s.io
-   ```
+```
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: read-pods                   #RoleBinding对象名称
+  namespace: default                #允许作用namespace
+subjects:                           #subjects定义要授予的用户或对象
+- kind: User                        #类型，支持User、Group 和 ServiceAccount，用的最多的是ServiceAccount
+  name: jane
+  apiGroup: rbac.authorization.k8s.io
+roleRef:                            #roleRef指向具体的Role对象
+  kind: Role                         
+  name: pod-reader 
+  apiGroup: rbac.authorization.k8s.io
+```
 3. 通过RoleBinding对象，我们就可以把 pod-reader Role 定义的权限绑定给用户 jane，这样 jane 就可以对 default namespace pod 进行 GET、WATCH 和 LIST 操作。
 4. Role 和 RoleBinding 对象它们对权限的限制规则仅在它们自己的 Namespace 内有效，roleRef 也只能引用当前 Namespace 里的 Role 对象。
 
@@ -179,68 +180,68 @@ Role 和 RoleBingding 是 Kubernetes 的 API 对象，Role 是一组对 Kubernet
 之前我们提到 User 其实用的不多，用的最多的是 ServiceAccount，ServiceAccount 可以简单的理解为 `Kubernetes内置用户` 类型。下面，我们看下如何为一个 ServiceAccount 授权。
 
 1. 先创建一个 ServiceAccount
-   ```
-   apiVersion: v1
-   kind: ServiceAccount
-   metadata: 
-     namespace: default
-     name: cgl-sa
-   ```
+```
+apiVersion: v1
+kind: ServiceAccount
+metadata: 
+  namespace: default
+  name: cgl-sa
+```
 2. 定义Role对象（只能作用于 default namespace，允许用户对 default namespace pod 进行 GET、WATCH 和 LIST 操作）
-   ```
-   apiVersion: rbac.authorization.k8s.io/v1
-   kind: Role
-   metadata:
-     namespace: default                 #允许作用namespace
-     name: pod-reader                   #Role对象名称
-   rules:
-   - apiGroups: [""] #                  #空表示核心API对象
-     resources: ["pods"]                #允许访问API对象
-     verbs: ["get", "watch", "list"]    #允许操作列表，全集为 "get", "list", "watch", "create", "update", "patch", "delete"
-   ```
+```
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: default                 #允许作用namespace
+  name: pod-reader                   #Role对象名称
+rules:
+- apiGroups: [""] #                  #空表示核心API对象
+  resources: ["pods"]                #允许访问API对象
+  verbs: ["get", "watch", "list"]    #允许操作列表，全集为 "get", "list", "watch", "create", "update", "patch", "delete"
+```
 3. 定义一个RoleBinding对象（把 Role 绑定在 cgl-sa 这个 ServiceAccount 上）
-   ```
-   apiVersion: rbac.authorization.k8s.io/v1
-   kind: RoleBinding
-   metadata:
-     name: read-pods                   #RoleBinding对象名称
-     namespace: default                #允许作用namespace
-   subjects:                           #subjects定义要授予的用户或对象
-   - kind: ServiceAccount              #ServiceAccount类型
-     name: cgl-sa
-     apiGroup: rbac.authorization.k8s.io
-   roleRef:                            #roleRef指向具体的Role对象
-     kind: Role                         
-     name: pod-reader 
-     apiGroup: rbac.authorization.k8s.io
-   ```
+```
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: read-pods                   #RoleBinding对象名称
+  namespace: default                #允许作用namespace
+subjects:                           #subjects定义要授予的用户或对象
+- kind: ServiceAccount              #ServiceAccount类型
+  name: cgl-sa
+  apiGroup: rbac.authorization.k8s.io
+roleRef:                            #roleRef指向具体的Role对象
+  kind: Role                         
+  name: pod-reader 
+  apiGroup: rbac.authorization.k8s.io
+```
 4. 查看cgl-sa ServiceAccount
-   ```
-   $ kubectl describe sa cgl-sa
-   Name:                cgl-sa
-   Namespace:           default
-   Labels:              <none>
-   Annotations:         kubectl.kubernetes.io/last-applied-configuration:
-                       {"apiVersion":"v1","kind":"ServiceAccount","metadata":{"annotations":{},"name":"cgl- sa","namespace":"default"}}
-   Image pull secrets:  <none>
-   Mountable secrets:   cgl-sa-token-f8ppj
-   Tokens:              cgl-sa-token-f8ppj
-   Events:              <none>
-   ```
+```
+$ kubectl describe sa cgl-sa
+Name:                cgl-sa
+Namespace:           default
+Labels:              <none>
+Annotations:         kubectl.kubernetes.io/last-applied-configuration:
+                    {"apiVersion":"v1","kind":"ServiceAccount","metadata":{"annotations":{},"name":"cgl- sa","namespace":"default"}}
+Image pull secrets:  <none>
+Mountable secrets:   cgl-sa-token-f8ppj
+Tokens:              cgl-sa-token-f8ppj
+Events:              <none>
+```
 5. 根据鉴权模块提到每个 ServiceAccount 都会关联一个 Secret，每个Secret都会有 token，使用这个token我们就可以访问 APIServer。下面我们测试一下 cgl-sa 这个ServiceAccount的权限（default namespace pod 进行 GET、WATCH 和 LIST 操作）
-   ```
-   $ token=$(kubectl describe secret cgl-sa-token-f8ppj | grep 'token:' | cut -f2 -d':' | tr -d " ")
-   $ curl $APISERVER/api/v1/namespaces/default/pods/ --header "Authorization: Bearer $token" --insecure
-   {
-     "kind": "PodList",
-     "apiVersion": "v1",
-     "metadata": {
-       "selfLink": "/api/v1/namespaces/kube-system/pods",
-       "resourceVersion": "1111035"
-     },
-     ...
-   }
-   ```
+```
+$ token=$(kubectl describe secret cgl-sa-token-f8ppj | grep 'token:' | cut -f2 -d':' | tr -d " ")
+$ curl $APISERVER/api/v1/namespaces/default/pods/ --header "Authorization: Bearer $token" --insecure
+{
+  "kind": "PodList",
+  "apiVersion": "v1",
+  "metadata": {
+    "selfLink": "/api/v1/namespaces/kube-system/pods",
+    "resourceVersion": "1111035"
+  },
+  ...
+}
+```
 
 ServiceAccount 用的最多的场景是在用户 Pod 内，通过在用户的 Pod 声明使用某个 ServiceAccount 从而达到访问某个 API 对象的目的，例如下面这个 Pod 配置使用 cgl-sa 这个 ServiceAccount。如果 Pod 没有声明 serviceAccountName，Kubernetes 会自动在它的 Namespace 下创建一个名叫 default 的默认 ServiceAccount，然后分配给这个 Pod。这个默认 ServiceAccount 并没有关联任何 Role，此时它有访问 APIServer 的绝大多数权限（权限很大）。
 
