@@ -86,7 +86,7 @@ $ curl $APISERVER/api --cacert $CACRT --cert $CLIENTCRT --key $CLIENTKEY
 ## ② token
 token鉴权 是我们比较熟悉的一种方式，在[cookies和token鉴权区别](https://chenguolin.github.io/2017/07/29/HTTP-API-4-Cookies%E5%92%8CToken%E9%89%B4%E6%9D%83%E5%8C%BA%E5%88%AB/)中我们仔细对比了这两种鉴权方式的区别。同时提到基于token鉴权方式是无状态的，所以基于JSON Web Tokens 已经成为事实标准。
 
-Kubernetes token 跟 ServiceAccount 有关系，每个 ServiceAccount 都会关联一个 Secret，每个 Secret 内包含有 token 内容。Kubernetes default namespace 默认有一个 ServiceAccount 为 default，这个 ServiceAccount 有访问 APIServer 的绝大多数权限（权限很大）。
+Kubernetes token 跟 ServiceAccount 有关系，每个 ServiceAccount 都会关联一个 Secret，Secret 内正是 token 内容。这个 Secret 就是ServiceAccount 用来跟 APIServer 进行交互的授权文件，token 内容一般是证书或者密码，它以一个 Secret 对象的方式保存在 Etcd 当中。Kubernetes default namespace 默认有一个 ServiceAccount 为 default，这个 ServiceAccount 有访问 APIServer 的绝大多数权限（权限很大）。
 
 我们可以来验证一下，查看一下 default ServiceAccount 所关联 Secret 的 token
 
@@ -116,7 +116,7 @@ token: ZXlKaGJHY2lPaU...
 
 ```
 $ token=$(kubectl describe secret default-token-htw52 | grep 'token:' | cut -f2 -d':' | tr -d " ")
-$ curl $APISERVER/api --header "Authorization: Bearer $token" --insecure
+$ curl $APISERVER/api --header "Authorization: Bearer $token" --cacert /etc/kubernetes/ca.crt
 {
   "kind": "APIVersions",
   "versions": [
@@ -229,13 +229,14 @@ Role 和 RoleBingding 是 Kubernetes 的 API 对象，Role 是一组对 Kubernet
    Events:              <none>
    ```
  
-5. 根据鉴权模块提到每个 ServiceAccount 都会关联一个 Secret，每个Secret都会有 token，使用这个token我们就可以访问 APIServer。下面我们测试一下 cgl-sa 这个ServiceAccount的权限。
+5. 根据鉴权模块提到每个 ServiceAccount 都会关联一个 Secret，每个Secret都会有 token，使用这个token我们就可以访问 APIServer。下面我们测试一下 cgl-sa 这个ServiceAccount的权限（default namespace pod 进行 GET、WATCH 和 LIST 操作）
    ```
    $ token=$(kubectl describe secret cgl-sa-token-f8ppj | grep 'token:' | cut -f2 -d':' | tr -d " ")
    $ curl $APISERVER/api/v1/namespaces/default/pods/ --header "Authorization: Bearer $token" --insecure
    
    ```
 
+注意: 如果
 
 ## ② clusterrole 和 clusterrolebinding
 
