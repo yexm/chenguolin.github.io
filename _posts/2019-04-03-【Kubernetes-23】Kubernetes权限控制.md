@@ -33,8 +33,8 @@ client certificates 指的是客户端证书用于标识Client或者User，CA �
 apiVersion: v1
 clusters:
 - cluster:
-    certificate-authority: /etc/kubernetes/ca.crt         //CA证书，CA指的是颁发数字证书的机构
-    server: https://kubernetes.docker.internal:6443       //APIServer
+    certificate-authority: /etc/kubernetes/ca.crt         #CA证书，CA指的是颁发数字证书的机构
+    server: https://kubernetes.docker.internal:6443       #APIServer
   name: kubernetes
 contexts:
 - context:
@@ -47,8 +47,8 @@ preferences: {}
 users:
 - name: kubernetes-admin
   user:
-    client-certificate: /etc/kubernetes/client.crt       //客户端证书
-    client-key: /etc/kubernetes/client.key               //客户端私钥
+    client-certificate: /etc/kubernetes/client.crt       #客户端证书
+    client-key: /etc/kubernetes/client.key               #客户端私钥
 ```
 
 有了ca.crt、client.crt、client.key 后我们就可以向 APIServer 发起请求，kubectl 默认情况下会根据 kubeconfig 配置文件的内容在请求 APIServer 的时候进行签名。除此之外，我们也可以使用 curl 自己请求 APIServer，例如下面这个例子。
@@ -149,25 +149,25 @@ Role 和 RoleBingding 是 Kubernetes 的 API 对象，Role 是一组对 Kubernet
    apiVersion: rbac.authorization.k8s.io/v1
    kind: Role
    metadata:
-     namespace: default                 //允许作用namespace
-     name: pod-reader                   //Role对象名称
+     namespace: default                 #允许作用namespace
+     name: pod-reader                   #Role对象名称
    rules:
-   - apiGroups: [""] #                  //空表示核心API对象
-     resources: ["pods"]                //允许访问API对象
-     verbs: ["get", "watch", "list"]    //允许操作列表，全集为 "get", "list", "watch", "create", "update", "patch", "delete"
+   - apiGroups: [""] #                  #空表示核心API对象
+     resources: ["pods"]                #允许访问API对象
+     verbs: ["get", "watch", "list"]    #允许操作列表，全集为 "get", "list", "watch", "create", "update", "patch", "delete"
    ```
 2. 定义一个RoleBinding对象（把Role绑定在jane用户上）
    ```
    apiVersion: rbac.authorization.k8s.io/v1
    kind: RoleBinding
    metadata:
-     name: read-pods                   //RoleBinding对象名称
-     namespace: default                //允许作用namespace
-   subjects:                           //subjects定义要授予的用户或对象
-   - kind: User                        //类型，支持User、Group 和 ServiceAccount，用的最多的是ServiceAccount
+     name: read-pods                   #RoleBinding对象名称
+     namespace: default                #允许作用namespace
+   subjects:                           #subjects定义要授予的用户或对象
+   - kind: User                        #类型，支持User、Group 和 ServiceAccount，用的最多的是ServiceAccount
      name: jane
      apiGroup: rbac.authorization.k8s.io
-   roleRef:                            //roleRef指向具体的Role对象
+   roleRef:                            #roleRef指向具体的Role对象
      kind: Role                         
      name: pod-reader 
      apiGroup: rbac.authorization.k8s.io
@@ -191,25 +191,25 @@ Role 和 RoleBingding 是 Kubernetes 的 API 对象，Role 是一组对 Kubernet
    apiVersion: rbac.authorization.k8s.io/v1
    kind: Role
    metadata:
-     namespace: default                 //允许作用namespace
-     name: pod-reader                   //Role对象名称
+     namespace: default                 #允许作用namespace
+     name: pod-reader                   #Role对象名称
    rules:
-   - apiGroups: [""] #                  //空表示核心API对象
-     resources: ["pods"]                //允许访问API对象
-     verbs: ["get", "watch", "list"]    //允许操作列表，全集为 "get", "list", "watch", "create", "update", "patch", "delete"
+   - apiGroups: [""] #                  #空表示核心API对象
+     resources: ["pods"]                #允许访问API对象
+     verbs: ["get", "watch", "list"]    #允许操作列表，全集为 "get", "list", "watch", "create", "update", "patch", "delete"
    ```
 3. 定义一个RoleBinding对象（把 Role 绑定在 cgl-sa 这个 ServiceAccount 上）
    ```
    apiVersion: rbac.authorization.k8s.io/v1
    kind: RoleBinding
    metadata:
-     name: read-pods                   //RoleBinding对象名称
-     namespace: default                //允许作用namespace
-   subjects:                           //subjects定义要授予的用户或对象
-   - kind: ServiceAccount              //ServiceAccount类型
+     name: read-pods                   #RoleBinding对象名称
+     namespace: default                #允许作用namespace
+   subjects:                           #subjects定义要授予的用户或对象
+   - kind: ServiceAccount              #ServiceAccount类型
      name: cgl-sa
      apiGroup: rbac.authorization.k8s.io
-   roleRef:                            //roleRef指向具体的Role对象
+   roleRef:                            #roleRef指向具体的Role对象
      kind: Role                         
      name: pod-reader 
      apiGroup: rbac.authorization.k8s.io
