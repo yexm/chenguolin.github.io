@@ -7,7 +7,7 @@ tags:          #标签
 ---
 
 # 一. 访问ApiServer
-Apiserver 做为 Kubernetes master 的核心组件之一起着非常重要的作用，因此如何访问 apiserver 就变得非常的重要，我们分为2部分来介绍一下如何访问 apiserver。
+Apiserver 做为 Kubernetes master 的核心组件之一起着非常重要的作用，因此如何访问 apiserver 就变得非常的重要，我们分为2部分来介绍一下如何访问 apiserver。关于 Kubernetes 的权限控制可以参考文章 [kubernetes权限控制](https://chenguolin.github.io/2019/04/03/Kubernetes-23-Kubernetes%E6%9D%83%E9%99%90%E6%8E%A7%E5%88%B6/)
 
 ## ① 容器外
 容器外指的是 `我们并不是在 Pod 内容器访问 apiserver`，比如我们在集群的节点上通过console访问，或者在其它集群通过HTTP协议进行访问的方式。容器外访问 apiserver 主要有以下几种方式，这些使用方式主要用在运维排查场景。
@@ -30,11 +30,42 @@ Apiserver 做为 Kubernetes master 的核心组件之一起着非常重要的作
    
 3. 直接访问  
    ```
-   APISERVER=$(kubectl config view --minify | grep server | cut -f 2- -d ":" | tr -d " ")
-   SECRET_NAME=$(kubectl get secrets | grep ^default | cut -f1 -d ' ')
-   TOKEN=$(kubectl describe secret $SECRET_NAME | grep -E '^token' | cut -f2 -d':' | tr -d " ")
+   1). 使用证书鉴权方式
+   $ APISERVER=$(kubectl config view --minify | grep server | cut -f 2- -d ":" | tr -d " ")
+   $ CACRT=$(kubectl config view --minify | grep certificate-authority | cut -f 2- -d ":" | tr -d " ")
+   $ CLIENTCRT=$(kubectl config view --minify | grep client-certificate | cut -f 2- -d ":" | tr -d " ")
+   $ CLIENTKEY=$(kubectl config view --minify | grep client-key | cut -f 2- -d ":" | tr -d " ")
+   $ curl $APISERVER/api --cacert $CACRT --cert $CLIENTCRT --key $CLIENTKEY
+   {
+     "kind": "APIVersions",
+     "versions": [
+       "v1"
+     ],
+     "serverAddressByClientCIDRs": [
+       {
+         "clientCIDR": "0.0.0.0/0",
+         "serverAddress": "192.168.65.3:6443"
+       }
+     ]
+   }
 
-   curl $APISERVER/api --header "Authorization: Bearer $TOKEN" --insecure
+   2). 使用token鉴权方式
+   $ APISERVER=$(kubectl config view --minify | grep server | cut -f 2- -d ":" | tr -d " ")
+   $ SECRET_NAME=$(kubectl get secrets | grep ^default | cut -f1 -d ' ')
+   $ TOKEN=$(kubectl describe secret $SECRET_NAME | grep -E '^token' | cut -f2 -d':' | tr -d " ")
+   $ curl $APISERVER/api --header "Authorization: Bearer $token" --insecure
+   {
+     "kind": "APIVersions",
+     "versions": [
+       "v1"
+     ],
+     "serverAddressByClientCIDRs": [
+       {
+         "clientCIDR": "0.0.0.0/0",
+         "serverAddress": "192.168.65.3:6443"
+       }
+     ]
+   }
    ```
 
 ## ② 容器内
@@ -111,7 +142,9 @@ spec:
       secretName: default-token-n4slb
 ```
 
-默认情况下，Kubernetes 会给每个 Pod 加上 `default` 这个 ServiceAccount，默认情况下 default 具有 admin 的权限。我们也可以创建自定义的 ServiceAccount，绑定相关的Role来控制访问 apiserver 的权限。
+当这个 Pod 运行起来之后，我们就可以看到该 ServiceAccount 的 Secret 对象被 Kubernetes 自动挂载到了容器的 /var/run/secrets/kubernetes.io/serviceaccount 目录下，这个目录包含 ca.crt、namespace 和 token 3个文件。容器里的应用，就可以使用这个 ca.crt 来访问 APIServer 了。
+
+如果 Pod 没有声明 serviceAccountName，Kubernetes 会自动在它的 Namespace 下创建一个名叫 default 的默认 ServiceAccount，然后分配给这个 Pod。这个默认 ServiceAccount 并没有关联任何 Role，此时它有访问 APIServer 的绝大多数权限（权限很大）。
 
 # 二. 访问业务Service
 之前我们在 [kubernetes之service](https://chenguolin.github.io/2019/04/01/Kubernetes-21-Kubernetes%E4%B9%8BService/) 文章学习了 Kubernetes Service 对象，了解了 Service 的基本原理、类型、实现机制等等。
