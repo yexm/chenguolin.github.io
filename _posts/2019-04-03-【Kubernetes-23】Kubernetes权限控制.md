@@ -143,6 +143,7 @@ Role 和 RoleBingding 是 Kubernetes 的 API 对象，Role 是一组对 Kubernet
 
 下面，我们来看一个例子通过Role 和 RoleBinding，如何对一个用户进行授权
 
+### User
 1. 先定义Role对象（这个 Role 对象名称为 pod-reader，只能作用于 default namespace，允许用户对 default namespace pod 进行 GET、WATCH 和 LIST 操作）
    ```
    apiVersion: rbac.authorization.k8s.io/v1
@@ -176,6 +177,7 @@ Role 和 RoleBingding 是 Kubernetes 的 API 对象，Role 是一组对 Kubernet
 3. 通过RoleBinding对象，我们就可以把 pod-reader Role 定义的权限绑定给用户 jane，这样 jane 就可以对 default namespace pod 进行 GET、WATCH 和 LIST 操作。
 4. Role 和 RoleBinding 对象它们对权限的限制规则仅在它们自己的 Namespace 内有效，roleRef 也只能引用当前 Namespace 里的 Role 对象。
 
+### ServiceAccount
 之前我们提到 User 其实用的不多，用的最多的是 ServiceAccount，ServiceAccount 可以简单的理解为 `Kubernetes内置用户` 类型。下面，我们看下如何为一个 ServiceAccount 授权。
 
 1. 先创建一个 ServiceAccount
@@ -261,6 +263,27 @@ spec:
 
 当这个 Pod 运行起来之后，我们就可以看到该 ServiceAccount 的 Secret 对象被 Kubernetes 自动挂载到了容器的 `/var/run/secrets/kubernetes.io/serviceaccount` 目录下，这个目录包含 `ca.crt`、`namespace` 和 `token` 3个文件。容器里的应用，就可以使用这个 ca.crt 来访问 APIServer 了。
 
+### Group
+前面我们提到 RoleBinding 指定对象可以是 User、Group 和 ServiceAccount，现在我们来看一下 Group。Group 指的是用户组，实际上，一个 ServiceAccount 在 Kubernetes 中对应的是 `system:serviceaccount:{namespace}:{serviceaccount-name}`。所以某个 Namespace 下对应的内置用户组的名字是 `system:serviceaccount:{namespace}`，通过在 RoleBinding 配置用户组可以把 Role 绑定给某个 Namespace 下所有 ServiceAccount。
+
+举个例子，如果我们想配置 default 下所有 ServiceAccount 绑定某个Role
+   
+```
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: all-sa-in-default
+  namespace: default
+subjects:
+- kind: Group
+  name: system:serviceaccounts:mynamespace 
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: {role name}
+  apiGroup: rbac.authorization.k8s.io
+```
+
 除了用户自定义的 Role 之外，Kubernetes 内置了很多为系统保留的 Role 和 RoleBinding，默认 `system:` 开头，我们可以通过 `kubectl get role -n kube-system` 和 `kubectl get rolebinding -n kube-system` 进行查看。
 
 ## ② clusterrole 和 clusterrolebinding
@@ -268,9 +291,9 @@ spec:
 
 上面我们说到如果 Pod 没有声明 serviceAccountName，Kubernetes 会自动在它的 Namespace 下创建一个名叫 default 的默认 ServiceAccount，然后分配给这个 Pod。这个 default ServiceAccount 默认有很大的权限，生产环境上我们其实是不推荐这样做，我们期望能够给所有 Namespace 下的默认 ServiceAccount 绑定一个只读权限的 Role，这个时候就可以使用 ClusterRole 和 ClusterRoleBinding 来实现。
 
-Kubernetes 内置了很多为系统保留的 ClusterRole 和 ClusterRoleBinding，默认 `system:` 开头，我们可以通过 `kubectl get clusterrole -n kube-system` 和 `kubectl get cluterrolebinding -n kube-system` 进行查看。有几个内置的 ClusterRole 我们需要了解，`admin`、`cluster-admin`、`edit`、`view`，可以通过 `kubectl describe clusterrole` 命令查看详细的权限规则。通过名字我们能够知道 view 这个 ClusterRole 正是用来提供只读权限的，那我们可以通过以下 ClusterRoleBinding 来实现所有 Namespace 下的默认 ServiceAccount 绑定到 view。
+Kubernetes 内置了很多为系统保留的 ClusterRole 和 ClusterRoleBinding，默认 `system:` 开头，我们可以通过 `kubectl get clusterrole -n kube-system` 和 `kubectl get cluterrolebinding -n kube-system` 进行查看。有几个内置的 ClusterRole 我们需要了解，`admin`、`cluster-admin`、`edit`、`view`，可以通过 `kubectl describe clusterrole` 命令查看详细的权限规则，通过名字我们能够知道 view 这个 ClusterRole 正是用来提供只读权限的。
 
-之前
+根据上面我们提到的 Group 用户组的概念，那我们可以通过以下 ClusterRoleBinding 来实现所有 Namespace 下的默认 ServiceAccount 绑定到 view。
 
 ```
 apiVersion: rbac.authorization.k8s.io/v1
@@ -278,7 +301,7 @@ kind: ClusterRoleBinding
 metadata:
   name: all-default-sa-read-only
 subjects:
-- kind: ServiceAccount
+- kind: Group
   name: system.serviceaccount.default
 roleRef:
   kind: ClusterRole
