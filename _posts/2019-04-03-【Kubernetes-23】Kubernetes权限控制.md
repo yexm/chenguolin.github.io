@@ -134,7 +134,7 @@ $ curl $APISERVER/api --header "Authorization: Bearer $token" --cacert /etc/kube
 ```
 
 # 三. Authorization(授权)
-鉴权是为了校验请求是否合法，Authorization 授权则是为了授予某个用户、对象某些权限，通过授权进行权限控制。Kubernetes 支持多种授权模式，包括 `Node`、`ABAC` `RBAC` 和 `Webhook`，具体可以参考文档 [authorization mode](https://kubernetes.io/docs/reference/access-authn-authz/authorization/#review-your-request-attributes)。如果请求授权校验失败，则会返回 HTTP 403 状态码。
+鉴权是为了校验请求是否合法，Authorization 授权则是为了授予某个用户、对象某些权限，通过授权进行权限控制。Kubernetes 支持多种授权模式，包括 `Node`、`ABAC`、`RBAC` 和 `Webhook`，具体可以参考文档 [authorization mode](https://kubernetes.io/docs/reference/access-authn-authz/authorization/#review-your-request-attributes)。如果请求授权校验失败，则会返回 HTTP 403 状态码。
 
 在 Kubernetes 项目中，使用的授权（Authorization）模式是 [RBAC](https://kubernetes.io/docs/reference/access-authn-authz/rbac/)，通过 kube-apiserver 进程参数 `--authorization-mode=RBAC` 进行配置。关于 RBAC 的细节，我们分为以下2部分来介绍。
 
