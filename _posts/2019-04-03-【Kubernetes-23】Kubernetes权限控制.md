@@ -84,7 +84,9 @@ $ curl $APISERVER/api --cacert $CACRT --cert $CLIENTCRT --key $CLIENTKEY
 ```
 
 ## ② token
+token鉴权 是我们比较熟悉的一种方式，在[cookies和token鉴权区别](https://chenguolin.github.io/2017/07/29/HTTP-API-4-Cookies%E5%92%8CToken%E9%89%B4%E6%9D%83%E5%8C%BA%E5%88%AB/)中我们仔细对比了这两种鉴权方式的区别。同时提到基于token鉴权方式是无状态的，所以基于JSON Web Tokens 已经成为事实标准。
 
+Kubernetes token 跟 ServiceAccount 有关系，
 
 # 三. Authorization(授权)
 ## ① role和rolebinding
