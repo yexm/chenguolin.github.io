@@ -23,6 +23,31 @@ APIServer 是一个提供 HTTP 接口的服务，为了安全性考虑任何一�
 Kubernetes APIServer 则使用 `client certificates` 和 `token` 2种方式进行请求鉴权，`client certificates` 是用的最多的方式。
 
 ## ① client certificates
+client certificates 指的是客户端证书，CA 机构会遵守 X.509 规范来签发客户端证书，证书用于请求 APIServer 时鉴权使用，关于证书相关的内容可以参考 [Client authenticated_TLS_handshake](https://en.wikipedia.org/wiki/Transport_Layer_Security#Client-authenticated_TLS_handshake)
+
+我们知道 kubeconfig 文件默认是以证书的方式来访问 APIServer的，例如下面这个文件内容
+
+```
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority: /etc/kubernetes/ca.crt
+    server: https://kubernetes.docker.internal:6443
+  name: kubernetes
+contexts:
+- context:
+    cluster: kubernetes
+    user: kubernetes-admin
+  name: kubernetes-admin@kubernetes
+current-context: kubernetes-admin@kubernetes
+kind: Config
+preferences: {}
+users:
+- name: kubernetes-admin
+  user:
+    client-certificate: /etc/kubernetes/client.crt
+    client-key: /etc/kubernetes/client.key
+```
 
 ## ② token
 
