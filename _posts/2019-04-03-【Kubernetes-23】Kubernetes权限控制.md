@@ -259,7 +259,7 @@ spec:
 当这个 Pod 运行起来之后，我们就可以看到该 ServiceAccount 的 Secret 对象被 Kubernetes 自动挂载到了容器的 `/var/run/secrets/kubernetes.io/serviceaccount` 目录下，这个目录包含 `ca.crt`、`namespace` 和 `token` 3个文件。容器里的应用，就可以使用这个 ca.crt 来访问 APIServer 了。
 
 ### Group
-前面我们提到 RoleBinding 指定对象可以是 User、Group 和 ServiceAccount，现在我们来看一下 Group。Group 指的是用户组，实际上，一个 ServiceAccount 在 Kubernetes 中对应的是 `system:serviceaccount:{namespace}:{serviceaccount-name}`。所以某个 Namespace 下对应的内置用户组的名字是 `system:serviceaccount:{namespace}`，通过在 RoleBinding 配置用户组可以把 Role 绑定给某个 Namespace 下所有 ServiceAccount。
+前面我们提到 RoleBinding 指定对象可以是 User、Group 和 ServiceAccount，现在我们来看一下 Group。Group 指的是用户组，实际上，一个 ServiceAccount 名称在 Kubernetes 中对应的是 `system:serviceaccount:{namespace}:{serviceaccount-name}`。所以某个 Namespace 下对应的内置用户组的名称为 `system:serviceaccount:{namespace}`，通过在 RoleBinding 配置用户组可以把 Role 绑定给某个 Namespace 下所有 ServiceAccount。
 
 举个例子，如果我们想配置 default 下所有 ServiceAccount 绑定某个Role
    
