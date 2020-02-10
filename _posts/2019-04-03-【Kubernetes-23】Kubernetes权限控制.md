@@ -18,9 +18,9 @@ tags:          #标签
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/Kubernetes-access-pipeline.png?raw=true)
 
 # 二. Authentication(鉴权)
-APIServer 是一个提供 HTTP 接口的服务，为了安全性考虑任何一个请求到来时都需要经过鉴权。所谓鉴权指的是验证请求合法性，确认请求来自合法的客户端。之前我们在 [HTTP API接口安全性设计](https://chenguolin.github.io/2017/07/26/HTTP-API-2-HTTP-API%E6%8E%A5%E5%8F%A3%E5%AE%89%E5%85%A8%E6%80%A7%E8%AE%BE%E8%AE%A1/)提到过为了保证接口安全我们有2种方式 `对称密钥签名` 和`私钥签名公钥验签`，这是最常见的接口鉴权方式。
+APIServer 是一个提供 HTTP 接口的服务，为了安全性考虑任何一个请求到来时都需要经过鉴权。所谓鉴权指的是验证请求合法性，确认请求来自合法的客户端。之前我们在 [HTTP API接口安全性设计](https://chenguolin.github.io/2017/07/26/HTTP-API-2-HTTP-API%E6%8E%A5%E5%8F%A3%E5%AE%89%E5%85%A8%E6%80%A7%E8%AE%BE%E8%AE%A1/)提到过为了保证接口安全我们可以使用 `对称密钥签名` 或 `私钥签名公钥验签`，同时在[cookies和token鉴权区别](https://chenguolin.github.io/2017/07/29/HTTP-API-4-Cookies%E5%92%8CToken%E9%89%B4%E6%9D%83%E5%8C%BA%E5%88%AB/)中我们提到 Token鉴权 是目前用的最多的鉴权方式。
 
-Kubernetes APIServer 则使用 `client certificates` 和 `token` 2种方式进行请求鉴权，`client certificates` 是用的最多的方式。
+Kubernetes APIServer 使用 `client certificates` 和 `token` 2种方式对请求进行鉴权，默认使用 `client certificates` 方式。
 
 ## ① client certificates
 client certificates 指的是客户端证书用于标识Client或者User，CA 机构会遵守 X.509 规范来签发客户端证书，证书用于请求 APIServer 时鉴权使用，关于证书相关的内容可以参考 [Client authenticated_TLS_handshake](https://en.wikipedia.org/wiki/Transport_Layer_Security#Client-authenticated_TLS_handshake)
@@ -49,7 +49,7 @@ users:
     client-key: /etc/kubernetes/client.key               //客户端私钥
 ```
 
-有了ca.crt、client.crt、client.key 后我们就可以向 APIServer 发起请求，kubectl 默认情况下会根据 kubeconfig 配置文件的内容再请求 APIServer 的时候进行签名。除此，之外我们也可以使用 curl 自己请求 APIServer，例如下面这个例子。
+有了ca.crt、client.crt、client.key 后我们就可以向 APIServer 发起请求，kubectl 默认情况下会根据 kubeconfig 配置文件的内容在请求 APIServer 的时候进行签名。除此之外，我们也可以使用 curl 自己请求 APIServer，例如下面这个例子。
 
 ```
 $ APISERVER=$(kubectl config view --minify | grep server | cut -f 2- -d ":" | tr -d " ")
