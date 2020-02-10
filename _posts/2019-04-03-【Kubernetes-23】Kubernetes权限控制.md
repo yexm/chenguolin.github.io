@@ -115,7 +115,7 @@ token: ZXlKaGJHY2lPaU...
 拿到 token 之后，我们就可以通过 token 请求 APIServer，通过 token APIServer 就可以完成请求鉴权。
 
 ```
-$ token=$(kubectl describe secret $SECRET_NAME | grep 'token:' | cut -f2 -d':' | tr -d " ")
+$ token=$(kubectl describe secret default-token-htw52 | grep 'token:' | cut -f2 -d':' | tr -d " ")
 $ curl $APISERVER/api --header "Authorization: Bearer $token" --insecure
 {
   "kind": "APIVersions",
@@ -134,11 +134,111 @@ $ curl $APISERVER/api --header "Authorization: Bearer $token" --insecure
 # 三. Authorization(授权)
 鉴权是为了校验请求是否合法，Authorization 授权则是为了授予某个用户、对象某些权限，通过授权进行权限控制。Kubernetes 支持多种授权模式，包括 `Node`、`ABAC` `RBAC` 和 `Webhook`，具体可以参考文档 [authorization mode](https://kubernetes.io/docs/reference/access-authn-authz/authorization/#review-your-request-attributes)。如果请求授权校验失败，则会返回 HTTP 403 状态码。
 
-在 Kubernetes 项目中，负责完成授权（Authorization）工作的机制使用 RBAC
+在 Kubernetes 项目中，使用的授权（Authorization）模式是 [RBAC](https://kubernetes.io/docs/reference/access-authn-authz/rbac/)，通过 kube-apiserver 进程参数 `--authorization-mode=RBAC` 进行配置。关于 RBAC 的细节，我们分为以下2部分来介绍。
 
 ## ① role和rolebinding
+Role 和 RoleBingding 是 Kubernetes 的 API 对象，Role 是一组对 Kubernetes API 对象的操作权限规则，RoleBingding 用于把 Role 绑定在指定对象上。指定对象可以是 User、Group 和 ServiceAccount，用的最多的是 ServiceAccount。但是 Kubernetes 中，其实并没有一个叫作 User 的 API 对象，实际上 Kubernetes 里的 User，只是一个授权系统里的逻辑概念（比如kubeconfig内的User），大部分情况下，我们只要使用 ServiceAccount 就足够了。
+
+下面，我们来看一个例子通过Role 和 RoleBinding，如何对一个用户进行授权
+
+1. 先定义Role对象（这个 Role 对象名称为 pod-reader，只能作用于 default namespace，允许用户对 default namespace pod 进行 GET、WATCH 和 LIST 操作）
+   ```
+   apiVersion: rbac.authorization.k8s.io/v1
+   kind: Role
+   metadata:
+     namespace: default                 //允许作用namespace
+     name: pod-reader                   //Role对象名称
+   rules:
+   - apiGroups: [""] #                  //空表示核心API对象
+     resources: ["pods"]                //允许访问API对象
+     verbs: ["get", "watch", "list"]    //允许操作列表，全集为 "get", "list", "watch", "create", "update", "patch", "delete"
+   ```
+   
+2. 定义一个RoleBinding对象（把Role绑定在jane用户上）
+   ```
+   apiVersion: rbac.authorization.k8s.io/v1
+   kind: RoleBinding
+   metadata:
+     name: read-pods                   //RoleBinding对象名称
+     namespace: default                //允许作用namespace
+   subjects:                           //subjects定义要授予的用户或对象
+   - kind: User                        //类型，支持User、Group 和 ServiceAccount，用的最多的是ServiceAccount
+     name: jane
+     apiGroup: rbac.authorization.k8s.io
+   roleRef:                            //roleRef指向具体的Role对象
+     kind: Role                         
+     name: pod-reader 
+     apiGroup: rbac.authorization.k8s.io
+   ```
+
+3. 通过RoleBinding对象，我们就可以把 pod-reader Role 定义的权限绑定给用户 jane，这样 jane 就可以对 default namespace pod 进行 GET、WATCH 和 LIST 操作。
+4. Role 和 RoleBinding 对象它们对权限的限制规则仅在它们自己的 Namespace 内有效，roleRef 也只能引用当前 Namespace 里的 Role 对象。
+
+之前我们提到 User 其实用的不多，用的最多的是 ServiceAccount，ServiceAccount 可以简单的理解为 `Kubernetes内置用户` 类型。下面，我们看下如何为一个 ServiceAccount 授权。
+
+1. 先创建一个 ServiceAccount
+   ```
+   apiVersion: v1
+   kind: ServiceAccount
+   metadata: 
+     namespace: default
+     name: cgl-sa
+   ```
+
+2. 定义Role对象（这个 Role 对象名称为 pod-reader，只能作用于 default namespace，允许用户对 default namespace pod 进行 GET、WATCH 和 LIST 操作）
+   ```
+   apiVersion: rbac.authorization.k8s.io/v1
+   kind: Role
+   metadata:
+     namespace: default                 //允许作用namespace
+     name: pod-reader                   //Role对象名称
+   rules:
+   - apiGroups: [""] #                  //空表示核心API对象
+     resources: ["pods"]                //允许访问API对象
+     verbs: ["get", "watch", "list"]    //允许操作列表，全集为 "get", "list", "watch", "create", "update", "patch", "delete"
+   ```
+   
+3. 定义一个RoleBinding对象（把 Role 绑定在 cgl-sa 这个 ServiceAccount 上）
+   ```
+   apiVersion: rbac.authorization.k8s.io/v1
+   kind: RoleBinding
+   metadata:
+     name: read-pods                   //RoleBinding对象名称
+     namespace: default                //允许作用namespace
+   subjects:                           //subjects定义要授予的用户或对象
+   - kind: ServiceAccount              //ServiceAccount类型
+     name: cgl-sa
+     apiGroup: rbac.authorization.k8s.io
+   roleRef:                            //roleRef指向具体的Role对象
+     kind: Role                         
+     name: pod-reader 
+     apiGroup: rbac.authorization.k8s.io
+   ```
+
+4. 查看cgl-sa ServiceAccount
+   ```
+   $ kubectl describe sa cgl-sa
+   Name:                cgl-sa
+   Namespace:           default
+   Labels:              <none>
+   Annotations:         kubectl.kubernetes.io/last-applied-configuration:
+                       {"apiVersion":"v1","kind":"ServiceAccount","metadata":{"annotations":{},"name":"cgl- sa","namespace":"default"}}
+   Image pull secrets:  <none>
+   Mountable secrets:   cgl-sa-token-f8ppj
+   Tokens:              cgl-sa-token-f8ppj
+   Events:              <none>
+   ```
+ 
+5. 根据鉴权模块提到每个 ServiceAccount 都会关联一个 Secret，每个Secret都会有 token，使用这个token我们就可以访问 APIServer。下面我们测试一下 cgl-sa 这个ServiceAccount的权限。
+   ```
+   $ token=$(kubectl describe secret cgl-sa-token-f8ppj | grep 'token:' | cut -f2 -d':' | tr -d " ")
+   $ curl $APISERVER/api/v1/namespaces/default/pods/ --header "Authorization: Bearer $token" --insecure
+   
+   ```
+
 
 ## ② clusterrole 和 clusterrolebinding
+
 
 # 四. 举例
 
