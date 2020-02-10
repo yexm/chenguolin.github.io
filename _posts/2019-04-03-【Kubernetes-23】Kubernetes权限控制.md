@@ -23,7 +23,7 @@ APIServer 是一个提供 HTTP 接口的服务，为了安全性考虑任何一�
 Kubernetes APIServer 则使用 `client certificates` 和 `token` 2种方式进行请求鉴权，`client certificates` 是用的最多的方式。
 
 ## ① client certificates
-client certificates 指的是客户端证书，CA 机构会遵守 X.509 规范来签发客户端证书，证书用于请求 APIServer 时鉴权使用，关于证书相关的内容可以参考 [Client authenticated_TLS_handshake](https://en.wikipedia.org/wiki/Transport_Layer_Security#Client-authenticated_TLS_handshake)
+client certificates 指的是客户端证书用于标识Client或者User，CA 机构会遵守 X.509 规范来签发客户端证书，证书用于请求 APIServer 时鉴权使用，关于证书相关的内容可以参考 [Client authenticated_TLS_handshake](https://en.wikipedia.org/wiki/Transport_Layer_Security#Client-authenticated_TLS_handshake)
 
 我们知道 kubeconfig 文件默认是以证书的方式来访问 APIServer的，例如下面这个文件内容
 
@@ -31,8 +31,8 @@ client certificates 指的是客户端证书，CA 机构会遵守 X.509 规范�
 apiVersion: v1
 clusters:
 - cluster:
-    certificate-authority: /etc/kubernetes/ca.crt
-    server: https://kubernetes.docker.internal:6443
+    certificate-authority: /etc/kubernetes/ca.crt         //CA证书，CA指的是颁发数字证书的机构
+    server: https://kubernetes.docker.internal:6443       //APIServer
   name: kubernetes
 contexts:
 - context:
@@ -45,8 +45,42 @@ preferences: {}
 users:
 - name: kubernetes-admin
   user:
-    client-certificate: /etc/kubernetes/client.crt
-    client-key: /etc/kubernetes/client.key
+    client-certificate: /etc/kubernetes/client.crt       //客户端证书
+    client-key: /etc/kubernetes/client.key               //客户端私钥
+```
+
+有了ca.crt、client.crt、client.key 后我们就可以向 APIServer 发起请求，kubectl 默认情况下会根据 kubeconfig 配置文件的内容再请求 APIServer 的时候进行签名。除此，之外我们也可以使用 curl 自己请求 APIServer，例如下面这个例子。
+
+```
+$ APISERVER=$(kubectl config view --minify | grep server | cut -f 2- -d ":" | tr -d " ")
+$ echo $APISERVER
+https://kubernetes.docker.internal:6443
+
+$ CACRT=$(kubectl config view --minify | grep certificate-authority | cut -f 2- -d ":" | tr -d " ")
+$ echo CACRT
+/etc/kubernetes/ca.crt
+
+$ CLIENTCRT=$(kubectl config view --minify | grep client-certificate | cut -f 2- -d ":" | tr -d " ")
+$ echo CLIENTCRT
+/etc/kubernetes/client.crt
+
+$ CLIENTKEY=$(kubectl config view --minify | grep client-key | cut -f 2- -d ":" | tr -d " ")
+$ echo CLIENTKEY
+/etc/kubernetes/client.key
+
+$ curl $APISERVER/api --cacert $CACRT --cert $CLIENTCRT --key $CLIENTKEY
+{
+  "kind": "APIVersions",
+  "versions": [
+    "v1"
+  ],
+  "serverAddressByClientCIDRs": [
+    {
+      "clientCIDR": "0.0.0.0/0",
+      "serverAddress": "192.168.65.3:6443"
+    }
+  ]
+}
 ```
 
 ## ② token
