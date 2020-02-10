@@ -284,7 +284,7 @@ roleRef:
 ## ② clusterrole 和 clusterrolebinding
 对于非 Namespaced 对象比如Node，或者说某一个 Role 想要作用于所有的 Namespace 的时候 Role 和 RoleBinding 就无能为力了。这个时候我们可以使用 ClusterRole 和 ClusterRoleBinding，这2个 API 对象的用法和 Role 和 RoleBinding 一致，只不过不需要配置 Namespace 字段。
 
-上面我们说到如果 Pod 没有声明 serviceAccountName，Kubernetes 会自动在它的 Namespace 下创建一个名叫 default 的默认 ServiceAccount，然后分配给这个 Pod。Kubernetes 内置了很多为系统保留的 ClusterRole 和 ClusterRoleBinding，默认 `system:` 开头，我们可以通过 `kubectl get clusterrole -n kube-system` 和 `kubectl get cluterrolebinding -n kube-system` 进行查看。有几个内置的 ClusterRole 我们需要了解，`admin`、`cluster-admin`、`edit`、`view`，可以通过 `kubectl describe clusterrole` 命令查看详细的权限规则，通过名字我们能够知道 view 这个 ClusterRole 正是用来提供只读权限的。
+Kubernetes 内置了很多为系统保留的 ClusterRole 和 ClusterRoleBinding，默认 `system:` 开头，我们可以通过 `kubectl get clusterrole -n kube-system` 和 `kubectl get cluterrolebinding -n kube-system` 进行查看。有几个内置的 ClusterRole 我们需要了解，`admin`、`cluster-admin`、`edit`、`view`，可以通过 `kubectl describe clusterrole` 命令查看详细的权限规则，通过名字我们能够知道 view 这个 ClusterRole 正是用来提供只读权限的。
 
 举个例子，例如我们希望把 view ClusterRole 绑定给某个 ServiceAccount，那 ClusterRoleBinding 配置如下
 
