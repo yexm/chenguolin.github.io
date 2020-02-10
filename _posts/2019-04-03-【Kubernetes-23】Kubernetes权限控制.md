@@ -86,7 +86,50 @@ $ curl $APISERVER/api --cacert $CACRT --cert $CLIENTCRT --key $CLIENTKEY
 ## ② token
 token鉴权 是我们比较熟悉的一种方式，在[cookies和token鉴权区别](https://chenguolin.github.io/2017/07/29/HTTP-API-4-Cookies%E5%92%8CToken%E9%89%B4%E6%9D%83%E5%8C%BA%E5%88%AB/)中我们仔细对比了这两种鉴权方式的区别。同时提到基于token鉴权方式是无状态的，所以基于JSON Web Tokens 已经成为事实标准。
 
-Kubernetes token 跟 ServiceAccount 有关系，
+Kubernetes token 跟 ServiceAccount 有关系，每个 ServiceAccount 都会关联一个 Secret，每个 Secret 内包含有 token 内容。Kubernetes default namespace 默认有一个 ServiceAccount 为 default，这个 ServiceAccount 有访问 APIServer 的绝大多数权限（权限很大）。
+
+我们可以来验证一下，查看一下 default ServiceAccount 所关联 Secret 的 token
+
+```
+$ kubectl get sa
+NAME      SECRETS   AGE
+default   1         34d
+
+$ kubectl get sa default -o yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  creationTimestamp: "2020-01-07T02:00:23Z"
+  name: default
+  namespace: default
+  resourceVersion: "343"
+  selfLink: /api/v1/namespaces/default/serviceaccounts/default
+  uid: 7734964f-30f1-11ea-b94b-025000000001
+secrets:
+- name: default-token-htw52
+
+$ kubectl get secret default-token-htw52 -o yaml | grep 'token:'
+token: ZXlKaGJHY2lPaU...
+```
+
+拿到 token 之后，我们就可以通过 token 请求 APIServer，通过 token APIServer 就可以完成请求鉴权。
+
+```
+$ token=$(kubectl describe secret $SECRET_NAME | grep 'token:' | cut -f2 -d':' | tr -d " ")
+$ curl $APISERVER/api --header "Authorization: Bearer $token" --insecure
+{
+  "kind": "APIVersions",
+  "versions": [
+    "v1"
+  ],
+  "serverAddressByClientCIDRs": [
+    {
+      "clientCIDR": "0.0.0.0/0",
+      "serverAddress": "192.168.65.3:6443"
+    }
+  ]
+}
+```
 
 # 三. Authorization(授权)
 ## ① role和rolebinding
