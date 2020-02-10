@@ -100,53 +100,42 @@ tags:          #标签
    `$ kubectl get all --all-namespaces -o name | awk -F '/' '{print $2}' | awk '{if (length($1) > 40) print}'`
 
 ## ② 常用问题排查步骤
-1. 查看Pod状态以及运行的节点  
-   `$ kubectl get pods -n kube-system -o wide`
-2. 查看Pod事件  
-   `$ kubectl describe pod {pod_name} -n kube-system` 或 `$ kubectl get event -n kube-system --field-selector involvedObject.name=my-pod-zl6m6`
-3. 查看Events  
-   `$ kubectl get events -n kube-system` 
-4. 查看Node状态  
-   `$ kubectl get nodes`  
-   `$ kubectl describe node {node_name}`
-5. 查看kubelet日志  
-   `$ journalctl -l -u kubelet   (Kubelet通常以 systemd 管理)`
-6. 查看dockerd日志  
-   `$ grep dockerd /var/log/messages`
-7. 查看containerd日志  
-   `$ grep containerd /var/log/messages`
-8. 查看containerd-shim日志  
-   `$ grep containerd-shim /var/log/messages`
-9. 查看docker-runc日志  
-   `$ grep docker-runc /var/log/messages`
-10. 查看kube-apiserver日志
-   `$ journalctl -l -u kube-apiserver`
-11. 查看kube-controller-manager日志
-   `$ journalctl -l -u kube-controller-manager`
-12. 查看kube-scheduler日志
-   `$ journalctl -l -u kube-scheduler`
-13. 查看etcd日志
-   `$ journalctl -l -u etcd`
+1. 查看Pod状态以及运行的节点: `$ kubectl get pods -n kube-system -o wide`
+2. 查看Pod事件: `$ kubectl describe pod {pod_name} -n kube-system` 或 `$ kubectl get event -n kube-system --field-selector involvedObject.name=my-pod-zl6m6`
+3. 查看Events: `$ kubectl get events -n kube-system` 
+4. 查看Node状态: `$ kubectl get nodes` 或 `$ kubectl describe node {node_name}`
+5. 查看kubelet日志: `$ journalctl -l -u kubelet   (Kubelet通常以 systemd 管理)`
+6. 查看dockerd日志: `$ grep dockerd /var/log/messages`
+7. 查看containerd日志: `$ grep containerd /var/log/messages`
+8. 查看containerd-shim日志: `$ grep containerd-shim /var/log/messages`
+9. 查看docker-runc日志: `$ grep docker-runc /var/log/messages`
+10. 查看kube-apiserver日志: `$ journalctl -l -u kube-apiserver`
+11. 查看kube-controller-manager日志: `$ journalctl -l -u kube-controller-manager`
+12. 查看kube-scheduler日志: `$ journalctl -l -u kube-scheduler`
+13. 查看etcd日志: `$ journalctl -l -u etcd`
 
 ## ③ 相关目录
 1. Linux容器使用device mapper做为storage driver
-    * rootfs(镜像)挂载点文件: `/var/lib/docker/image/devicemapper/layerdb/mounts/{container_id}/mount-id`
-    * rootfs挂载点目录: `/var/lib/docker/devicemapper/mnt/{mount_id}/rootfs`
-    * 容器输出stdout/stderr日志目录: `/var/log/containers`
-    * 容器cgroup配置目录: `/sys/fs/cgroup/{resource}/docker/{container_id}`
-    * 容器配置文件目录: `/var/lib/docker/containers/{container_id}/config.v2.json`
-    * docker containerd目录: `/run/docker/containerd/{container_id}`
-    * docker runc状态目录: `/run/docker/runtime-runc/moby/{container_id}/state.json`
-    * docker runtime目录: `/run/docker/containerd/daemon/io.containerd.runtime.v1.linux/moby/{container_id}`
-    * emptyDir Volume在Node上目录: `/var/lib/kubelet/pods/{pod_id}/volumes/kubernetes.io~empty-dir/`
+   ```
+   1). rootfs(镜像)挂载点文件: /var/lib/docker/image/devicemapper/layerdb/mounts/{container_id}/mount-id
+   2). rootfs挂载点目录: /var/lib/docker/devicemapper/mnt/{mount_id}/rootfs
+   3). 容器输出stdout/stderr日志目录: /var/log/containers
+   4). 容器cgroup配置目录: /sys/fs/cgroup/{resource}/docker/{container_id}
+   5). 容器配置文件目录: /var/lib/docker/containers/{container_id}/config.v2.json
+   6). docker containerd目录: /run/docker/containerd/{container_id}
+   7). docker runc状态目录: /run/docker/runtime-runc/moby/{container_id}/state.json
+   8). docker runtime目录: /run/docker/containerd/daemon/io.containerd.runtime.v1.linux/moby/{container_id}
+   9). emptyDir Volume在Node上目录: /var/lib/kubelet/pods/{pod_id}/volumes/kubernetes.io~empty-dir/
+   ```
 2. Linux容器使用overlay2做为storage driver
-    * rootfs(镜像)挂载点文件: `/var/lib/docker/image/overlay2/layerdb/mounts/{container_id}/mount-id`
-    * rootfs挂载点目录: `/var/lib/docker/overlay2/{mount_id}/merged`
-    * 容器输出stdout/stderr日志目录: `/var/log/containers`
-    * 容器cgroup配置目录: `/sys/fs/cgroup/{resource}/podruntime/docker/kubepods/{container_id}`
-    * 容器配置文件目录: `/var/lib/docker/containers/{container_id}/config.v2.json`
-    * docker containerd目录: `/run/desktop/docker/containerd/{container_id}`
-    * docker runc状态目录: `/run/desktop/docker/runtime-runc/moby/{container_id}/state.json`
-    * docker runtime目录: `/run/desktop/docker/containerd/daemon/io.containerd.runtime.v1.linux/moby/{container_id}`
-    * emptyDir Volume在Node上目录: `/var/lib/kubelet/pods/{pod_id}/volumes/kubernetes.io~empty-dir/`
-
+   ```
+   1). rootfs(镜像)挂载点文件: /var/lib/docker/image/overlay2/layerdb/mounts/{container_id}/mount-id
+   2). rootfs挂载点目录: /var/lib/docker/overlay2/{mount_id}/merged
+   3). 容器输出stdout/stderr日志目录: /var/log/containers
+   4). 容器cgroup配置目录: /sys/fs/cgroup/{resource}/podruntime/docker/kubepods/{container_id}
+   5). 容器配置文件目录: /var/lib/docker/containers/{container_id}/config.v2.json
+   6). docker containerd目录: /run/desktop/docker/containerd/{container_id}
+   7). docker runc状态目录: /run/desktop/docker/runtime-runc/moby/{container_id}/state.json
+   8). docker runtime目录: /run/desktop/docker/containerd/daemon/io.containerd.runtime.v1.linux/moby/{container_id}
+   9). emptyDir Volume在Node上目录: /var/lib/kubelet/pods/{pod_id}/volumes/kubernetes.io~empty-dir/
+   ```
