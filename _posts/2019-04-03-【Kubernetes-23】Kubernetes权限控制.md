@@ -286,7 +286,7 @@ roleRef:
 
 Kubernetes 内置了很多为系统保留的 ClusterRole 和 ClusterRoleBinding，默认 `system:` 开头，我们可以通过 `kubectl get clusterrole -n kube-system` 和 `kubectl get cluterrolebinding -n kube-system` 进行查看。有几个内置的 ClusterRole 我们需要了解，`admin`、`cluster-admin`、`edit`、`view`，可以通过 `kubectl describe clusterrole` 命令查看详细的权限规则，通过名字我们能够知道 view 这个 ClusterRole 正是用来提供只读权限的。
 
-举个例子，例如我们希望把 view ClusterRole 绑定给某个 ServiceAccount，那 ClusterRoleBinding 配置如下
+例如我们希望把 view ClusterRole 绑定给某个 ServiceAccount，那 ClusterRoleBinding 配置样例如下。这个例子，cgl Namespace 下的 cgl-ca ServiceAccount 可以读取整个集群所有API对象，因为它绑定了 view ClusterRole。
 
 ```
 apiVersion: rbac.authorization.k8s.io/v1
