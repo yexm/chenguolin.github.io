@@ -7,7 +7,7 @@ tags:          #标签
 ---
 
 # 一. 概述
-我们知道 Kubernetes 中所有的 API 对象都保存在 Etcd 里，对这些 API 对象的操作一定都是通过访问 kube-apiserver 实现的。我们知道任何的中间层都是为了解耦，APIServer 也不例外，因为我们需要 APIServer 来帮助我们做鉴权、授权的工作。我们知道任何一个系统安全性都非常重要，Kubernetes 也不例外，所以任何操作 API 对象的请求都是通过 APIServer 而非直接操作 Etcd。
+我们知道 Kubernetes 中所有的 API 对象都保存在 Etcd 里，对这些 API 对象的操作一定都是通过访问 kube-apiserver 实现的。任何的中间层都是为了解耦，APIServer 也不例外，因为我们需要 APIServer 来帮助我们做鉴权、授权的工作。任何一个系统安全性都非常重要，Kubernetes 也不例外，所以任何操作 API 对象的请求都是通过 APIServer 而非直接操作 Etcd。
 
 访问 APIServer 有以下几种方式
 1. 容器外: kubectl、kubectl proxy 和 REST HTTP 请求
@@ -18,7 +18,19 @@ tags:          #标签
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/Kubernetes-access-pipeline.png?raw=true)
 
 # 二. Authentication(鉴权)
-APIServer 是一个提供 HTTP 接口的服务，我们在 
+APIServer 是一个提供 HTTP 接口的服务，为了安全性考虑任何一个请求到来时都需要经过鉴权。所谓鉴权指的是验证请求合法性，确认请求来自合法的客户端。之前我们在 [HTTP API接口安全性设计](https://chenguolin.github.io/2017/07/26/HTTP-API-2-HTTP-API%E6%8E%A5%E5%8F%A3%E5%AE%89%E5%85%A8%E6%80%A7%E8%AE%BE%E8%AE%A1/)提到过为了保证接口安全我们有2种方式 `对称密钥签名` 和`私钥签名公钥验签`，这是最常见的接口鉴权方式。
+
+Kubernetes APIServer 则使用 `client certificates` 和 `token` 2种方式进行请求鉴权，`client certificates` 是用的最多的方式。
+
+## ① client certificates
+
+## ② token
 
 
 # 三. Authorization(授权)
+## ① role和rolebinding
+
+## ② clusterrole 和 clusterrolebinding
+
+# 四. 举例
+
