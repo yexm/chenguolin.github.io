@@ -17,6 +17,8 @@ tags:          #标签
 
 ![](https://github.com/chenguolin/chenguolin.github.io/blob/master/data/image/Kubernetes-access-pipeline.png?raw=true)
 
+`注意: 只有通过 HTTPS 访问 APIServer 的时候才需要鉴权和授权，HTTP 访问不需要。因为，正常来说 HTTPS 是外部请求需要考虑安全性，而 HTTP 是内部请求安全性上可以保证所以无需鉴权和授权。`
+
 # 二. Authentication(鉴权)
 APIServer 是一个提供 HTTP 接口的服务，为了安全性考虑任何一个请求到来时都需要经过鉴权。所谓鉴权指的是验证请求合法性，确认请求来自合法的客户端。之前我们在 [HTTP API接口安全性设计](https://chenguolin.github.io/2017/07/26/HTTP-API-2-HTTP-API%E6%8E%A5%E5%8F%A3%E5%AE%89%E5%85%A8%E6%80%A7%E8%AE%BE%E8%AE%A1/)提到过为了保证接口安全我们可以使用 `对称密钥签名` 或 `私钥签名公钥验签`，同时在[cookies和token鉴权区别](https://chenguolin.github.io/2017/07/29/HTTP-API-4-Cookies%E5%92%8CToken%E9%89%B4%E6%9D%83%E5%8C%BA%E5%88%AB/)中我们提到 Token鉴权 是目前用的最多的鉴权方式。
 
