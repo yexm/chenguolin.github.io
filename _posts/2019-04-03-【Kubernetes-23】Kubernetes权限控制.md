@@ -141,7 +141,7 @@ $ curl $APISERVER/api --header "Authorization: Bearer $token" --cacert /etc/kube
 ## ① role和rolebinding
 Role 和 RoleBingding 是 Kubernetes 的 API 对象，Role 是一组对 Kubernetes API 对象的操作权限规则，RoleBingding 用于把 Role 绑定在指定对象上。指定对象可以是 User、Group 和 ServiceAccount，用的最多的是 ServiceAccount。但是 Kubernetes 中，其实并没有一个叫作 User 的 API 对象，实际上 Kubernetes 里的 User，只是一个授权系统里的逻辑概念（比如kubeconfig内的User），大部分情况下，我们只要使用 ServiceAccount 就足够了。
 
-下面，我们来看一个例子通过Role 和 RoleBinding，如何对一个用户进行授权
+下面，我们我们分别介绍一下如何把 Role 绑定给 User、ServiceAccount 和 Group
 
 ### User
 1. 先定义Role对象（只能作用于 default namespace，允许用户对 default namespace pod 进行 GET、WATCH 和 LIST 操作）
