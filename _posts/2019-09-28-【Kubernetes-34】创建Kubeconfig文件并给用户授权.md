@@ -18,74 +18,73 @@ Kubernetes 做为一个大的容器编排系统，安全是需要重点考虑的
 
 下面，我们就看一下如何使用 Client Certificates + User + ClusterRole/ClusterRoleBinding 如何创建一个 kubeconfig 文件，并为指定用户进行授权。
 
-1. 创建 Client Certificates （使用openssl，假设用户名为 cgl）
-   ```
-   $ openssl genrsa -out cgl.key 2048
-   $ openssl req -new -key cgl.key -out cgl.csr -subj "/CN=cgl/O=eng"\n
-   $ kubectl apply -f - <<EOF
-     apiVersion: certificates.k8s.io/v1beta1
-     kind: CertificateSigningRequest
-     metadata:
-       name: cgl-csr
-     spec:
-       groups:
-       - system:authenticated
-       request: `(cat cgl.csr | base64 | tr -d '\n')`
-       usages:
-       - digital signature
-       - key encipherment
-       - server auth
-       - client auth
-     EOF
-   $ kubectl certificate approve $user-csr
-   $ kubectl get csr cgl-csr -o jsonpath='{.status.certificate}' | base64 --decode > cgl.crt
-   ```
- 
+1.创建 Client Certificates （使用openssl，假设用户名为 cgl）
+```
+$ openssl genrsa -out cgl.key 2048
+$ openssl req -new -key cgl.key -out cgl.csr -subj "/CN=cgl/O=eng"\n
+$ kubectl apply -f - <<EOF
+  apiVersion: certificates.k8s.io/v1beta1
+  kind: CertificateSigningRequest
+  metadata:
+    name: cgl-csr
+  spec:
+    groups:
+    - system:authenticated
+    request: `(cat cgl.csr | base64 | tr -d '\n')`
+    usages:
+    - digital signature
+    - key encipherment
+    - server auth
+    - client auth
+  EOF
+$ kubectl certificate approve $user-csr
+$ kubectl get csr cgl-csr -o jsonpath='{.status.certificate}' | base64 --decode > cgl.crt
+```
 2. 证书的内容可以通过以下命令查看: `$ openssl x509 -text -noout -in certificate.crt`
 3. 配置kubeconfig
-   ```
-   $ kubectl config set-credentials cgl --client-certificate=cgl.crt --client-key=cgl.key
-   $ kubectl config set-context cgl-context --cluster={cluster-name} --user=cgl
-   $ kubectl config view
-   ```
+```
+$ kubectl config set-credentials cgl --client-certificate=cgl.crt --client-key=cgl.key
+$ kubectl config set-context cgl-context --cluster={cluster-name} --user=cgl
+$ kubectl config view
+```
 4. 授权，把ClusterRole view 授权给用户 cgl
-   ```shell
-   $ kubectl apply -f - <<EOF
-     kind: ClusterRoleBinding
-     apiVersion: rbac.authorization.k8s.io/v1
-     metadata:
-       name: read-only-2-cgl
-     subjects:
-     - kind: User
-       name: cgl
-       apiGroup: rbac.authorization.k8s.io
-     roleRef:
-       kind: ClusterRole
-       name: view
-       apiGroup: rbac.authorization.k8s.io
-     EOF
-   ```
+```
+$ kubectl apply -f - <<EOF
+  kind: ClusterRoleBinding
+  apiVersion: rbac.authorization.k8s.io/v1
+  metadata:
+    name: read-only-2-cgl
+  subjects:
+  - kind: User
+    name: cgl
+    apiGroup: rbac.authorization.k8s.io
+  roleRef:
+    kind: ClusterRole
+    name: view
+    apiGroup: rbac.authorization.k8s.io
+  EOF
+```
 5. 切换kubeconfig context
-   ```
-   $ kubectl config get-contexts
-   $ kubectl config use-context $user-context
-   ```
+```
+$ kubectl config get-contexts
+$ kubectl config use-context $user-context
+```
 6. 生成新的kubeconfig文件: `$ kubectl config view --minify > cgl-kubeconfig`
 7. kubectl使用新kubeconfig文件，测试权限（确认用户 cgl 是否只有只读权限）
-   ```
-   $ kubectl get pods -n kube-system --kubeconfig cgl-kubeconfig
-   NAME                                     READY   STATUS    RESTARTS   AGE
-   coredns-6dcc67dcbc-9zcb9                 1/1     Running   0          35d
-   coredns-6dcc67dcbc-mpsb7                 1/1     Running   0          77m
-   etcd-docker-desktop                      1/1     Running   0          35d
-   kube-apiserver-docker-desktop            1/1     Running   0          35d
-   kube-controller-manager-docker-desktop   1/1     Running   22         35d
-   kube-proxy-c2zfh                         1/1     Running   0          35d
-   kube-scheduler-docker-desktop            1/1     Running   27         35d
+```
+$ kubectl get pods -n kube-system --kubeconfig cgl-kubeconfig
+NAME                                     READY   STATUS    RESTARTS   AGE
+coredns-6dcc67dcbc-9zcb9                 1/1     Running   0          35d
+coredns-6dcc67dcbc-mpsb7                 1/1     Running   0          77m
+etcd-docker-desktop                      1/1     Running   0          35d
+kube-apiserver-docker-desktop            1/1     Running   0          35d
+kube-controller-manager-docker-desktop   1/1     Running   22         35d
+kube-proxy-c2zfh                         1/1     Running   0          35d
+kube-scheduler-docker-desktop            1/1     Running   27         35d
 
-   $ kubectl delete pod coredns-6dcc67dcbc-9zcb9 -n kube-system --kubeconfig cgl-kubeconfig
-   Error from server (Forbidden): pods "coredns-6dcc67dcbc-9zcb9" is forbidden: User "cgl" cannot delete resource "pods" in API group "" in the namespace "kube-system"
-   ```
+$ kubectl delete pod coredns-6dcc67dcbc-9zcb9 -n kube-system --kubeconfig cgl-kubeconfig
+Error from server (Forbidden): pods "coredns-6dcc67dcbc-9zcb9" is forbidden: User "cgl" cannot delete resource "pods" in API group "" in the namespace "kube-system"
+```
 
 类似的如果我们想要为其它用户设置其它权限可以参考这个例子，主要的区别是在授权这一步。Kubernetes内置了很多 ClusterRole 和 ClusterRoleBinding 可以直接使用，除此之外我们也可以自己编写 ClusterRole 设定权限规则，通过 ClusterRoleBinding 给某个用户或 ServiceAccount 授权总体而言还是比较灵活的。
 
