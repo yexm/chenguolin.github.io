@@ -88,3 +88,5 @@ Kubernetes 做为一个大的容器编排系统，安全是需要重点考虑的
    Error from server (Forbidden): pods "coredns-6dcc67dcbc-9zcb9" is forbidden: User "cgl" cannot delete resource "pods" in API group "" in the namespace "kube-system"
    ```
 
+类似的如果我们想要为其它用户设置其它权限可以参考这个例子，主要的区别是在授权这一步。Kubernetes内置了很多 ClusterRole 和 ClusterRoleBinding 可以直接使用，除此之外我们也可以自己编写 ClusterRole 设定权限规则，通过 ClusterRoleBinding 给某个用户或 ServiceAccount 授权总体而言还是比较灵活的。
+
