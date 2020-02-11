@@ -48,16 +48,16 @@ Kubernetes 做为一个大的容器编排系统，安全是需要重点考虑的
    $ kubectl config set-context cgl-context --cluster={cluster-name} --user=cgl
    $ kubectl config view
    ```
-4. 授权（把ClusterRole view 授权给用户 cgl，其它权限也类似，可以自己编写ClusterRole规则）
+4. 授权，把ClusterRole view 授权给用户 cgl
    ```
    $ kubectl apply -f - <<EOF
      kind: ClusterRoleBinding
      apiVersion: rbac.authorization.k8s.io/v1
      metadata:
-       name: read-only-2-$user
+       name: read-only-2-cgl
      subjects:
      - kind: User
-       name: $user
+       name: cgl
        apiGroup: rbac.authorization.k8s.io
      roleRef:
        kind: ClusterRole
