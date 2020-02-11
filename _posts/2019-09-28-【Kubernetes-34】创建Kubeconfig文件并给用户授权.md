@@ -40,14 +40,17 @@ $ kubectl apply -f - <<EOF
 $ kubectl certificate approve $user-csr
 $ kubectl get csr cgl-csr -o jsonpath='{.status.certificate}' | base64 --decode > cgl.crt
 ```
-2. 证书的内容可以通过以下命令查看: `$ openssl x509 -text -noout -in certificate.crt`
-3. 配置kubeconfig
+
+2.证书的内容可以通过以下命令查看: `$ openssl x509 -text -noout -in certificate.crt`
+
+3.配置kubeconfig
 ```
 $ kubectl config set-credentials cgl --client-certificate=cgl.crt --client-key=cgl.key
 $ kubectl config set-context cgl-context --cluster={cluster-name} --user=cgl
 $ kubectl config view
 ```
-4. 授权，把ClusterRole view 授权给用户 cgl
+
+4.授权，把ClusterRole view 授权给用户 cgl
 ```
 $ kubectl apply -f - <<EOF
   kind: ClusterRoleBinding
@@ -64,13 +67,15 @@ $ kubectl apply -f - <<EOF
     apiGroup: rbac.authorization.k8s.io
   EOF
 ```
-5. 切换kubeconfig context
+
+5.切换kubeconfig context
 ```
 $ kubectl config get-contexts
 $ kubectl config use-context $user-context
 ```
-6. 生成新的kubeconfig文件: `$ kubectl config view --minify > cgl-kubeconfig`
-7. kubectl使用新kubeconfig文件，测试权限（确认用户 cgl 是否只有只读权限）
+6.生成新的kubeconfig文件: `$ kubectl config view --minify > cgl-kubeconfig`
+
+7.kubectl使用新kubeconfig文件，测试权限（确认用户 cgl 是否只有只读权限）
 ```
 $ kubectl get pods -n kube-system --kubeconfig cgl-kubeconfig
 NAME                                     READY   STATUS    RESTARTS   AGE
