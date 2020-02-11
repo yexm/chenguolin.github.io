@@ -50,7 +50,6 @@ Kubernetes 做为一个大的容器编排系统，安全是需要重点考虑的
    ```
 4. 授权（把ClusterRole view 授权给用户 cgl，其它权限也类似，可以自己编写ClusterRole规则）
    ```
-   # authorization
    kubectl apply -f - <<EOF
    kind: ClusterRoleBinding
    apiVersion: rbac.authorization.k8s.io/v1
