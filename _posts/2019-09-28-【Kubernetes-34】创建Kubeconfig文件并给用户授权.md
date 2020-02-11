@@ -49,7 +49,7 @@ Kubernetes 做为一个大的容器编排系统，安全是需要重点考虑的
    $ kubectl config view
    ```
 4. 授权，把ClusterRole view 授权给用户 cgl
-   ```
+   ```shell
    $ kubectl apply -f - <<EOF
      kind: ClusterRoleBinding
      apiVersion: rbac.authorization.k8s.io/v1
