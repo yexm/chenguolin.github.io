@@ -178,7 +178,7 @@ Cgroups子资源系统实际上就是资源控制器，每种子资源系统控�
     * RT调度配置 (只限制实时任务的CPU)
         * cpu.rt_period_us: 每个周期总使用CPU时间
         * cpu.rt_runtime_us: 每个周期进程能够使用CPU时间
-    * 内存统计配置
+    * CPU统计配置
         * cpu.stat: CPU使用统计数据
             * nr_periods: 总共经历了几个CPU周期
             * nr_throttled: 进程被限制使用CPU的次数
