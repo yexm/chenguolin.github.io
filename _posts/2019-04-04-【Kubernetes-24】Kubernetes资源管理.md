@@ -129,7 +129,7 @@ $ cat /sys/fs/cgroup/memory/.../adcb91fdab07.../memory.limit_in_bytes
 总的来说，强烈建议每个容器都需要配置 requests.memory 和 limits.memory。根据实践经验是可以把 requests.memory 值设置的小一点保证能够成功调度到某个节点上，把 limits.memory 设置大一点保证在高峰时期应用还能够继续运行，否则应用容器很容易因为 OOM（Out-Of-Memory）被内核 Kill。
 
 ## ③ Extended resources
-
+除了 CPU 和 Memory 资源外，Kubernetes v1.8 之后加入了 [ephemeral-storage](https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#local-ephemeral-storage) 资源类型，但是到目前 Kubernetes v1.17 还未正式 GA。除此之外，还可以自定义资源类型，详情可以参考 [extended-resources](https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#extended-resources)。
 
 # 三. Quality of Service(QoS)
 
