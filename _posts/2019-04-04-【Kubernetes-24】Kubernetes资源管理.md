@@ -111,15 +111,25 @@ spec:
     command: ['sh', '-c', 'echo Hello Kubernetes! && sleep 3600']
 ```
 
-我们在 [docker容器技术](https://chenguolin.github.io/2019/03/13/Kubernetes-3-Docker%E5%AE%B9%E5%99%A8%E6%8A%80%E6%9C%AF/) 文章里面提到过容器的本质是一个特殊进程，这个进程由 Namespace 进行隔离，同时使用 Cgroups 进行资源限制。所以，Pod 容器配置的 requests.memory 和 limits.memory 实际上是在设置容器进程 Cgroups 的 memory 子资源限制配置。
+我们在 [docker容器技术](https://chenguolin.github.io/2019/03/13/Kubernetes-3-Docker%E5%AE%B9%E5%99%A8%E6%8A%80%E6%9C%AF/) 文章里面提到过容器的本质是一个特殊进程，这个进程由 Namespace 进行隔离，同时使用 Cgroups 进行资源限制。所以，Pod 容器配置的 requests.memory 和 limits.memory 实际上是在设置容器进程 Cgroups 的 memory 子资源限制配置。`limits.memory 字段实际设置的是 memory.limit_in_bytes 的值，表示进程能够使用的内存上限。`
 
-它的原理是。
+当上面这个 Pod 启动之后，我们来确认一下这2个容器的对应进程的 Cgroups 的 memory 资源限制配置情况，发现两个容器进程对应的 memory.limit_in_bytes  值一样，这也证实了 1Gi = 1073741824。
 
-limits.cpu: 字段设置的是 cpu.cfs_quota_us 的值，值计算公式为 **limits.cpu * cpu.cfs_period_us**，cpu.cfs_period_us 默认为100000。cpu.cfs_quota_us 值表示进程每个周期能使用CPU时间，配合 cpu.cfs_period_us 使用，默认为 -1 表示不限制。例如要限制进程只能使用 50% CPU 那可以设置该值为 cpu.cfs_period_us 的1/2，如果要设置进程能使用多核CPU那可以设置该值为cpu.cfs_period_us 的 n 倍。
+```
+$ docker ps -a | grep myapp-pod-cpu
+31e87e590f2d        busybox             "sh -c 'echo Hello K…"   24 minutes ago ...
+adcb91fdab07        busybox             "sh -c 'echo Hello K…"   25 minutes ago ...
 
-当上面这个 Pod 启动之后，我们来确认一下这2个容器的对应进程的 Cgroups 的 cpu 资源限制配置情况。
+$ cat /sys/fs/cgroup/memory/.../31e87e590f2d.../memory.limit_in_bytes    
+1073741824
+$ cat /sys/fs/cgroup/memory/.../adcb91fdab07.../memory.limit_in_bytes
+1073741824
+```
+
+总的来说，强烈建议每个容器都需要配置 requests.memory 和 limits.memory。根据实践经验是可以把 requests.memory 值设置的小一点保证能够成功调度到某个节点上，把 limits.memory 设置大一点保证在高峰时期应用还能够继续运行，否则应用容器很容易因为 OOM（Out-Of-Memory）被内核 Kill。
 
 ## ③ Extended resources
+
 
 # 三. Quality of Service(QoS)
 
