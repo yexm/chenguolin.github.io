@@ -172,7 +172,7 @@ Cgroups子资源系统实际上就是资源控制器，每种子资源系统控�
    ```
 3. 配置文件详解
     * CFS调度配置 (Linux内核默认CFS调度)
-        * cpu.shares: 进程使用CPU的权重设置，默认值为1024。当CPU资源充足时，设置CPU的权重是没有意义的，只有CPU资源紧张的情况下，CPU的权重才能让不同的进程按比例分到不同的CPU使用时长
+        * cpu.shares: 进程使用CPU的权重设置，默认值为1024。当CPU资源充足时，设置CPU的权重是没有意义的，只有CPU资源紧张的情况下，CPU的权重才能让不同的进程按比例分到不同的CPU使用时长，详情可以参考[cpu-share](https://docs.docker.com/engine/reference/run/#cpu-share-constraint)
         * cpu.cfs_period_us: 每个周期CPU总时间，配合cpu.cfs_quota_us使用，docker中默认设置为100000(100ms)
         * cpu.cfs_quota_us: 进程每个周期能使用CPU时间，配合cpu.cfs_period_us使用，默认-1表示不限制。例如要限制进程只能使用50% CPU那可以设置该值为cpu.cfs_period_us的1/2，如果要设置进程能使用多核CPU那可以设置该值为cpu.cfs_period_us的n倍
     * RT调度配置 (只限制实时任务的CPU)
