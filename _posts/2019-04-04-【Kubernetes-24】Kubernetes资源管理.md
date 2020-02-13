@@ -216,7 +216,7 @@ containers:
         memory: 100Mi
 ```
 
-2. 有容器没有配置 requests 和 limits
+2.有容器没有配置 requests 和 limits
 ```
 containers:
   name: foo
