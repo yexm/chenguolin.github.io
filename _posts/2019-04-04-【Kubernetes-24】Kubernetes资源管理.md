@@ -76,7 +76,7 @@ $ cat /sys/fs/cgroup/cpu/.../14e3bb16e4e2.../cpu.cfs_quota_us
 总的来说，强烈建议每个容器都需要配置 requests.cpu 和 limits.cpu。根据实践经验是可以把 requests.cpu 值设置的小一点保证能够成功调度到某个节点上，把 limits.cpu 设置大一点保证在高峰时期应用还能够继续运行，但是这2个字段设置的值会影响Pod Qos，这块会在下文介绍。
 
 ## ② Memory
-`Memory` 是 Kubernetes 系统的一种资源类型，在 Kubernetes 中 1个 CPU 等价于 `1 AWS vCPU` 或 `1 GCP Core` 或 `1 Azure vCore` 或 `1 IBM vCPU` 或 `1 CPU Hyperthread`。在 Kubernetes 中，Memory 资源属于 **不可压缩资源（compressible resources）**，当不可压缩资源不足时 Pod 会被Kill，常见的有 Pod 因为 OOM（Out-Of-Memory）被内核杀掉。
+`Memory` 是 Kubernetes 系统的一种资源类型，在 Kubernetes 中，Memory 资源属于 **不可压缩资源（compressible resources）**，当不可压缩资源不足时 Pod 会被Kill，常见的有 Pod 因为 OOM（Out-Of-Memory）被内核杀掉。
 
 容器中跟 Memory 相关的字段有 `spec.containers[].resources.limits.memory` 和 `spec.containers[].resources.requests.memory`。`requests.memory` 表示当前容器要申请的 Memory 资源（Kubernetes 调度是根据 requests.memory 值），`limits.memory` 表示当前容器最多能使用的 Memory 资源上限（没有配置表示可以使用节点所有CPU资源）。每个 Pod 总 `requests.memory` 等于所有容器 `requests.memory` 相加，同理 `limits.memory` 也类似。
 
