@@ -80,7 +80,7 @@ $ cat /sys/fs/cgroup/cpu/.../14e3bb16e4e2.../cpu.cfs_quota_us
 
 容器中跟 Memory 相关的字段有 `spec.containers[].resources.limits.memory` 和 `spec.containers[].resources.requests.memory`。`requests.memory` 表示当前容器要申请的 Memory 资源（Kubernetes 调度是根据 requests.memory 值），`limits.memory` 表示当前容器最多能使用的 Memory 资源上限（没有配置表示可以使用节点所有CPU资源）。每个 Pod 总 `requests.memory` 等于所有容器 `requests.memory` 相加，同理 `limits.memory` 也类似。
 
-Memory 资源单位默认是 bytes ，例如 **1000000** 表示 1000000 bytes 内存。除处值为还可以使用特殊的单位，例如 **E, P, T, G, M, K** 或 **Ei, Pi, Ti, Gi, Mi, Ki** 来表示。但是需要注意的是 Mi 和 M 是不同的，**1Mi=1024*1024、1M=1000*1000**。`强烈建议使用 Mi、Ki 这种方式来表示 Memory 资源，因为这比较符合程序员的思想。`
+Memory 资源单位默认是 bytes ，例如 **1000000** 表示 1000000 bytes 内存。除此之外，还可以使用特殊的单位，例如 **E, P, T, G, M, K** 或 **Ei, Pi, Ti, Gi, Mi, Ki** 来表示。但是需要注意的是 Mi 和 M 是不同的，**1Mi=1048576、1M=1000000**。`强烈建议使用 Mi、Ki 这种方式来表示 Memory 资源，因为这比较符合程序员的思想。`
 
 了解这些内容之后，我们可以看以下这个例子，Pod 内有2个容器，每个容器配置了 requests.memory 和 limits.memory。当 Pod 创建之后可以通过 `kubectl describe pod myapp-pod` 查看对应的容器状态，实际上这2个容器配置的 Memory 资源是一样的。
 
