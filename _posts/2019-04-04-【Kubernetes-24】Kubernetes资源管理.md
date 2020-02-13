@@ -318,7 +318,7 @@ spec:
 4. limits.memory: 表示 Namespace 下所有 Pod 可以配置 limits.memory 的上限
 5. pods: 表示 Namespace 可以启动 Pod 数的上限 （其它的字段类似，就不一一枚举介绍）
 
-配置 LimitRange 后我们可以通过 `kubectl describe ns cgl` 查看当前 Namespace 的详细信息
+配置 ResourceQuota 后我们可以通过 `kubectl describe ns cgl` 查看当前 Namespace 的详细信息
 
 ```
 kubectl describe ns cgl
