@@ -132,6 +132,8 @@ $ cat /sys/fs/cgroup/memory/.../adcb91fdab07.../memory.limit_in_bytes
 除了 CPU 和 Memory 资源外，Kubernetes v1.8 之后加入了 [ephemeral-storage](https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#local-ephemeral-storage) 资源类型，但是到目前 Kubernetes v1.17 还未正式 GA。除此之外，还可以自定义资源类型，详情可以参考 [extended-resources](https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#extended-resources)。
 
 # 三. Quality of Service(QoS)
+在了解了 Kubernetes 的资源模型之后，我们来看一下 Kubernetes 的 Quality of Service(QoS)。在 Kubernetes 中，Pod不同的 requests 和 limits 的设置方式，其实会将这个 Pod 划分到不同的 QoS 级别当中。
+在 Kubernetes 中， 不同的 requests 和 limits 的设置方式，其实会将这个 Pod 划分到不同的 QoS 级别当中。
 
 # 四. Policies(策略)
 ## ① Limit Ranges
