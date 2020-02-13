@@ -175,6 +175,10 @@ containers:
         memory: 100Mi
 ```
 
+在使用容器的时候，我们还可以通过设置 [cpuset](https://chenguolin.github.io/2019/03/14/Kubernetes-5-Docker%E5%AE%B9%E5%99%A8%E6%8A%80%E6%9C%AF%E4%B9%8BCgroups/#-cpuset) 把容器绑定到某个 CPU 的核上，而不是像 cpushare 那样共享 CPU 的计算能力。由于绑定在某个 CPU 后，在 CPU 之间的上下文切换的次数大大减少，容器里应用的性能会得到大幅提升。
+
+只要
+
 ## ② Best-Effort
 `Best-Effort 指的是所有容器都没有配置 requests 和 limits 的 Pod `，如果没有配置 limits 表示容器可以使用当前节点所有可分配的资源。
 
