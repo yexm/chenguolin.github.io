@@ -232,9 +232,127 @@ containers:
 ```
 
 # 四. Policies(策略)
-除了对单 Pod 进行资源配置外，Kubernetes 还支持给某个 Namespace 进行资源限制，主要有 [LimitRange](https://kubernetes.io/docs/concepts/policy/limit-range/) 和 [ResourceQuota](https://kubernetes.io/docs/concepts/policy/resource-quotas/) 两种策略。
+除了对单 Pod 进行资源配置外，Kubernetes 还支持给某个 Namespace 进行资源限制，主要有 [LimitRange](https://kubernetes.io/docs/concepts/policy/limit-range/) 和 [ResourceQuota](https://kubernetes.io/docs/concepts/policy/resource-quotas/) 两种策略。我们知道，一个 Kubernetes 集群会有多个业务，每个业务属于不同 Namespace。默认情况下 Pod 资源 limits 配置可以使用整个节点的资源， 因此如果能够在 Namespace 级别进行资源的限制就显得非常重要，可以保证业务之间公平共享资源。
 
 ## ① Limit Ranges
+[LimitRange](https://github.com/kubernetes/api/blob/02edbc1d22f3f0842d77b5cac047f25f8da1b6f9/core/v1/types.go#L5241)是Kubernetes 的API对象，可以用于限制某个 Namespace 下 Pod 容器资源使用，详细使用可以参考 [Kubernetes LimitRange](https://kubernetes.io/docs/concepts/policy/limit-range/)。
 
+```
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: limit-range
+  namespace: cgl
+spec:
+  limits:
+  - max:                
+      cpu: "800m"
+      memory: "1Gi"
+    min:                
+      cpu: "100m"
+      memory: "99Mi"
+    default:            
+      cpu: "700m"
+      memory: "900Mi"
+    defaultRequest:     
+      cpu: "110m"
+      memory: "111Mi"
+    type: Container
+```
+
+1. max: 表示 Pod 内容器最大可配置的资源
+2. min: 表示 Pod 内容器最小需要配置的资源
+3. default: 表示 Pod 内容器没有配置 limits 的情况下，会自动设置的默认值
+4. defaultRequest: 表示 Pod 内容器没有配置 requests 的情况下，会自动设置的默认值
+
+配置 LimitRange 后我们可以通过 `kubectl describe ns cgl` 查看当前 Namespace 的详细信息
+
+```
+$ kubectl describe ns cgl
+Name:         cgl
+Labels:       <none>
+Annotations:  <none>
+Status:       Active
+
+No resource quota.
+
+Resource Limits
+ Type       Resource  Min   Max   Default Request  Default Limit  Max Limit/Request Ratio
+ ----       --------  ---   ---   ---------------  -------------  -----------------------
+ Container  cpu       100m  800m  110m             700m           -
+ Container  memory    99Mi  1Gi   111Mi            900Mi          -
+```
+
+根据上面信息，如果我们在 cgl Namespace 下启动一个 Pod 并且没有配置任何 limits 和 requests，那 Kubernetes 会根据 LimitRange 自动设置 limits 和 requests。
 
 ## ② Resource Quotas
+除了 LimitRange 之外，还可以使用 [ResourceQuota](https://github.com/kubernetes/api/blob/02edbc1d22f3f0842d77b5cac047f25f8da1b6f9/core/v1/types.go#L5397) 来限制某个 Namespace 总的可以使用的资源。ResourceQuota 除了支持设置 cpu、memory 资源外，还支持设置 pods、services、replicationcontrollers 等API对象，详细可以参考 [Configure Quotas for API Objects
+](https://kubernetes.io/docs/tasks/administer-cluster/quota-api-object/#notes)。
+
+```
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: resource-quota
+  namespace: cgl
+spec:
+  hard:
+    requests.cpu: "1"
+    requests.memory: 1Gi
+    limits.cpu: "2"
+    limits.memory: 2Gi
+    pods: "5"
+    services: "4"
+    replicationcontrollers: "3"
+    resourcequotas: "2"
+    secrets: "1"
+    configmaps: "1"
+    persistentvolumeclaims: "1"
+    services.loadbalancers: "2"
+    services.nodeports: "0"
+```
+
+1. requests.cpu: 表示 Namespace 下所有 Pod 可以配置 requests.cpu 的上限
+2. requests.memory: 表示 Namespace 下所有 Pod 可以配置 requests.memory 的上限
+3. limits.cpu: 表示 Namespace 下所有 Pod 可以配置 limits.cpu 的上限
+4. limits.memory: 表示 Namespace 下所有 Pod 可以配置 limits.memory 的上限
+5. pods: 表示 Namespace 可以启动 Pod 数的上限 （其它的字段类似，就不一一枚举介绍）
+
+配置 LimitRange 后我们可以通过 `kubectl describe ns cgl` 查看当前 Namespace 的详细信息
+
+```
+kubectl describe ns cgl
+Name:         cgl
+Labels:       <none>
+Annotations:  <none>
+Status:       Active
+
+Resource Quotas
+ Name:                   resource-quota
+ Resource                Used    Hard
+ --------                ---     ---
+ configmaps              0       1
+ limits.cpu              1400m   2
+ limits.memory           1800Mi  2Gi
+ persistentvolumeclaims  0       1
+ pods                    1       5
+ replicationcontrollers  0       3
+ requests.cpu            220m    1
+ requests.memory         222Mi   1Gi
+ resourcequotas          1       2
+ secrets                 2       1
+ services                0       4
+ services.loadbalancers  0       2
+ services.nodeports      0       0
+
+Resource Limits
+ Type       Resource  Min   Max   Default Request  Default Limit  Max Limit/Request Ratio
+ ----       --------  ---   ---   ---------------  -------------  -----------------------
+ Container  cpu       100m  800m  110m             700m           -
+ Container  memory    99Mi  1Gi   111Mi            900Mi          -
+```
+
+根据上面的信息，cgl Namespace limits.cpu 已经使用了 1400m，那么只剩 600m 给剩下的 Pod 使用，limits.memory 已经使用了 1800Mi，那么只剩 200Mi 给剩下的 Pod 使用。同理，针对 pods、services 等 API 对象的限制也是一样的用法。
+
+总结一下，**LimitRange** 用于限制 Pod 内容器资源可配置的最大值、最小值 或 默认值，**ResourceQuota** 用于限制 Namespace 总的可以使用的资源，以及某些API对象可创建的个数。实际生产环境，强烈建议针对每个 Namespace 都设置 LimitRange 和 ResourceQuota。
+
