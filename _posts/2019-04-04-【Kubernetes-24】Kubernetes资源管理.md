@@ -132,8 +132,98 @@ $ cat /sys/fs/cgroup/memory/.../adcb91fdab07.../memory.limit_in_bytes
 除了 CPU 和 Memory 资源外，Kubernetes v1.8 之后加入了 [ephemeral-storage](https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#local-ephemeral-storage) 资源类型，但是到目前 Kubernetes v1.17 还未正式 GA。除此之外，还可以自定义资源类型，详情可以参考 [extended-resources](https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#extended-resources)。
 
 # 三. Quality of Service(QoS)
-在了解了 Kubernetes 的资源模型之后，我们来看一下 Kubernetes 的 Quality of Service(QoS)。在 Kubernetes 中，Pod不同的 requests 和 limits 的设置方式，其实会将这个 Pod 划分到不同的 QoS 级别当中。
-在 Kubernetes 中， 不同的 requests 和 limits 的设置方式，其实会将这个 Pod 划分到不同的 QoS 级别当中。
+在了解了 Kubernetes 的资源模型之后，我们来看一下 Kubernetes 的 Quality of Service(QoS)。在 Kubernetes 中，Pod 配置不同的 requests 和 limits 会将这个 Pod 划分到不同的 QoS 级别当中，目前支持 **Guaranteed、Burstable、Best-Effort** 这3个级别。
+
+QoS 主要的作用是影响节点驱逐 Pod 的策略，当节点资源不足时，kubelet 会挑选一些 Pod 进行驱逐操作，这个时候会需要参考这些 Pod 的 QoS 级别。`Best-Effort` 级别 Pod 优先级最低，当节点出现资源不足的时候最先考虑驱逐这类 Pod。`Burstable` 级别 Pod 是中等优先级，当没有 Best-Effort 级别 Pod 的时候才会考虑驱逐资源使用超过 requests 的 Burstable Pod。`Guaranteed` 级别 Pod 优先级最高，Kubernetes 会保证只有当 Guaranteed 类别的 Pod 的资源使用量超过了其 limits 的限制，或者宿主机本身正处于 Memory Pressure 状态时，Guaranteed 的 Pod 才可能被驱逐。
+
+## ① Guaranteed
+`Guaranteed 指的是所有容器的所有资源类型 requests 和 limits 都相同的 Pod`，如果一个 Pod 只有 limits 没有 requests，那么这个 Pod 也属于 Guaranteed（如果没有 requests Kubernetes 会默认设置成 limits）。下面这2个例子，都是 Guaranteed 级别 Pod。
+
+1.没有 requests 配置
+```
+containers:
+  name: foo
+    resources:
+      limits:
+        cpu: 100m
+        memory: 1Gi
+  name: bar
+    resources:
+      limits:
+        cpu: 100m
+        memory: 100Mi
+```
+
+2.显式的配置 requests 和 limits
+```
+containers:
+  name: foo
+    resources:
+      limits:
+        cpu: 100m
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 1Gi
+  name: bar
+    resources:
+      limits:
+        cpu: 100m
+        memory: 100Mi
+      requests:
+        cpu: 100m
+        memory: 100Mi
+```
+
+## ② Best-Effort
+`Best-Effort 指的是所有容器都没有配置 requests 和 limits 的 Pod `，如果没有配置 limits 表示容器可以使用当前节点所有可分配的资源。
+
+```
+containers:
+  name: foo
+    resources:
+  name: bar
+    resources:
+```
+
+## ③ Burstable
+所有不满足 Guaranteed 和 Best-Effort 的 Pod 都属于 Burstable，例如下面这几个例子
+
+1.有一个容器 requests 和 limits 不同
+```
+containers:
+  name: foo
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 100Mi
+  name: bar
+    resources:
+      limits:
+        cpu: 100m
+        memory: 100Mi
+      requests:
+        cpu: 100m
+        memory: 100Mi
+```
+
+2. 有容器没有配置 requests 和 limits
+```
+containers:
+  name: foo
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 100Mi
+  name: bar
+    ...
+```
 
 # 四. Policies(策略)
 ## ① Limit Ranges
