@@ -136,6 +136,8 @@ $ cat /sys/fs/cgroup/memory/.../adcb91fdab07.../memory.limit_in_bytes
 
 QoS 主要的作用是影响节点驱逐 Pod 的策略，当节点资源不足时，kubelet 会挑选一些 Pod 进行驱逐操作，这个时候会需要参考这些 Pod 的 QoS 级别。`Best-Effort` 级别 Pod 优先级最低，当节点出现资源不足的时候最先考虑驱逐这类 Pod。`Burstable` 级别 Pod 是中等优先级，当没有 Best-Effort 级别 Pod 的时候才会考虑驱逐资源使用超过 requests 的 Burstable Pod。`Guaranteed` 级别 Pod 优先级最高，Kubernetes 会保证只有当 Guaranteed 类别的 Pod 的资源使用量超过了其 limits 的限制，或者宿主机本身正处于 Memory Pressure 状态时，Guaranteed 的 Pod 才可能被驱逐。
 
+因此，在实际生产环境中，针对 DaemonSet 这类的应用建议把 Pod 设置成 Guaranteed 级别，尽量减少 Pod 被驱逐的概率。
+
 ## ① Guaranteed
 `Guaranteed 指的是所有容器的所有资源类型 requests 和 limits 都相同的 Pod`，如果一个 Pod 只有 limits 没有 requests，那么这个 Pod 也属于 Guaranteed（如果没有 requests Kubernetes 会默认设置成 limits）。下面这2个例子，都是 Guaranteed 级别 Pod。
 
@@ -177,7 +179,7 @@ containers:
 
 在使用容器的时候，我们还可以通过设置 [cpuset](https://chenguolin.github.io/2019/03/14/Kubernetes-5-Docker%E5%AE%B9%E5%99%A8%E6%8A%80%E6%9C%AF%E4%B9%8BCgroups/#-cpuset) 把容器绑定到某个 CPU 的核上，而不是像 cpushare 那样共享 CPU 的计算能力。由于绑定在某个 CPU 后，在 CPU 之间的上下文切换的次数大大减少，容器里应用的性能会得到大幅提升。
 
-只要
+所以，只要 Pod 属于 Guaranteed 级别并且容器 CPU 资源的 requests 和 limits 设置为同一个相等的**整数值**即可。
 
 ## ② Best-Effort
 `Best-Effort 指的是所有容器都没有配置 requests 和 limits 的 Pod `，如果没有配置 limits 表示容器可以使用当前节点所有可分配的资源。
@@ -230,6 +232,9 @@ containers:
 ```
 
 # 四. Policies(策略)
+除了对单 Pod 进行资源配置外，Kubernetes 还支持给某个 Namespace 进行资源限制，主要有 [LimitRange](https://kubernetes.io/docs/concepts/policy/limit-range/) 和 [ResourceQuota](https://kubernetes.io/docs/concepts/policy/resource-quotas/) 两种策略。
+
 ## ① Limit Ranges
+
 
 ## ② Resource Quotas
